@@ -10,7 +10,7 @@ import java.util.List;
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long projectId;
+    private Long projectId;
 
     private String projectName;
     private String projectDescription;
@@ -23,14 +23,14 @@ public class Project {
     @JoinColumn(name = "userId")
     private User projectLeader;
     @OneToMany(mappedBy = "project")
-    private List<Meeting> projectMeetings;
+    private List <Meeting> projectMeetings;
     @OneToMany(mappedBy = "project")
     private List<EmployeeInProject> projectEmployeeProjects;
 
     public Project() {
     }
 
-    public Project(long projectId, String projectName, String projectDescription, LocalDate projectStartDate, LocalDate projectEndDate, Category projectCategory, User projectLeader, List<Meeting> projectMeetings, List<EmployeeInProject> projectEmployeeProjects) {
+    public Project(Long projectId, String projectName, String projectDescription, LocalDate projectStartDate, LocalDate projectEndDate, Category projectCategory, User projectLeader, List<Meeting> projectMeetings, List<EmployeeInProject> projectEmployeeProjects) {
         this.projectId = projectId;
         this.projectName = projectName;
         this.projectDescription = projectDescription;
@@ -42,11 +42,11 @@ public class Project {
         this.projectEmployeeProjects = projectEmployeeProjects;
     }
 
-    public long getProjectId() {
+    public Long getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(long projectId) {
+    public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
 
@@ -103,7 +103,7 @@ public class Project {
     }
 
     public void setProjectMeeting(List<Meeting> projectMeetings) {
-        this.projectMeetings = projectMeeting;
+        this.projectMeetings = projectMeetings;
     }
 
     public List<EmployeeInProject> getProjectEmployeeProjects() {

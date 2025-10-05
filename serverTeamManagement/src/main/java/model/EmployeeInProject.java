@@ -9,7 +9,7 @@ import java.util.List;
 public class EmployeeInProject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long employeeProjectId;
+    private Long employeeProjectId;
     @ManyToOne
     @JoinColumn(name="projectId")
     private Project project;
@@ -25,7 +25,7 @@ public class EmployeeInProject {
     public EmployeeInProject() {
     }
 
-    public EmployeeInProject(long employeeProjectId, Project project, User user, String roleDescription, List<Report> reports, List<Approval> approvals) {
+    public EmployeeInProject(Long employeeProjectId, Project project, User user, String roleDescription, List<Report> reports, List<Approval> approvals) {
         this.employeeProjectId = employeeProjectId;
         this.project = project;
         this.user = user;
@@ -34,11 +34,11 @@ public class EmployeeInProject {
         this.approvals = approvals;
     }
 
-    public long getEmployeeProjectId() {
+    public Long getEmployeeProjectId() {
         return employeeProjectId;
     }
 
-    public void setEmployeeProjectId(long employeeProjectId) {
+    public void setEmployeeProjectId(Long employeeProjectId) {
         this.employeeProjectId = employeeProjectId;
     }
 

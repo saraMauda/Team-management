@@ -14,7 +14,7 @@ public class User {
     private String password;
     @OneToMany(mappedBy="user")
     private List<EmployeeInProject> employeeProjects;
-    @OneToMany(mappedBy="leader")
+    @OneToMany(mappedBy="projectLeader")
     private List<Project> leaderProjects;
 
 }
