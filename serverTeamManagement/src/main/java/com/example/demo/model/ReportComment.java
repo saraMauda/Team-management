@@ -1,4 +1,4 @@
-package model;
+package com.example.demo.model;
 
 import jakarta.persistence.*;
 
@@ -16,7 +16,7 @@ public class ReportComment {
     private Report report;
     @ManyToOne
     @JoinColumn(name = "userId")
-    private User user;
+    private Users user;
     private String text;
     private Date commentDate;
 
@@ -39,11 +39,11 @@ public class ReportComment {
     public ReportComment() {
     }
 
-    public User getUser() {
+    public Users getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(Users user) {
         this.user = user;
     }
 

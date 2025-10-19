@@ -1,4 +1,4 @@
-package model;
+package com.example.demo.model;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Id;
@@ -21,7 +21,7 @@ public class Project {
     private Category projectCategory;
     @ManyToOne
     @JoinColumn(name = "userId")
-    private User projectLeader;
+    private Users projectLeader;
     @OneToMany(mappedBy = "project")
     private List <Meeting> projectMeetings;
     @OneToMany(mappedBy = "project")
@@ -30,7 +30,7 @@ public class Project {
     public Project() {
     }
 
-    public Project(Long projectId, String projectName, String projectDescription, LocalDate projectStartDate, LocalDate projectEndDate, Category projectCategory, User projectLeader, List<Meeting> projectMeetings, List<EmployeeInProject> projectEmployeeProjects) {
+    public Project(Long projectId, String projectName, String projectDescription, LocalDate projectStartDate, LocalDate projectEndDate, Category projectCategory, Users projectLeader, List<Meeting> projectMeetings, List<EmployeeInProject> projectEmployeeProjects) {
         this.projectId = projectId;
         this.projectName = projectName;
         this.projectDescription = projectDescription;
@@ -90,11 +90,11 @@ public class Project {
         this.projectCategory = projectCategory;
     }
 
-    public User getProjectLeader() {
+    public Users getProjectLeader() {
         return projectLeader;
     }
 
-    public void setProjectLeader(User projectLeader) {
+    public void setProjectLeader(Users projectLeader) {
         this.projectLeader = projectLeader;
     }
 

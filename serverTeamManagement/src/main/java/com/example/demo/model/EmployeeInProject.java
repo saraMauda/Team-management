@@ -1,4 +1,4 @@
-package model;
+package com.example.demo.model;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Id;
@@ -15,7 +15,7 @@ public class EmployeeInProject {
     private Project project;
     @ManyToOne
     @JoinColumn(name = "userId")
-    private User user;
+    private Users user;
     private String roleDescription;
     @OneToMany(mappedBy = "reportEmployeeInProject")
     private List<Report> reports;
@@ -25,7 +25,7 @@ public class EmployeeInProject {
     public EmployeeInProject() {
     }
 
-    public EmployeeInProject(Long employeeProjectId, Project project, User user, String roleDescription, List<Report> reports, List<Approval> approvals) {
+    public EmployeeInProject(Long employeeProjectId, Project project, Users user, String roleDescription, List<Report> reports, List<Approval> approvals) {
         this.employeeProjectId = employeeProjectId;
         this.project = project;
         this.user = user;
@@ -50,11 +50,11 @@ public class EmployeeInProject {
         this.project = project;
     }
 
-    public User getUser() {
+    public Users getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(Users user) {
         this.user = user;
     }
 
