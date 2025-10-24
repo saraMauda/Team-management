@@ -12,22 +12,42 @@ public class Users{
     private String name;
     private String email;
     private String password;
+    private String role;
+    private boolean active;
     @OneToMany(mappedBy="user")
     private List<EmployeeInProject> employeeProjects;
     @OneToMany(mappedBy="projectLeader")
     private List<Project> leaderProjects;
 
-    public Users(Long id, String name, String email, String password, List<EmployeeInProject> employeeProjects, List<Project> leaderProjects) {
+    public Users() {
+
+    }
+
+    public Users(Long id, String name, String email, String password, String role, boolean active, List<EmployeeInProject> employeeProjects, List<Project> leaderProjects) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
+        this.active = active;
         this.employeeProjects = employeeProjects;
         this.leaderProjects = leaderProjects;
     }
 
-    public Users() {
+    public String getRole() {
+        return role;
+    }
 
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public Long getId() {

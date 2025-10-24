@@ -3,6 +3,7 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 import jakarta.persistence.Id;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -10,6 +11,8 @@ public class EmployeeInProject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long employeeProjectId;
+    private LocalDate assignedDate;
+    private String status;
     @ManyToOne
     @JoinColumn(name="projectId")
     private Project project;
@@ -25,13 +28,31 @@ public class EmployeeInProject {
     public EmployeeInProject() {
     }
 
-    public EmployeeInProject(Long employeeProjectId, Project project, Users user, String roleDescription, List<Report> reports, List<Approval> approvals) {
+    public EmployeeInProject(Long employeeProjectId, Project project, Users user, String roleDescription, List<Report> reports, List<Approval> approvals, LocalDate assignedDate, String status) {
         this.employeeProjectId = employeeProjectId;
         this.project = project;
         this.user = user;
         this.roleDescription = roleDescription;
         this.reports = reports;
         this.approvals = approvals;
+        this.assignedDate = assignedDate;
+        this.status = status;
+    }
+
+    public LocalDate getAssignedDate() {
+        return assignedDate;
+    }
+
+    public void setAssignedDate(LocalDate assignedDate) {
+        this.assignedDate = assignedDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Long getEmployeeProjectId() {

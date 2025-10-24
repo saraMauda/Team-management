@@ -16,6 +16,10 @@ public class Project {
     private String projectDescription;
     private LocalDate projectStartDate;
     private LocalDate projectEndDate;
+    private String projectStatus;
+    private int progressPercentage;
+    private String projectLocation;
+    private LocalDate lastUpdated;
     @ManyToOne
     @JoinColumn(name = "categoryId")
     private Category projectCategory;
@@ -27,10 +31,7 @@ public class Project {
     @OneToMany(mappedBy = "project")
     private List<EmployeeInProject> projectEmployeeProjects;
 
-    public Project() {
-    }
-
-    public Project(Long projectId, String projectName, String projectDescription, LocalDate projectStartDate, LocalDate projectEndDate, Category projectCategory, Users projectLeader, List<Meeting> projectMeetings, List<EmployeeInProject> projectEmployeeProjects) {
+    public Project(Long projectId, String projectName, String projectDescription, LocalDate projectStartDate, LocalDate projectEndDate, Category projectCategory, Users projectLeader, List<Meeting> projectMeetings, List<EmployeeInProject> projectEmployeeProjects, String projectStatus, int progressPercentage, String projectLocation, LocalDate lastUpdated) {
         this.projectId = projectId;
         this.projectName = projectName;
         this.projectDescription = projectDescription;
@@ -40,6 +41,49 @@ public class Project {
         this.projectLeader = projectLeader;
         this.projectMeetings = projectMeetings;
         this.projectEmployeeProjects = projectEmployeeProjects;
+        this.projectStatus = projectStatus;
+        this.progressPercentage = progressPercentage;
+        this.projectLocation = projectLocation;
+        this.lastUpdated = lastUpdated;
+    }
+
+    public Project() {
+    }
+
+    public void setProjectMeetings(List<Meeting> projectMeetings) {
+        this.projectMeetings = projectMeetings;
+    }
+
+    public String getProjectStatus() {
+        return projectStatus;
+    }
+
+    public void setProjectStatus(String projectStatus) {
+        this.projectStatus = projectStatus;
+    }
+
+    public int getProgressPercentage() {
+        return progressPercentage;
+    }
+
+    public void setProgressPercentage(int progressPercentage) {
+        this.progressPercentage = progressPercentage;
+    }
+
+    public String getProjectLocation() {
+        return projectLocation;
+    }
+
+    public void setProjectLocation(String projectLocation) {
+        this.projectLocation = projectLocation;
+    }
+
+    public LocalDate getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(LocalDate lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 
     public Long getProjectId() {

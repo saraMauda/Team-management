@@ -2,11 +2,15 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Entity
 public class Approval {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long approvalId;
+    private boolean approved;
+    private LocalDate approvalDate;
     @ManyToOne
     @JoinColumn(name = "employeeInProjectId")
     private EmployeeInProject approvalEmployeeInProject;
@@ -15,6 +19,14 @@ public class Approval {
     private Meeting meeting;
 
     public Approval() {
+    }
+
+    public Approval(Long approvalId, EmployeeInProject approvalEmployeeInProject, Meeting meeting, boolean approved, LocalDate approvalDate) {
+        this.approvalId = approvalId;
+        this.approvalEmployeeInProject = approvalEmployeeInProject;
+        this.meeting = meeting;
+        this.approved = approved;
+        this.approvalDate = approvalDate;
     }
 
     public Long getApprovalId() {
@@ -39,5 +51,20 @@ public class Approval {
 
     public void setMeeting(Meeting meeting) {
         this.meeting = meeting;
+    }
+    public boolean isApproved() {
+        return approved;
+    }
+
+    public void setApproved(boolean approved) {
+        this.approved = approved;
+    }
+
+    public LocalDate getApprovalDate() {
+        return approvalDate;
+    }
+
+    public void setApprovalDate(LocalDate approvalDate) {
+        this.approvalDate = approvalDate;
     }
 }

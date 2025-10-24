@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -18,7 +19,28 @@ public class ReportComment {
     @JoinColumn(name = "userId")
     private Users user;
     private String text;
-    private Date commentDate;
+    private LocalDateTime commentDate;
+    private boolean isEdited;
+
+    public ReportComment() {
+    }
+
+    public ReportComment(Long commentId, Report report, Users user, String text, LocalDateTime commentDate, boolean isEdited) {
+        this.commentId = commentId;
+        this.report = report;
+        this.user = user;
+        this.text = text;
+        this.commentDate = commentDate;
+        this.isEdited = isEdited;
+    }
+
+    public boolean isEdited() {
+        return isEdited;
+    }
+
+    public void setEdited(boolean edited) {
+        isEdited = edited;
+    }
 
     public Report getReport() {
         return report;
@@ -34,9 +56,6 @@ public class ReportComment {
 
     public Long getCommentId() {
         return commentId;
-    }
-
-    public ReportComment() {
     }
 
     public Users getUser() {
@@ -55,11 +74,11 @@ public class ReportComment {
         this.text = text;
     }
 
-    public Date getCommentDate() {
+    public LocalDateTime getCommentDate() {
         return commentDate;
     }
 
-    public void setCommentDate(Date commentDate) {
+    public void setCommentDate(LocalDateTime commentDate) {
         this.commentDate = commentDate;
     }
 }

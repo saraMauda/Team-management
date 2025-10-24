@@ -3,6 +3,7 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -10,10 +11,11 @@ public class Report {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long reportId;
-
     private String reportTitle;
     private String reportDescription;
     private LocalDate reportDate;
+    private String reportStatus;
+    private LocalDate lastEdited;
     @ManyToOne
     @JoinColumn(name = "employeeProjectId")
     private EmployeeInProject reportEmployeeInProject;
@@ -23,11 +25,13 @@ public class Report {
     public Report() {
     }
 
-    public Report(long reportId, String reportTitle, String reportDescription, LocalDate reportDate, EmployeeInProject reportEmployeeInProject, List<ReportComment> reportComments) {
+    public Report(long reportId, String reportTitle, String reportDescription, LocalDate reportDate, String reportStatus, LocalDate lastEdited, EmployeeInProject reportEmployeeInProject, List<ReportComment> reportComments) {
         this.reportId = reportId;
         this.reportTitle = reportTitle;
         this.reportDescription = reportDescription;
         this.reportDate = reportDate;
+        this.reportStatus = reportStatus;
+        this.lastEdited = lastEdited;
         this.reportEmployeeInProject = reportEmployeeInProject;
         this.reportComments = reportComments;
     }
@@ -78,5 +82,21 @@ public class Report {
 
     public void setReportComments(List<ReportComment> reportComments) {
         this.reportComments = reportComments;
+    }
+
+    public String getReportStatus() {
+        return reportStatus;
+    }
+
+    public void setReportStatus(String reportStatus) {
+        this.reportStatus = reportStatus;
+    }
+
+    public LocalDate getLastEdited() {
+        return lastEdited;
+    }
+
+    public void setLastEdited(LocalDate lastEdited) {
+        this.lastEdited = lastEdited;
     }
 }
