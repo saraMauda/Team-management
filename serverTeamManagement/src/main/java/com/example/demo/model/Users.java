@@ -14,6 +14,7 @@ public class Users{
     private String password;
     private String role;
     private boolean active;
+    private String imagePath;
     @OneToMany(mappedBy="user")
     private List<EmployeeInProject> employeeProjects;
     @OneToMany(mappedBy="projectLeader")
@@ -23,15 +24,24 @@ public class Users{
 
     }
 
-    public Users(Long id, String name, String email, String password, String role, boolean active, List<EmployeeInProject> employeeProjects, List<Project> leaderProjects) {
+    public Users(Long id, String name, String email, String password, String role, boolean active, String imagePath, List<EmployeeInProject> employeeProjects, List<Project> leaderProjects) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
         this.active = active;
+        this.imagePath = imagePath;
         this.employeeProjects = employeeProjects;
         this.leaderProjects = leaderProjects;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     public String getRole() {
