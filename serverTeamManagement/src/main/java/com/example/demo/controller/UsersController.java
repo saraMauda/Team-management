@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
+
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -33,10 +35,10 @@ public class UsersController {
     private UsersMapper usersMapper;
 
     @GetMapping("get/{id}")
-    public ResponseEntity<Users> getUsers(@PathVariable("id") long id) {
-        Users user = usersRepository.findById(id).orElse(null);
+    public ResponseEntity<UsersDTO> getUsers(@PathVariable("id") long id) {
+        Users user = usersRepository.findById(id).get();
         if(user != null) {
-            return new ResponseEntity<>(user, HttpStatus.OK);
+            return new ResponseEntity<>(usersMapper.userToUsersDTO(user), HttpStatus.OK);
         }
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -69,18 +71,22 @@ public class UsersController {
         usersRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-    @PostMapping("/upload/{id}")
-    public ResponseEntity<String> uploadImage(@PathVariable Long id,
-                                              @RequestParam("image") MultipartFile file) throws IOException {
-        Users user = usersRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        ImageUtils.uploadImage(file); // שומר את התמונה פיזית
-        user.setImagePath(file.getOriginalFilename()); // שומר רק את השם בטבלה
-        usersRepository.save(user);
-
-        return ResponseEntity.ok("Image uploaded successfully");
+    @PostMapping("/upload")
+    public ResponseEntity<Users> uploadUsersWithImage(
+            @RequestPart("image") MultipartFile file,
+            @RequestPart("users") Users u) {
+        try {
+            ImageUtils.uploadImage(file);
+            u.setImagePath(file.getOriginalFilename());
+            Users user = usersRepository.save(u);
+            return new ResponseEntity<>(user, HttpStatus.CREATED);
+        } catch (IOException e) {
+            System.out.println(e);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
+
+
 
     @GetMapping
     public List<UsersDTO> getAllUsers() {
