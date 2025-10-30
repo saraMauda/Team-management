@@ -29,4 +29,14 @@ public interface ReportMapper {
 
         return dto;
     }
+    default Report reportDTOToReport(ReportDTO dto){
+        Report report=new Report();
+        report.setReportId(dto.getId());
+        report.setReportTitle(dto.getTitle());
+        report.setReportDescription(dto.getDescription());
+        report.setReportStatus(dto.getStatus());
+        report.setReportDate(dto.getReportDate());
+        report.setLastEdited(dto.getLastEdited());
+        return report;
+    }
 }

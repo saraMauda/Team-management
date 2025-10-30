@@ -27,4 +27,16 @@ public interface ProjectMapper {
 
         return dto;
     }
+default Project projectDTOToProject(ProjectDTO dto){
+        Project project=new Project();
+        project.setProjectId(dto.getId());
+        project.setProjectName(dto.getName());
+        project.setProjectDescription(dto.getDescription());
+        project.setProjectStartDate(dto.getStartDate());
+        project.setProjectEndDate(dto.getEndDate());
+        project.setProjectStatus(dto.getStatus());
+        project.setProgressPercentage(dto.getProgress());
+
+    return project;
+}
 }

@@ -25,4 +25,22 @@ public interface MeetingMapper {
 
         return dto;
     }
+//    default Meeting meetingDTOToMeeting(MeetingDTO dto){
+//        Meeting meeting=new Meeting();
+//        meeting.setTitle(dto.getTitle());
+//
+//    }
+default Meeting meetingDTOToMeeting(MeetingDTO dto) {
+    Meeting meeting = new Meeting();
+
+    meeting.setMeetingId(dto.getId());
+    meeting.setTitle(dto.getTitle());
+    meeting.setDescription(dto.getDescription());
+    meeting.setMeetingDate(dto.getMeetingDate());
+    meeting.setMeetingLocation(dto.getMeetingLocation());
+    meeting.setStatus(dto.getStatus());
+    meeting.setCreatedAt(dto.getCreatedAt());
+
+    return meeting;
+}
 }

@@ -41,6 +41,34 @@ public class UsersController {
         else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+    //יצירת משתמש חדש (למשל בהרשמה)
+    @PostMapping
+    public ResponseEntity<UsersDTO>createUser(@RequestBody UsersDTO usersDTO){
+        Users users=usersMapper.usersDTOToUser(usersDTO);
+        Users savedUser=usersRepository.save(users);
+        return ResponseEntity.status(HttpStatus.CREATED).body(usersMapper.userToUsersDTO(savedUser));
+    }
+    //עדכון משתמש
+    @PutMapping("/{id}")
+    public ResponseEntity<UsersDTO>updateUser(@PathVariable Long id,@RequestBody UsersDTO userDTO){
+        return usersRepository.findById(id)
+                .map(existing->{
+                    existing.setName(userDTO.getName());
+                    existing.setEmail(userDTO.getEmail());
+                    usersRepository.save(existing);
+                    return ResponseEntity.ok(usersMapper.userToUsersDTO(existing));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+    //מחיקת משתמש (רק Admin רשאי)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void>deleteUser(@PathVariable Long id){
+        if(!usersRepository.existsById(id)){
+            return ResponseEntity.notFound().build();
+        }
+        usersRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
     @PostMapping("/upload/{id}")
     public ResponseEntity<String> uploadImage(@PathVariable Long id,
                                               @RequestParam("image") MultipartFile file) throws IOException {

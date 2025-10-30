@@ -35,4 +35,46 @@ public class ProjectController {
                 .orElseThrow(() -> new RuntimeException("Project not found"));
         return projectMapper.projectToProjectDTO(project);
     }
+    //יצירת פרויקט חדש
+    @PostMapping
+    public ProjectDTO createProject(@RequestBody ProjectDTO projectDTO){
+        Project project=projectMapper.projectDTOToProject(projectDTO);
+        Project saved=projectRepository.save(project);
+        return projectMapper.projectToProjectDTO(saved);
+    }
+    @PutMapping("/{id}")
+    public ProjectDTO updateProject(@PathVariable Long id, @RequestBody ProjectDTO projectDTO){
+        Project existing = projectRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+
+        existing.setProjectName(projectDTO.getName());
+        existing.setProjectDescription(projectDTO.getDescription());
+        existing.setProjectStartDate(projectDTO.getStartDate());
+        existing.setProjectEndDate(projectDTO.getEndDate());
+
+        Project updated = projectRepository.save(existing);
+        return projectMapper.projectToProjectDTO(updated);
+    }
+    //מחיקת פרויקט
+    @DeleteMapping("/{id}")
+    public void deleteProject(@PathVariable Long id) {
+        projectRepository.deleteById(id);
+    }
+    // שליפת פרויקטים לפי מנהל צוות
+    @GetMapping("/byLeader/{leaderId}")
+    public List<ProjectDTO> getProjectsByLeader(@PathVariable Long leaderId) {
+        return projectRepository.findByProjectLeader_Id(leaderId)
+                .stream()
+                .map(projectMapper::projectToProjectDTO)
+                .collect(Collectors.toList());
+    }
+    //שליפת פרויקטים לפי עובד
+    @GetMapping("/byEmployee/{employeeId}")
+    public List<ProjectDTO> getProjectsByEmployee(@PathVariable Long employeeId) {
+        return projectRepository.findByProjectEmployeeProjects_User_Id(employeeId)
+                .stream()
+                .map(projectMapper::projectToProjectDTO)
+                .collect(Collectors.toList());
+    }
+
 }
