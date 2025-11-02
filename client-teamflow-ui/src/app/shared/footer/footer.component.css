@@ -1,0 +1,15 @@
+.main-footer {
+  background-color: #ff7f32;
+  color: white;
+  text-align: center;
+  padding: 12px 0;
+  font-size: 14px;
+  width: 100%;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.25);
+}
+
+@media (max-width: 600px) {
+  .main-footer {
+    font-size: 13px;
+  }
+}

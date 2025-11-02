@@ -1,0 +1,141 @@
+/* רקע כללי */
+.login-wrapper {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #01426a, #ff7f32);
+  font-family: 'Poppins', sans-serif;
+}
+
+/* כרטיס התחברות */
+.login-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 40px 30px;
+  width: 360px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  color: #fff;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.login-card:hover {
+  transform: translateY(-5px);
+}
+
+/* כותרת ולוגו */
+.logo {
+  width: 70px;
+  margin-bottom: 10px;
+}
+
+.login-header h2 {
+  margin-bottom: 5px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.login-header span {
+  color: #ff7f32;
+}
+
+.login-header p {
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+/* טופס התחברות */
+.login-form {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* שדות */
+.form-group {
+  position: relative;
+}
+
+.form-group i {
+  position: absolute;
+  top: 12px;
+  left: 10px;
+  color: #01426a;
+  font-size: 18px;
+}
+
+.form-group input {
+  width: 87%;
+  padding: 10px 10px 10px 35px;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.9);
+  color: #01426a;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+  box-shadow: 0 0 8px rgba(255, 127, 50, 0.7);
+}
+
+/* כפתור */
+.login-btn {
+  background-color: #ff7f32;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s;
+}
+
+.login-btn:hover {
+  background-color: #e56e22;
+  transform: scale(1.03);
+}
+
+/* קישורים */
+.extra-links {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  font-size: 13px;
+}
+
+.extra-links a {
+  color: white;
+  opacity: 0.85;
+  text-decoration: none;
+  transition: opacity 0.3s;
+}
+
+.extra-links a:hover {
+  opacity: 1;
+}
+
+/* 📱 רספונסיביות */
+@media (max-width: 480px) {
+  .login-card {
+    width: 85%;
+    padding: 30px 20px;
+  }
+
+  .login-header h2 {
+    font-size: 20px;
+  }
+
+  .login-form input {
+    font-size: 14px;
+  }
+
+  .login-btn {
+    font-size: 15px;
+  }
+}
