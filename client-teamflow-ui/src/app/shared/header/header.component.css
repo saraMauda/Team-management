@@ -1,75 +1,67 @@
+/* כללי */
 .header {
+  background-color: #0f2234;
+  height: 65px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  background-color: #0e2433;
-  color: white;
-  padding: 12px 25px;
+  justify-content: space-between;
+  padding: 0 30px;
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 127, 50, 0.25);
+  box-sizing: border-box;
   position: sticky;
   top: 0;
-  z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 50;
 }
 
-.left-section {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.logo {
-  height: 42px;
-}
-
-.brand {
-  font-size: 22px;
+/* כותרת */
+.header-title {
+  font-size: 20px;
+  font-weight: 700;
   color: #ff7f32;
   margin: 0;
 }
 
-.nav-links {
+/* אזור פעולות (לוגאאוט) */
+.header-actions {
   display: flex;
+  align-items: center;
   gap: 20px;
 }
 
-.nav-links a {
-  color: white;
-  text-decoration: none;
-  font-weight: 500;
-  transition: 0.2s;
-}
+/* רספונסיביות */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    height: auto;
+    gap: 10px;
+    text-align: center;
+  }
 
-.nav-links a:hover,
-.nav-links a.active {
-  color: #ff7f32;
-  border-bottom: 2px solid #ff7f32;
-  padding-bottom: 3px;
+  .header-actions {
+    justify-content: center;
+  }
 }
-
-.profile-section {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.profile-pic {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: 2px solid #ff7f32;
-}
-
 .logout-btn {
-  background-color: #ff7f32;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
+  background-color: transparent;  /* בלי רקע כתום בולט */
+  color: #e6edf4;                 /* צבע אחיד עם הנתונים */
+  border: 1.5px solid #ff7f32;    /* קו דק בצבע המותג */
+  border-radius: 8px;
+  padding: 8px 16px;
   cursor: pointer;
-  font-weight: 500;
-  transition: 0.2s;
+  font-weight: 600;
+  font-size: 16px;                /* זהה לטקסט של הנתונים */
+  font-family: 'Segoe UI', Arial, sans-serif; /* אותו פונט כמו הנתונים */
+  letter-spacing: 0.4px;
+  transition: all 0.25s ease;
+
 }
 
 .logout-btn:hover {
-  background-color: #ff9453;
+  background-color: #ff7f32;      /* הכתום רק ב-hover */
+  color: #fff;                    /* טקסט לבן ברור */
+  transform: translateY(-1px);
+  box-shadow: 0 0 8px rgba(255, 127, 50, 0.3);
 }
+
+

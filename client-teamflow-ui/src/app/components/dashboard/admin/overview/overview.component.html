@@ -1,1 +1,133 @@
-<p>overview works!</p>
+<div class="overview-wrapper">
+  <div class="overview-header">
+    <div>
+      <h1>Admin Dashboard</h1>
+      <p>System overview and activity for TeamFlow</p>
+    </div>
+    <div class="tag">
+      Live Data
+    </div>
+  </div>
+
+  <!-- הודעה בזמן טעינה / שגיאה -->
+  <div *ngIf="loading" class="status-box loading">
+    Loading data from server...
+  </div>
+  <div *ngIf="!loading && error" class="status-box error">
+    {{ error }}
+  </div>
+
+  <!-- Cards row -->
+  <div class="cards-row">
+    <div class="card">
+      <div class="card-title">Users</div>
+      <div class="card-value">{{ totalUsers }}</div>
+      <div class="card-sub">
+        Active: {{ activeUsers }} ({{ getActiveUsersPercent() }}%)
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Projects</div>
+      <div class="card-value">{{ totalProjects }}</div>
+      <div class="card-sub">
+        Active: {{ activeProjects }} ({{ getActiveProjectsPercent() }}%)
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Reports</div>
+      <div class="card-value">{{ totalReports }}</div>
+      <div class="card-sub">
+        Total reports in system
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Meetings</div>
+      <div class="card-value">{{ totalMeetings }}</div>
+      <div class="card-sub">
+        Scheduled & past meetings
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity / Stats row -->
+  <div class="bottom-row">
+    <!-- Left: Activity (פאנל גרפי) -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2>System Activity</h2>
+        <span class="panel-tag">Summary</span>
+      </div>
+
+      <div class="activity-bars">
+        <div class="activity-item">
+          <div class="label-row">
+            <span>Active Users</span>
+            <span>{{ getActiveUsersPercent() }}%</span>
+          </div>
+          <div class="bar">
+            <div class="bar-fill users" [style.width.%]="getActiveUsersPercent()"></div>
+          </div>
+        </div>
+
+        <div class="activity-item">
+          <div class="label-row">
+            <span>Active Projects</span>
+            <span>{{ getActiveProjectsPercent() }}%</span>
+          </div>
+          <div class="bar">
+            <div class="bar-fill projects" [style.width.%]="getActiveProjectsPercent()"></div>
+          </div>
+        </div>
+
+        <div class="activity-note">
+          Data based on current status from the system.
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Recent items -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Recent Activity</h2>
+        <span class="panel-tag">Latest</span>
+      </div>
+
+      <div class="recent-columns">
+        <!-- Recent projects -->
+        <div class="recent-column">
+          <h3>Projects</h3>
+          <ul>
+            <li *ngFor="let p of recentProjects">
+              <div class="item-title">{{ p.projectName }}</div>
+              <div class="item-sub">
+                Status: {{ p.projectStatus || 'N/A' }}
+              </div>
+            </li>
+            <li *ngIf="recentProjects.length === 0" class="empty">
+              No projects data yet.
+            </li>
+          </ul>
+        </div>
+
+        <!-- Recent meetings -->
+        <div class="recent-column">
+          <h3>Meetings</h3>
+          <ul>
+            <li *ngFor="let m of recentMeetings">
+              <div class="item-title">{{ m.title }}</div>
+              <div class="item-sub">
+                {{ m.meetingDate || 'No date' }} · {{ m.meetingLocation || 'Location TBD' }}
+              </div>
+            </li>
+            <li *ngIf="recentMeetings.length === 0" class="empty">
+              No meetings data yet.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

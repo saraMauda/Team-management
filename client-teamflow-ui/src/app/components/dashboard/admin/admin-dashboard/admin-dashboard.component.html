@@ -1,21 +1,35 @@
-<div class="dashboard-layout">
-  <aside class="sidebar">
-    <div class="logo-area">
-      <img src="assets/logo.png" alt="TeamFlow Logo" class="logo" />
-      <h2>Leader Panel</h2>
-    </div>
+<div class="dashboard-container">
+<div class="admin-layout">
+  <!-- סרגל צד שמאלי -->
+  <aside class="side-nav">
+<div class="logo-container">
+  <img src="assets/logo.png" alt="TeamFlow Logo" class="logo-img" />
+  <span class="logo-text">TeamFlow</span>
+</div>
 
-    <nav class="nav-links">
-      <a routerLink="team-projects" routerLinkActive="active">Team Projects</a>
-      <a routerLink="team-reports" routerLinkActive="active">Team Reports</a>
-      <a routerLink="team-meetings" routerLinkActive="active">Meetings</a>
-      <a routerLink="feedback" routerLinkActive="active">Feedback</a>
-    </nav>
+    <ul>
+      <li><a routerLink="/admin-dashboard/overview" routerLinkActive="active">Overview</a></li>
+      <li><a routerLink="/admin-dashboard/users" routerLinkActive="active">Users</a></li>
+      <li><a routerLink="/admin-dashboard/projects" routerLinkActive="active">Projects</a></li>
+      <li><a routerLink="/admin-dashboard/reports" routerLinkActive="active">Reports</a></li>
+      <li><a routerLink="/admin-dashboard/meetings" routerLinkActive="active">Meetings</a></li>
+      <li><a routerLink="/admin-dashboard/settings" routerLinkActive="active">Settings</a></li>
+    </ul>
   </aside>
 
-  <section class="content">
+  <!-- אזור ראשי -->
+  <div class="admin-main">
+    <!-- כאן נכנס ה-header שלך כמו שהוא -->
     <app-header></app-header>
-    <router-outlet></router-outlet>
+
+    <!-- רק החלק הזה גולל -->
+    <div class="admin-content">
+      <router-outlet></router-outlet>
+    </div>
+
+    <!-- כאן נכנס ה-footer שלך כמו שהוא -->
     <app-footer></app-footer>
-  </section>
+  </div>
 </div>
+</div>
+
