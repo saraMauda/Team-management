@@ -5,12 +5,12 @@ import { importProvidersFrom } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app/app.component';
-import { LoginComponent } from './app/components/login/login.component';
-
-const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent }
+import { AdminDashboardComponent } from './app/components/admin-dashboard/admin-dashboard.component';
+export const routes: Routes = [
+  { path: '', redirectTo: 'manage-users', pathMatch: 'full' },
+  { path: 'admin-dashboard', component: AdminDashboardComponent }
 ];
+
 
 bootstrapApplication(AppComponent, {
   providers: [

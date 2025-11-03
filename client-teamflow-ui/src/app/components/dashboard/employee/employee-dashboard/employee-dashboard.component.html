@@ -1,0 +1,21 @@
+<div class="dashboard-layout">
+  <aside class="sidebar">
+    <div class="logo-area">
+      <img src="assets/logo.png" alt="TeamFlow Logo" class="logo" />
+      <h2>Employee</h2>
+    </div>
+
+    <nav class="nav-links">
+      <a routerLink="my-projects" routerLinkActive="active">My Projects</a>
+      <a routerLink="my-reports" routerLinkActive="active">My Reports</a>
+      <a routerLink="meetings" routerLinkActive="active">Meetings</a>
+      <a routerLink="add-report" routerLinkActive="active">Add Report</a>
+    </nav>
+  </aside>
+
+  <section class="content">
+    <app-header></app-header>
+    <router-outlet></router-outlet>
+    <app-footer></app-footer>
+  </section>
+</div>

@@ -1,0 +1,19 @@
+.dashboard-layout {
+  display: flex;
+  height: 100vh;
+  background-color: #0e2433;
+}
+
+.sidebar {
+  width: 240px;
+  background-color: #132b3b;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border-right: 2px solid #ff7f32;
+}
+.nav-links a.active {
+  background-color: #ff7f32;
+  color: #0e2433;
+}

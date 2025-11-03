@@ -1,0 +1,97 @@
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <img [src]="logoPath" alt="TeamFlow" class="brand-logo">
+      <span class="brand-text">TeamFlow</span>
+    </div>
+
+    <nav class="menu">
+      <a class="menu-item active">Dashboard</a>
+      <a class="menu-item">Users</a>
+      <a class="menu-item">Projects</a>
+      <a class="menu-item">Reports</a>
+      <a class="menu-item">Settings</a>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <section class="main">
+
+    <!-- Stats -->
+    <section class="stats">
+      <div class="card stat" *ngFor="let s of stats">
+        <div class="stat-icon">{{ s.icon }}</div>
+        <div class="stat-info">
+          <div class="stat-title">{{ s.title }}</div>
+          <div class="stat-value">{{ s.value }}</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid-2">
+      <!-- System Overview (Chart placeholder) -->
+      <section class="card chart-card">
+        <h2>System Overview</h2>
+        <div class="chart-placeholder">📈 Chart will be here</div>
+      </section>
+
+      <!-- Manage Projects -->
+      <section class="card manage-projects">
+        <h2>Manage Projects</h2>
+        <div class="project" *ngFor="let p of projects">
+          <div class="dot"></div>
+          <div class="project-info">
+            <div class="name">{{ p.name }}</div>
+            <div [ngClass]="projectStatusClass(p.status)">{{ p.status }}</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Manage Users Table -->
+    <section class="card manage-users">
+      <div class="mu-header">
+        <h2>Manage Users</h2>
+        <button class="btn btn-primary">+ Add User</button>
+      </div>
+
+      <div class="table">
+        <div class="thead">
+          <div>Name</div>
+          <div>Email</div>
+          <div>Role</div>
+          <div>Actions</div>
+        </div>
+
+        <div class="trow" *ngFor="let u of users">
+          <div class="cell user-cell">
+            <img
+              class="mini-avatar"
+              [src]="u.imageBase64 && u.imageBase64.length > 0 ? ('data:image/png;base64,' + u.imageBase64) : 'assets/avatar-default.png'"
+              alt="Profile">
+            <div class="user-name">{{ u.name }}</div>
+          </div>
+          <div class="cell">{{ u.email }}</div>
+          <div class="cell">{{ u.role.replace('_', ' ') }}</div>
+          <div class="cell actions">
+            <button class="btn btn-dark" (click)="onEditUser(u)">Edit</button>
+            <button class="btn btn-danger" (click)="onDeleteUser(u)">Delete</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- System Settings -->
+    <section class="settings-grid">
+      <button class="btn setting" (click)="onManagePermissions()">Manage Permissions</button>
+      <button class="btn setting" (click)="onManageCategories()">Manage Categories</button>
+      <button class="btn setting" (click)="onBackupRestore()">Backup & Restore</button>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      © 2025 TeamFlow
+    </footer>
+  </section>
+</div>

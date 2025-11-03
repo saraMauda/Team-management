@@ -1,0 +1,35 @@
+// src/app/services/reports.service.ts
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { ReportDTO } from '../models/report-dto.model';
+import { API_BASE_URL } from '../app.config';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ReportsService {
+  private baseUrl = `${API_BASE_URL}/reports`;
+
+  constructor(private http: HttpClient) {}
+
+  getAll(): Observable<ReportDTO[]> {
+    return this.http.get<ReportDTO[]>(this.baseUrl);
+  }
+
+  getById(id: number): Observable<ReportDTO> {
+    return this.http.get<ReportDTO>(`${this.baseUrl}/${id}`);
+  }
+
+  create(report: Partial<ReportDTO>): Observable<ReportDTO> {
+    return this.http.post<ReportDTO>(this.baseUrl, report);
+  }
+
+  update(id: number, report: Partial<ReportDTO>): Observable<ReportDTO> {
+    return this.http.put<ReportDTO>(`${this.baseUrl}/${id}`, report);
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+}
