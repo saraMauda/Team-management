@@ -3,6 +3,7 @@ html, body {
   margin: 0;
   padding: 0;
   background-color: #10263b;
+  /* position: fixed; */
 }
 
 /* כל הלייאאוט של האדמין */
@@ -117,4 +118,44 @@ html, body {
   font-weight: 700;
   letter-spacing: 0.5px;
 }
+.side-nav {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 10; /* לוודא שהסרגל מעל ה-main ולא מתחת */
+  pointer-events: auto; /* מאפשר לחיצה */
+}
 
+.admin-main {
+  position: relative;
+  z-index: 1; /* כך שה-main לא יכסה את הסיידבר */
+  margin-left: 220px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #10263b;
+  overflow: hidden;
+}
+
+/* 🧱 תיקון מיקום ושכבות */
+app-header {
+  position: relative;
+  z-index: 5; /* שיהיה מעל התוכן, אבל לא מכסה את ה־sidebar */
+}
+
+.side-nav {
+  z-index: 10; /* מעל ה־header */
+  pointer-events: auto !important; /* מאפשר לחיצה */
+}
+
+.side-nav a {
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+
+/* ביטול כל חפיפה של שכבות */
+.admin-layout {
+  position: relative;
+  z-index: 1;
+}

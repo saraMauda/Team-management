@@ -1,1 +1,113 @@
-<p>manage-users works!</p>
+<div class="users-container">
+  <h2>Manage Users</h2>
+
+  <div class="toolbar">
+    <button class="add-btn" (click)="showAddForm = !showAddForm">
+      {{ showAddForm ? 'Cancel' : '➕ Add User' }}
+    </button>
+  </div>
+
+  <!-- add form (כמו שהיה) -->
+  @if (showAddForm) {
+    <div class="add-user-form">
+      <input type="text" placeholder="Full Name" [(ngModel)]="newUser.name" />
+      <input type="email" placeholder="Email" [(ngModel)]="newUser.email" />
+      <select [(ngModel)]="newUser.role">
+        <option value="ADMIN">Admin</option>
+        <option value="TEAM_LEADER">Team Leader</option>
+        <option value="EMPLOYEE">Employee</option>
+      </select>
+      <input type="password" placeholder="Password (set)" [(ngModel)]="newUser.password" />
+      <button class="save-btn" (click)="addUser()">Save</button>
+    </div>
+  }
+
+  <!-- users table -->
+  @if (loading) {
+    <p class="loading">Loading users...</p>
+  } @else if (error) {
+    <p class="error">{{ error }}</p>
+  } @else {
+    <table class="users-table" *ngIf="users.length > 0; else noUsers">
+      <thead>
+        <tr>
+          <th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of users; track user?.id) {
+          <tr>
+            <td>{{ user.id }}</td>
+            <td>
+              <div class="user-cell">
+                <img *ngIf="user.image" [src]="user.image" alt="avatar" class="avatar-small" />
+                <span>{{ user.name }}</span>
+              </div>
+            </td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.role }}</td>
+            <td>
+              <span class="status" [class.active]="user.active" [class.inactive]="!user.active">
+                {{ user.active ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+            <td>
+              <button class="edit-btn" (click)="openEdit(user)">Edit</button>
+              <button class="delete-btn" (click)="deleteUser(user.id)">Delete</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <ng-template #noUsers>
+      <p class="no-data">No users found.</p>
+    </ng-template>
+  }
+
+<!-- EDIT PANEL / MODAL -->
+@if (showEditForm && editingUser) {
+  <div class="edit-overlay">
+    <div class="edit-panel">
+      <h3>Edit User</h3>
+
+      <div class="edit-grid">
+        <label>Name</label>
+        <input type="text" [(ngModel)]="editingUser.name" />
+
+        <label>Email</label>
+        <input type="email" [(ngModel)]="editingUser.email" />
+
+        <label>Role</label>
+        <select [(ngModel)]="editingUser.role">
+          <option value="ADMIN">Admin</option>
+          <option value="TEAM_LEADER">Team Leader</option>
+          <option value="EMPLOYEE">Employee</option>
+        </select>
+
+        <label>Active</label>
+        <select [(ngModel)]="editingUser.active">
+          <option [ngValue]="true">Active</option>
+          <option [ngValue]="false">Inactive</option>
+        </select>
+
+        <label>Password</label>
+        <input type="password" [(ngModel)]="editingUser.password" placeholder="Enter new password to change" />
+
+        <label>Profile image</label>
+        <div class="image-row">
+          <img *ngIf="previewImageBase64" [src]="previewImageBase64" class="avatar-preview" />
+        <div class="file-upload-wrapper">
+            <label for="fileInput" class="upload-btn">📁 Choose File</label>
+            <input id="fileInput" type="file" (change)="onEditImageSelected($event)" accept="image/*" />
+    </div>
+        </div>
+      </div>
+
+      <div class="panel-actions">
+        <button class="save-btn" (click)="updateUser()" [disabled]="saving">{{ saving ? 'Saving...' : 'Save' }}</button>
+        <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
+      </div>
+    </div>
+  </div>
+}

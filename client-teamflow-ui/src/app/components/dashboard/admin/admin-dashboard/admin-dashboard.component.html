@@ -1,11 +1,9 @@
-<div class="dashboard-container">
 <div class="admin-layout">
-  <!-- סרגל צד שמאלי -->
   <aside class="side-nav">
-<div class="logo-container">
-  <img src="assets/logo.png" alt="TeamFlow Logo" class="logo-img" />
-  <span class="logo-text">TeamFlow</span>
-</div>
+    <div class="logo-container">
+      <img src="assets/logo.png" alt="TeamFlow Logo" class="logo-img" />
+      <span class="logo-text">TeamFlow</span>
+    </div>
 
     <ul>
       <li><a routerLink="/admin-dashboard/overview" routerLinkActive="active">Overview</a></li>
@@ -17,19 +15,11 @@
     </ul>
   </aside>
 
-  <!-- אזור ראשי -->
   <div class="admin-main">
-    <!-- כאן נכנס ה-header שלך כמו שהוא -->
     <app-header></app-header>
-
-    <!-- רק החלק הזה גולל -->
     <div class="admin-content">
-      <router-outlet></router-outlet>
+      <router-outlet></router-outlet>  <!-- כאן נטענים הקומפוננטות -->
     </div>
-
-    <!-- כאן נכנס ה-footer שלך כמו שהוא -->
     <app-footer></app-footer>
   </div>
 </div>
-</div>
-

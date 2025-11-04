@@ -6,20 +6,22 @@ import { ManageProjectsComponent } from './components/dashboard/admin/projects/m
 import { ManageReportsComponent } from './components/dashboard/admin/reports/manage-reports/manage-reports.component';
 import { ManageMeetingsComponent } from './components/dashboard/admin/meetings/manage-meetings/manage-meetings.component';
 import { SettingsComponent } from './components/dashboard/admin/settings/settings.component';
-
+import { LoginComponent } from './components/auth/login/login.component';
 export const routes: Routes = [
   { path: '', redirectTo: 'admin-dashboard', pathMatch: 'full' },
+  { path: 'log-in', component:LoginComponent},
   {
     path: 'admin-dashboard',
     component: AdminDashboardComponent,
-        children: [
-    { path: '', redirectTo: 'overview', pathMatch: 'full' },
-    { path: 'overview', component: OverviewComponent },
+    children: [
+      { path: '', redirectTo: 'overview', pathMatch: 'full' },
+      { path: 'overview', component: OverviewComponent },
       { path: 'users', component: ManageUsersComponent },
       { path: 'projects', component: ManageProjectsComponent },
       { path: 'reports', component: ManageReportsComponent },
       { path: 'meetings', component: ManageMeetingsComponent },
       { path: 'settings', component: SettingsComponent },
     ]
-  }
+  },
+  { path: '**', redirectTo: 'admin-dashboard' }
 ];

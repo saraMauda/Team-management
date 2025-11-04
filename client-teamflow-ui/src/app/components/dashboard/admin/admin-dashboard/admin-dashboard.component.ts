@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from '../../../../shared/header/header.component';
 import { FooterComponent } from '../../../../shared/footer/footer.component';
+import { RouterLink, RouterLinkActive} from '@angular/router';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, HeaderComponent, FooterComponent],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet,HeaderComponent,FooterComponent],
   templateUrl: './admin-dashboard.component.html',
-  styleUrls: ['./admin-dashboard.component.css']
+  styleUrl: './admin-dashboard.component.css'
 })
 export class AdminDashboardComponent {}

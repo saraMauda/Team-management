@@ -26,12 +26,18 @@ public interface UsersMapper {
 
         if (user.getImagePath() != null) {
             try {
-                usersDTO.setImage(ImageUtils.getImage(user.getImagePath()));
+                String base64 = ImageUtils.getImage(user.getImagePath());
+                // מוסיפים פרוטוקול כדי ש־<img src="..."> ידע להציג
+                usersDTO.setImage("data:image/png;base64," + base64);
             } catch (IOException e) {
                 e.printStackTrace();
                 usersDTO.setImage(null);
             }
+        } else {
+            usersDTO.setImage(null);
         }
+
         return usersDTO;
     }
+
 }

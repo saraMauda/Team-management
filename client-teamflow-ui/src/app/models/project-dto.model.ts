@@ -15,7 +15,6 @@ export interface ProjectDTO {
   // ב־DB יש category_id ו user_id – ב־DTO לרוב מוסיפים:
   categoryId?: number;
   category?: Category;
-
   projectLeaderId?: number;
   projectLeaderName?: string;
 }

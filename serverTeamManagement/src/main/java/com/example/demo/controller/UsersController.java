@@ -52,16 +52,24 @@ public class UsersController {
     }
     //עדכון משתמש
     @PutMapping("/{id}")
-    public ResponseEntity<UsersDTO>updateUser(@PathVariable Long id,@RequestBody UsersDTO userDTO){
+    public ResponseEntity<UsersDTO> updateUser(@PathVariable Long id, @RequestBody UsersDTO userDTO) {
         return usersRepository.findById(id)
-                .map(existing->{
+                .map(existing -> {
                     existing.setName(userDTO.getName());
                     existing.setEmail(userDTO.getEmail());
-                    usersRepository.save(existing);
-                    return ResponseEntity.ok(usersMapper.userToUsersDTO(existing));
+                    existing.setRole(userDTO.getRole());
+                    existing.setActive(userDTO.isActive());
+
+                    if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
+                        existing.setPassword(userDTO.getPassword());
+                    }
+
+                    Users saved = usersRepository.save(existing);
+                    return ResponseEntity.ok(usersMapper.userToUsersDTO(saved));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+
     //מחיקת משתמש (רק Admin רשאי)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void>deleteUser(@PathVariable Long id){
@@ -71,20 +79,21 @@ public class UsersController {
         usersRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-    @PostMapping("/upload")
-    public ResponseEntity<Users> uploadUsersWithImage(
-            @RequestPart("image") MultipartFile file,
-            @RequestPart("users") Users u) {
-        try {
-            ImageUtils.uploadImage(file);
-            u.setImagePath(file.getOriginalFilename());
-            Users user = usersRepository.save(u);
-            return new ResponseEntity<>(user, HttpStatus.CREATED);
-        } catch (IOException e) {
-            System.out.println(e);
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @PostMapping("/upload/{id}")
+    public ResponseEntity<String> uploadImage(
+            @PathVariable Long id,
+            @RequestParam("image") MultipartFile file) throws IOException {
+
+        Users user = usersRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        ImageUtils.uploadImage(file); // שומר את התמונה
+        user.setImagePath(file.getOriginalFilename()); // רק שם הקובץ
+        usersRepository.save(user);
+
+        return ResponseEntity.ok("Image uploaded successfully");
     }
+
 
 
 
