@@ -13,7 +13,6 @@
       <input type="text" placeholder="Full Name" [(ngModel)]="newUser.name" />
       <input type="email" placeholder="Email" [(ngModel)]="newUser.email" />
       <select [(ngModel)]="newUser.role">
-        <option value="ADMIN">Admin</option>
         <option value="TEAM_LEADER">Team Leader</option>
         <option value="EMPLOYEE">Employee</option>
       </select>
@@ -80,7 +79,6 @@
 
         <label>Role</label>
         <select [(ngModel)]="editingUser.role">
-          <option value="ADMIN">Admin</option>
           <option value="TEAM_LEADER">Team Leader</option>
           <option value="EMPLOYEE">Employee</option>
         </select>

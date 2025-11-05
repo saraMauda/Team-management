@@ -5,7 +5,6 @@ import { ManageUsersComponent } from './components/dashboard/admin/users/manage-
 import { ManageProjectsComponent } from './components/dashboard/admin/projects/manage-projects/manage-projects.component';
 import { ManageReportsComponent } from './components/dashboard/admin/reports/manage-reports/manage-reports.component';
 import { ManageMeetingsComponent } from './components/dashboard/admin/meetings/manage-meetings/manage-meetings.component';
-import { SettingsComponent } from './components/dashboard/admin/settings/settings.component';
 import { LoginComponent } from './components/auth/login/login.component';
 export const routes: Routes = [
   { path: '', redirectTo: 'admin-dashboard', pathMatch: 'full' },
@@ -20,7 +19,7 @@ export const routes: Routes = [
       { path: 'projects', component: ManageProjectsComponent },
       { path: 'reports', component: ManageReportsComponent },
       { path: 'meetings', component: ManageMeetingsComponent },
-      { path: 'settings', component: SettingsComponent },
+      
     ]
   },
   { path: '**', redirectTo: 'admin-dashboard' }
