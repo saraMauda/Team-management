@@ -78,12 +78,12 @@ export class OverviewComponent implements OnInit {
       next: (projects: ProjectDTO[]) => {
         this.totalProjects = projects.length;
         this.activeProjects = projects.filter(
-          p => (p.projectStatus ?? '').toLowerCase() === 'active'
+          p => (p.status ?? '').toLowerCase() === 'active'
         ).length;
 
         // recent projects (נניח לפי תאריך התחלה / עדכון – אם אין, ניקח פשוט ראשונים)
         this.recentProjects = [...projects]
-          .sort((a, b) => (b.lastUpdated ?? '').localeCompare(a.lastUpdated ?? ''))
+          .sort((a, b) => (b.startDate ?? '').localeCompare(a.endDate ?? ''))
           .slice(0, 5);
 
         done();

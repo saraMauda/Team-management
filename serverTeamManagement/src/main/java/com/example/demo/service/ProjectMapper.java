@@ -7,6 +7,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ProjectMapper {
+
     List<ProjectDTO> projectsToProjectDTOs(List<Project> projects);
 
     default ProjectDTO projectToProjectDTO(Project project) {
@@ -27,16 +28,19 @@ public interface ProjectMapper {
 
         return dto;
     }
-default Project projectDTOToProject(ProjectDTO dto){
-        Project project=new Project();
-        project.setProjectId(dto.getId());
-        project.setProjectName(dto.getName());
-        project.setProjectDescription(dto.getDescription());
-        project.setProjectStartDate(dto.getStartDate());
-        project.setProjectEndDate(dto.getEndDate());
-        project.setProjectStatus(dto.getStatus());
-        project.setProgressPercentage(dto.getProgress());
 
-    return project;
-}
+    // ✅ חשוב מאוד: לוודא שגם מזהה וגם progress נשמרים
+    default Project projectDTOToProject(ProjectDTO dto) {
+        Project p = new Project();
+        if (dto.getId() != null) {
+            p.setProjectId(dto.getId());
+        }
+        p.setProjectName(dto.getName());
+        p.setProjectDescription(dto.getDescription());
+        p.setProjectStartDate(dto.getStartDate());
+        p.setProjectEndDate(dto.getEndDate());
+        p.setProjectStatus(dto.getStatus());
+        p.setProgressPercentage(dto.getProgress());
+        return p;
+    }
 }

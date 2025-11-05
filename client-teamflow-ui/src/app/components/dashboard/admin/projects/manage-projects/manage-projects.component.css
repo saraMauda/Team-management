@@ -1,0 +1,143 @@
+.projects-container {
+  color: #fff;
+  background-color: #10263b;
+  padding: 25px;
+}
+
+/* Add/Edit Form */
+.project-form, .edit-panel {
+  background-color: #0f2234;
+  border: 1px solid rgba(255, 127, 50, 0.3);
+  border-radius: 12px;
+  padding: 25px;
+  margin-top: 25px;
+  box-shadow: 0 0 15px rgba(255, 127, 50, 0.2);
+}
+
+h3 {
+  color: #ff7f32;
+  margin-bottom: 15px;
+}
+
+.form-grid, .edit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 15px;
+}
+
+.form-group, .edit-grid label {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  color: #ff7f32;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+input, textarea, select {
+  background-color: #10263b;
+  color: white;
+  border: 1px solid rgba(255, 127, 50, 0.4);
+  border-radius: 6px;
+  padding: 8px;
+}
+
+textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #ff7f32;
+}
+
+/* Buttons */
+.save-btn, .cancel-btn, .edit-btn, .delete-btn, .add-btn {
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 8px 15px;
+}
+
+.save-btn, .add-btn {
+  background-color: #ff7f32;
+  color: #fff;
+}
+
+.save-btn:hover, .add-btn:hover {
+  background-color: #ff9955;
+}
+
+.cancel-btn {
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.cancel-btn:hover {
+  border-color: #ff7f32;
+  color: #ff7f32;
+}
+
+.edit-btn {
+  background-color: #3498db;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #5dade2;
+}
+
+.delete-btn {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #ff6655;
+}
+
+/* Overlay */
+.edit-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 8, 12, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.panel-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Table */
+.projects-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 25px;
+  background-color: #0f2234;
+}
+
+.projects-table th, .projects-table td {
+  padding: 10px;
+  text-align: left;
+}
+
+.projects-table th {
+  color: #ff7f32;
+  border-bottom: 1px solid rgba(255, 127, 50, 0.3);
+}
+
+.status.active { color: #27ae60; }
+.status.completed { color: #2ecc71; }
+.status.onhold { color: #f1c40f; }
+.status.inactive { color: #e74c3c; }

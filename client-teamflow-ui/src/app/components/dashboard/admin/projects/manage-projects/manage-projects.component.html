@@ -1,1 +1,144 @@
-<p>manage-projects works!</p>
+<!-- src/app/components/dashboard/admin/projects/manage-projects/manage-projects.component.html -->
+
+<div class="projects-container">
+  <h2>Manage Projects</h2>
+
+  <div class="toolbar">
+    <button class="add-btn" (click)="showAddForm = !showAddForm">
+      {{ showAddForm ? 'Cancel' : '+ Add Project' }}
+    </button>
+  </div>
+
+  <!-- טופס הוספה -->
+  @if (showAddForm) {
+    <div class="project-form">
+      <h3>Add New Project</h3>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Project Name</label>
+          <input type="text" [(ngModel)]="newProject.name" placeholder="Enter project name" />
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea [(ngModel)]="newProject.description" placeholder="Short description"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Status</label>
+          <select [(ngModel)]="newProject.status">
+            <option value="ACTIVE">Active</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="ON_HOLD">On Hold</option>
+            <option value="INACTIVE">Inactive</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Start Date</label>
+          <input type="date" [(ngModel)]="newProject.startDate" />
+        </div>
+
+        <div class="form-group">
+          <label>End Date</label>
+          <input type="date" [(ngModel)]="newProject.endDate" />
+        </div>
+
+        <div class="form-group">
+          <label>Progress (%)</label>
+          <input type="number" [(ngModel)]="newProject.progress" min="0" max="100" />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="save-btn" (click)="addProject()" [disabled]="saving">
+          {{ saving ? 'Saving...' : 'Save Project' }}
+        </button>
+        <button class="cancel-btn" (click)="showAddForm = false">Cancel</button>
+      </div>
+    </div>
+  }
+
+  <!-- הודעות טעינה/שגיאה -->
+  @if (loading) {
+    <p class="loading">Loading projects...</p>
+  } @else if (error) {
+    <p class="error">{{ error }}</p>
+  } @else {
+    <table class="projects-table" *ngIf="projects.length > 0; else noProjects">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (project of projects; track project.id) {
+          <tr>
+            <td>{{ project.id }}</td>
+            <td>{{ project.name }}</td>
+            <td>{{ project.description }}</td>
+            <td>
+              <span class="status" [ngClass]="getStatusClass(project.status)">
+                {{ getStatusLabel(project.status) }}
+              </span>
+            </td>
+            <td>
+              <button class="edit-btn" (click)="openEdit(project)">Edit</button>
+              <button class="delete-btn" (click)="deleteProject(project.id)">Delete</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <ng-template #noProjects>
+      <p class="no-data">No projects found.</p>
+    </ng-template>
+  }
+
+  <!-- חלון עריכה -->
+  @if (showEditForm && editingProject) {
+    <div class="edit-overlay">
+      <div class="edit-panel">
+        <h3>Edit Project</h3>
+
+        <div class="edit-grid">
+          <label>Name</label>
+          <input type="text" [(ngModel)]="editingProject.name" />
+
+          <label>Description</label>
+          <textarea [(ngModel)]="editingProject.description"></textarea>
+
+          <label>Status</label>
+          <select [(ngModel)]="editingProject.status">
+            <option value="ACTIVE">Active</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="ON_HOLD">On Hold</option>
+            <option value="INACTIVE">Inactive</option>
+          </select>
+
+          <label>Start Date</label>
+          <input type="date" [(ngModel)]="editingProject.startDate" />
+
+          <label>End Date</label>
+          <input type="date" [(ngModel)]="editingProject.endDate" />
+
+          <label>Progress (%)</label>
+          <input type="number" [(ngModel)]="editingProject.progress" min="0" max="100" />
+        </div>
+
+        <div class="panel-actions">
+          <button class="save-btn" (click)="updateProject()" [disabled]="saving">
+            {{ saving ? 'Saving...' : 'Save' }}
+          </button>
+          <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

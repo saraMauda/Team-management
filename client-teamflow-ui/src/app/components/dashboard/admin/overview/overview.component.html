@@ -101,9 +101,9 @@
           <h3>Projects</h3>
           <ul>
             <li *ngFor="let p of recentProjects">
-              <div class="item-title">{{ p.projectName }}</div>
+              <div class="item-title">{{ p.name }}</div>
               <div class="item-sub">
-                Status: {{ p.projectStatus || 'N/A' }}
+                Status: {{ p.status }}
               </div>
             </li>
             <li *ngIf="recentProjects.length === 0" class="empty">

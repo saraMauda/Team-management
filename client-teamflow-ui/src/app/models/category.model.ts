@@ -1,6 +1,5 @@
-// src/app/models/category.model.ts
 export interface Category {
-  id: number;
+  categoryId: number;
   categoryName: string;
-  categoryDescription?: string;
+  description?: string;
 }

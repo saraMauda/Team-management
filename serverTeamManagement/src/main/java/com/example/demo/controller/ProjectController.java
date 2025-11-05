@@ -51,10 +51,13 @@ public class ProjectController {
         existing.setProjectDescription(projectDTO.getDescription());
         existing.setProjectStartDate(projectDTO.getStartDate());
         existing.setProjectEndDate(projectDTO.getEndDate());
+        existing.setProjectStatus(projectDTO.getStatus());
+        existing.setProgressPercentage(projectDTO.getProgress());
 
         Project updated = projectRepository.save(existing);
         return projectMapper.projectToProjectDTO(updated);
     }
+
     //מחיקת פרויקט
     @DeleteMapping("/{id}")
     public void deleteProject(@PathVariable Long id) {
