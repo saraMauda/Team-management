@@ -9,35 +9,44 @@ import { API_BASE_URL } from '../app.config';
   providedIn: 'root'
 })
 export class UsersService {
+  // 👇 נתיב בסיס — שימי לב: "/api/users"
   private baseUrl = `${API_BASE_URL}/users`;
 
   constructor(private http: HttpClient) {}
 
+  // 📥 שליפת כל המשתמשים
   getAll(): Observable<UsersDTO[]> {
     return this.http.get<UsersDTO[]>(this.baseUrl);
   }
 
+  // 📥 שליפת משתמש לפי ID
   getById(id: number): Observable<UsersDTO> {
     return this.http.get<UsersDTO>(`${this.baseUrl}/get/${id}`);
   }
 
+  // 🆕 יצירת משתמש חדש
+  // חשוב! בשרת ה-endpoint נקרא /signup
   create(user: Partial<UsersDTO>): Observable<UsersDTO> {
-    return this.http.post<UsersDTO>(this.baseUrl, user);
+    return this.http.post<UsersDTO>(`${this.baseUrl}/signup`, user);
   }
 
+  // ✏️ עדכון משתמש קיים
   update(id: number, user: Partial<UsersDTO>): Observable<UsersDTO> {
     return this.http.put<UsersDTO>(`${this.baseUrl}/${id}`, user);
   }
 
+  // ❌ מחיקת משתמש לפי ID
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
+  // 📸 העלאת תמונה למשתמש מסוים
   uploadImage(id: number, file: File): Observable<string> {
     const formData = new FormData();
     formData.append('image', file);
+
     return this.http.post(`${this.baseUrl}/upload/${id}`, formData, {
-      responseType: 'text'
+      responseType: 'text' // השרת מחזיר רק מחרוזת (לא JSON)
     });
   }
 }

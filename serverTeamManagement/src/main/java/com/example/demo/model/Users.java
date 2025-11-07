@@ -24,9 +24,12 @@ public class Users{
     @OneToMany(mappedBy="projectLeader")
     private List<Project> leaderProjects;
 
+
     @ManyToMany
     @JsonIgnore
     private Set<Role> roles=new HashSet<>();
+    @Transient
+    private String roleString;
 
     public Users() {
 
@@ -113,6 +116,13 @@ public class Users{
 
     public void setLeaderProjects(List<Project> leaderProjects) {
         this.leaderProjects = leaderProjects;
+    }
+    public String getRoleString() {
+        return roleString;
+    }
+
+    public void setRoleString(String roleString) {
+        this.roleString = roleString;
     }
 }
 

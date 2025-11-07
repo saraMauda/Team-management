@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.UsersDTO;
+import com.example.demo.model.ERole;
+import com.example.demo.model.Role;
 import com.example.demo.model.Users;
 import com.example.demo.service.ImageUtils;
 import com.example.demo.service.RoleRepository;
@@ -130,19 +132,43 @@ public class UsersController {
     //מה שהמורה עשתה. gpt אמר לעשות עם אחד שמחזיר רק userDTO
     //כי אחרת הוא לא יוכל להסתדר איתו בpostman
     //מחזיר לולאה אינסופית
-    @PostMapping("/signup")
-    public ResponseEntity<UsersDTO> signUp(@RequestBody Users user) {
-        Users existing = usersRepository.findByEmail(user.getEmail());
-        if (existing != null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+@PostMapping("/signup")
+public ResponseEntity<UsersDTO> signUp(@RequestBody Users user) {
+    if (usersRepository.findByEmail(user.getEmail()) != null)
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-        user.getRoles().add(roleRepository.findById(1L).get());
-        Users saved = usersRepository.save(user);
+    user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
 
-        UsersDTO dto = usersMapper.userToUsersDTO(saved);
-        return new ResponseEntity<>(dto, HttpStatus.CREATED);
+    Role role;
+
+    // 🟢 אם נשלח role פשוט ב־JSON (כמו "ROLE_TEAMLEADER")
+    if (user.getRoleString() != null && !user.getRoleString().isEmpty()) {
+        role = roleRepository.findByName(ERole.valueOf(user.getRoleString()))
+                .orElseThrow(() -> new RuntimeException("Role not found"));
     }
+    // 🔵 אם נשלח roles כ־List (כמו [{"name": "ROLE_TEAMLEADER"}])
+    else if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+        String roleName = user.getRoles().iterator().next().getName().name();
+        role = roleRepository.findByName(ERole.valueOf(roleName))
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+    }
+    // ⚪ אחרת — ברירת מחדל
+    else {
+        role = roleRepository.findByName(ERole.ROLE_EMPLOYEE)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+    }
+
+    user.getRoles().clear();
+    user.getRoles().add(role);
+
+    Users saved = usersRepository.save(user);
+    UsersDTO dto = usersMapper.userToUsersDTO(saved);
+
+    return new ResponseEntity<>(dto, HttpStatus.CREATED);
+}
+
+
+
 
 
 

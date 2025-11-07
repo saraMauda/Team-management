@@ -23,11 +23,19 @@ public interface UsersMapper {
         usersDTO.setName(user.getName());
         usersDTO.setEmail(user.getEmail());
 
+        // ✅ הוספת role
+        if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+            String rolesAsString = user.getRoles()
+                    .stream()
+                    .map(r -> r.getName().name())  // ממיר את enum ל־String
+                    .reduce((r1, r2) -> r1 + ", " + r2)
+                    .orElse(null);
+            usersDTO.setRole(rolesAsString);
+        }
 
         if (user.getImagePath() != null) {
             try {
                 String base64 = ImageUtils.getImage(user.getImagePath());
-                // מוסיפים פרוטוקול כדי ש־<img src="..."> ידע להציג
                 usersDTO.setImage("data:image/png;base64," + base64);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -39,5 +47,6 @@ public interface UsersMapper {
 
         return usersDTO;
     }
+
 
 }

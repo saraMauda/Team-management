@@ -16,16 +16,21 @@ export class ManageUsersComponent implements OnInit {
   loading = false;
   error: string | null = null;
 
-  // create
   showAddForm = false;
-  newUser: Partial<UsersDTO> = { name: '', email: '', role: 'EMPLOYEE', active: true };
-
-  // edit
   showEditForm = false;
-  editingUser: Partial<UsersDTO> | null = null;
+  saving = false;
+
+  newUser: Partial<UsersDTO> = {
+    name: '',
+    email: '',
+    password: '',
+    roleString: 'ROLE_EMPLOYEE',
+    active: true
+  };
+
+  editingUser: UsersDTO | null = null;
   editingImageFile: File | null = null;
   previewImageBase64: string | null = null;
-  saving = false;
 
   constructor(private usersService: UsersService) {}
 
@@ -47,95 +52,101 @@ export class ManageUsersComponent implements OnInit {
     });
   }
 
-  // create
+  // ➕ יצירת משתמש חדש
   addUser(): void {
-    if (!this.newUser.name || !this.newUser.email) return;
-    this.usersService.create(this.newUser).subscribe({
+    if (!this.newUser.name || !this.newUser.email || !this.newUser.roleString) return;
+
+    const payload: Partial<UsersDTO> = {
+      name: this.newUser.name.trim(),
+      email: this.newUser.email.trim(),
+      password: this.newUser.password || '1234',
+      roleString: this.newUser.roleString,
+      active: this.newUser.active ?? true
+    };
+
+    this.saving = true;
+    this.usersService.create(payload).subscribe({
       next: (user) => {
         this.users.unshift(user);
+        this.newUser = {
+          name: '',
+          email: '',
+          password: '',
+          roleString: 'ROLE_EMPLOYEE',
+          active: true
+        };
         this.showAddForm = false;
-        this.newUser = { name: '', email: '', role: 'EMPLOYEE', active: true };
+        this.saving = false;
       },
-      error: () => alert('Failed to add user.')
+      error: () => {
+        alert('❌ Failed to add user.');
+        this.saving = false;
+      }
     });
   }
 
-  // open edit form with selected user
+  // ✏️ פתיחת עריכה
   openEdit(user: UsersDTO): void {
-    this.editingUser = { ...user }; // clone so לא נשפיע על הטבלה לפני שמירה
-    this.previewImageBase64 = user.image ?? null;
-    this.editingImageFile = null;
+    this.editingUser = { ...user };
+    this.previewImageBase64 = user.image || null;
     this.showEditForm = true;
   }
 
-  // file picker change
+  // 📸 בחירת תמונה לעריכה
   onEditImageSelected(ev: Event) {
     const input = ev.target as HTMLInputElement;
-    if (!input.files || input.files.length === 0) return;
+    if (!input.files?.length) return;
     this.editingImageFile = input.files[0];
 
-    // show preview
     const reader = new FileReader();
-    reader.onload = () => {
-      this.previewImageBase64 = reader.result as string;
-    };
+    reader.onload = () => (this.previewImageBase64 = reader.result as string);
     reader.readAsDataURL(this.editingImageFile);
   }
 
-  // update user + optional image upload
+  // 💾 עדכון משתמש
   updateUser(): void {
-    if (!this.editingUser || !this.editingUser.id) return;
+    if (!this.editingUser?.id) return;
     this.saving = true;
 
-    const finalizeUpdate = (updatedFields?: Partial<UsersDTO>) => {
-      const id = this.editingUser!.id as number;
-      const payload: Partial<UsersDTO> = { ...this.editingUser, ...updatedFields };
-      // אם משתמש החליף סיסמה – זה נשלח ב payload.password (שרת -> חיבור אחראי)
+    const id = this.editingUser.id;
+    const payload: Partial<UsersDTO> = { ...this.editingUser };
+
+    const finalizeUpdate = () => {
       this.usersService.update(id, payload).subscribe({
         next: (updatedUser) => {
-          // עדכון ברשימת המשתמשים בצד לקוחות
           this.users = this.users.map(u => u.id === updatedUser.id ? updatedUser : u);
-          this.showEditForm = false;
-          this.editingUser = null;
-          this.editingImageFile = null;
-          this.previewImageBase64 = null;
+          this.cancelEdit();
           this.saving = false;
         },
         error: () => {
-          alert('Failed to update user.');
+          alert('❌ Failed to update user.');
           this.saving = false;
         }
       });
     };
 
-    // אם בוחרים תמונה חדשה – קודם נשלח אותה ל־endpoint של uploadImage ואז נקבל (server) שם קובץ או מחרוזת
     if (this.editingImageFile) {
-      // משתמש מחליף תמונה
-      this.usersService.uploadImage(this.editingUser.id!, this.editingImageFile).subscribe({
+      this.usersService.uploadImage(id, this.editingImageFile).subscribe({
         next: (resultText) => {
-          // המורה שלך מוחזר טקסט (למשל שם הקובץ או "ok"), אם נחוץ ניתן לשים את השם בשדה image לפני update
-          // כאן نفترض שהשרת שומר את השם ב־imagePath ויש לך API שמחזיר את השם/url או שמחכה לבקשת ה־get לאחר שמירת השם.
-          // אם ה־upload מחזיר את ה־base64 או path, התאם לפי השרת:
-          // נכניס את הערך לשדה image ונמשיך ב־update
-          (this.editingUser as any).image = resultText; // או נתאם לפי שרתך
+          payload.image = resultText;
           finalizeUpdate();
         },
         error: () => {
-          alert('Failed to upload image.');
+          alert('❌ Failed to upload image.');
           this.saving = false;
         }
       });
     } else {
-      // אין תמונה חדשה — רק שומרים את השדות
       finalizeUpdate();
     }
   }
 
+  // ❌ מחיקת משתמש
   deleteUser(id: number): void {
     if (!confirm('Are you sure you want to delete this user?')) return;
     this.usersService.delete(id).subscribe({
       next: () => this.users = this.users.filter(u => u.id !== id),
-      error: () => alert('Failed to delete user.')
+      error: () => alert('❌ Failed to delete user.')
     });
   }
 
@@ -144,5 +155,15 @@ export class ManageUsersComponent implements OnInit {
     this.editingUser = null;
     this.previewImageBase64 = null;
     this.editingImageFile = null;
+  }
+
+  // 🧾 הצגה נעימה של תפקיד
+  prettyRole(role: string): string {
+    const map: Record<string, string> = {
+      'ROLE_ADMIN': 'Admin',
+      'ROLE_TEAMLEADER': 'Team Leader',
+      'ROLE_EMPLOYEE': 'Employee'
+    };
+    return map[role] || role;
   }
 }

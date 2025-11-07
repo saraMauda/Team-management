@@ -3,70 +3,87 @@
 
   <div class="toolbar">
     <button class="add-btn" (click)="showAddForm = !showAddForm">
-      {{ showAddForm ? 'Cancel' : '➕ Add User' }}
+      {{ showAddForm ? 'Cancel' : '+ Add User' }}
     </button>
   </div>
 
-  <!-- add form (כמו שהיה) -->
-  @if (showAddForm) {
-    <div class="add-user-form">
-      <input type="text" placeholder="Full Name" [(ngModel)]="newUser.name" />
-      <input type="email" placeholder="Email" [(ngModel)]="newUser.email" />
-      <select [(ngModel)]="newUser.role">
-        <option value="TEAM_LEADER">Team Leader</option>
-        <option value="EMPLOYEE">Employee</option>
-      </select>
-      <input type="password" placeholder="Password (set)" [(ngModel)]="newUser.password" />
-      <button class="save-btn" (click)="addUser()">Save</button>
+  <!-- טופס הוספת משתמש -->
+  <div *ngIf="showAddForm" class="add-user-form">
+    <div class="form-row">
+      <label>Name</label>
+      <input type="text" [(ngModel)]="newUser.name" placeholder="User name" />
     </div>
-  }
 
-  <!-- users table -->
-  @if (loading) {
-    <p class="loading">Loading users...</p>
-  } @else if (error) {
-    <p class="error">{{ error }}</p>
-  } @else {
-    <table class="users-table" *ngIf="users.length > 0; else noUsers">
-      <thead>
-        <tr>
-          <th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (user of users; track user?.id) {
-          <tr>
-            <td>{{ user.id }}</td>
-            <td>
-              <div class="user-cell">
-                <img *ngIf="user.image" [src]="user.image" alt="avatar" class="avatar-small" />
-                <span>{{ user.name }}</span>
-              </div>
-            </td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.role }}</td>
-            <td>
-              <span class="status" [class.active]="user.active" [class.inactive]="!user.active">
-                {{ user.active ? 'Active' : 'Inactive' }}
-              </span>
-            </td>
-            <td>
-              <button class="edit-btn" (click)="openEdit(user)">Edit</button>
-              <button class="delete-btn" (click)="deleteUser(user.id)">Delete</button>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+    <div class="form-row">
+      <label>Email</label>
+      <input type="email" [(ngModel)]="newUser.email" placeholder="Email address" />
+    </div>
 
-    <ng-template #noUsers>
-      <p class="no-data">No users found.</p>
-    </ng-template>
-  }
+    <div class="form-row">
+      <label>Password</label>
+      <input type="password" [(ngModel)]="newUser.password" placeholder="Initial password" />
+    </div>
 
-<!-- EDIT PANEL / MODAL -->
-@if (showEditForm && editingUser) {
-  <div class="edit-overlay">
+    <div class="form-row">
+      <label>Role</label>
+      <select [(ngModel)]="newUser.roleString">
+        <option value="ROLE_EMPLOYEE">Employee</option>
+        <option value="ROLE_TEAMLEADER">Team Leader</option>
+        <option value="ROLE_ADMIN">Admin</option>
+      </select>
+    </div>
+
+    <div class="form-actions">
+      <button class="save-btn" (click)="addUser()" [disabled]="saving">
+        {{ saving ? 'Saving...' : 'Save' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- טבלת משתמשים -->
+  <table class="users-table" *ngIf="users.length > 0; else noUsers">
+    <thead>
+      <tr>
+        <th>Image</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users">
+        <td>
+         
+  <img *ngIf="user.image"
+       [src]="user.image.startsWith('data:') ? user.image : 'data:image/png;base64,' + user.image"
+       class="profile-img"
+       alt="User image" />
+    <div *ngIf="!user.image" class="placeholder-img">👤</div>
+        
+        <td>{{ user.name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ prettyRole(user.role) }}</td>
+        <td>
+          <span [class.active]="user.active" [class.inactive]="!user.active">
+            {{ user.active ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+        <td>
+          <button class="edit-btn" (click)="openEdit(user)">Edit</button>
+          <button class="delete-btn" (click)="deleteUser(user.id)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-template #noUsers>
+    <p class="no-data">No users found.</p>
+  </ng-template>
+
+  <!-- חלון עריכה -->
+  <div *ngIf="showEditForm && editingUser" class="edit-overlay">
     <div class="edit-panel">
       <h3>Edit User</h3>
 
@@ -75,37 +92,34 @@
         <input type="text" [(ngModel)]="editingUser.name" />
 
         <label>Email</label>
-        <input type="email" [(ngModel)]="editingUser.email" />
+        <input type="text" [(ngModel)]="editingUser.email" />
 
         <label>Role</label>
-        <select [(ngModel)]="editingUser.role">
-          <option value="TEAM_LEADER">Team Leader</option>
-          <option value="EMPLOYEE">Employee</option>
+        <select [(ngModel)]="editingUser.roleString">
+          <option value="ROLE_EMPLOYEE">Employee</option>
+          <option value="ROLE_TEAMLEADER">Team Leader</option>
+          <option value="ROLE_ADMIN">Admin</option>
         </select>
 
-        <label>Active</label>
+        <label>Status</label>
         <select [(ngModel)]="editingUser.active">
           <option [ngValue]="true">Active</option>
           <option [ngValue]="false">Inactive</option>
         </select>
 
-        <label>Password</label>
-        <input type="password" [(ngModel)]="editingUser.password" placeholder="Enter new password to change" />
-
-        <label>Profile image</label>
-        <div class="image-row">
-          <img *ngIf="previewImageBase64" [src]="previewImageBase64" class="avatar-preview" />
-        <div class="file-upload-wrapper">
-            <label for="fileInput" class="upload-btn">📁 Choose File</label>
-            <input id="fileInput" type="file" (change)="onEditImageSelected($event)" accept="image/*" />
-    </div>
-        </div>
+        <label>Profile Image</label>
+        <input type="file" (change)="onEditImageSelected($event)" />
+        <img *ngIf="previewImageBase64"
+             [src]="previewImageBase64"
+             class="preview-img" />
       </div>
 
       <div class="panel-actions">
-        <button class="save-btn" (click)="updateUser()" [disabled]="saving">{{ saving ? 'Saving...' : 'Save' }}</button>
+        <button class="save-btn" (click)="updateUser()" [disabled]="saving">
+          {{ saving ? 'Saving...' : 'Save' }}
+        </button>
         <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
       </div>
     </div>
   </div>
-}
+</div>

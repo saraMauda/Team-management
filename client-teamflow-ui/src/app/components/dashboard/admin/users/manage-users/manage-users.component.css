@@ -1,3 +1,4 @@
+/* === מבנה כללי === */
 .users-container {
   padding: 20px;
   color: #fff;
@@ -33,33 +34,74 @@ h2 {
   background-color: #ff924c;
 }
 
+/* === טופס הוספת משתמש (inline row) === */
 .add-user-form {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
   background-color: #0e1c2b;
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 20px;
+  padding: 15px 20px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  gap: 15px;
 }
 
-.add-user-form input, .add-user-form select {
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid #ff7f32;
-  background-color: #10263b;
+.add-user-form .form-row {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 200px;
+  min-width: 180px;
+}
+
+.add-user-form label {
+  font-size: 13px;
+  color: #bcd0dc;
+  margin-bottom: 5px;
+}
+
+.add-user-form input,
+.add-user-form select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,127,50,0.6);
+  background-color: #132534;
   color: #fff;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
 }
 
+.add-user-form input:focus,
+.add-user-form select:focus {
+  border-color: #ff7f32;
+  outline: none;
+}
+
+.add-user-form .form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+}
+
+.add-user-form .save-btn {
+  margin-top: 22px;
+  padding: 8px 20px;
+}
+
+/* === טבלת משתמשים === */
 .users-table {
   width: 100%;
   border-collapse: collapse;
   background-color: #0e1c2b;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
+  margin-top: 10px;
 }
 
 .users-table th, .users-table td {
-  padding: 12px;
+  padding: 12px 15px;
   text-align: left;
 }
 
@@ -73,6 +115,7 @@ h2 {
   background-color: #122b44;
 }
 
+/* === סטטוס === */
 .status {
   font-weight: 600;
   padding: 4px 10px;
@@ -88,6 +131,7 @@ h2 {
   background-color: #c23b22;
 }
 
+/* === כפתורים === */
 .delete-btn {
   background-color: #c23b22;
   border: none;
@@ -103,55 +147,8 @@ h2 {
   background-color: #d64c3a;
 }
 
-.no-data {
-  text-align: center;
-  color: #ccc;
-  margin-top: 20px;
-}
-
-.loading, .error {
-  color: #ff7f32;
-  text-align: center;
-  font-weight: bold;
-}
-/* small additions for avatar, edit modal */
-.avatar-small { width:36px; height:36px; border-radius:50%; object-fit:cover; margin-right:8px; }
-.user-cell { display:flex; align-items:center; }
-
-.edit-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(4,8,12,0.6);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index: 1000;
-}
-
-.edit-panel {
-  width: 720px;
-  max-width: 95%;
-  background: #0e1c2b;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 20px 40px rgba(2,6,10,0.6);
-  color: #e7f0f6;
-}
-
-.edit-panel h3 { color:#ff7f32; margin-top:0; }
-
-.edit-grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px 18px; align-items:center; }
-.edit-grid label { color:#bcd0dc; font-size:13px; }
-.edit-grid input, .edit-grid select { padding:8px; border-radius:6px; border:1px solid rgba(255,127,50,0.08); background:#132534; color:#fff; }
-
-.image-row { display:flex; gap:10px; align-items:center; }
-.avatar-preview{ width:70px; height:70px; border-radius:10px; object-fit:cover; border:1px solid rgba(255,127,50,0.12); }
-
-.panel-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:16px; }
-.cancel-btn { background:transparent; border:1px solid rgba(255,255,255,0.08); color:#fff; padding:8px 12px; border-radius:6px; cursor:pointer; }
-/* --- EDIT BUTTON --- */
 .edit-btn {
-  background-color: #285b8f;        /* כחול אלגנטי שמשלים את הכתום */
+  background-color: #285b8f;
   border: none;
   color: #ffffff;
   padding: 6px 12px;
@@ -165,7 +162,7 @@ h2 {
 }
 
 .edit-btn:hover {
-  background-color: #3376b0;        /* טון כחול בהיר יותר בעת ריחוף */
+  background-color: #3376b0;
   transform: translateY(-1px);
 }
 
@@ -178,33 +175,96 @@ h2 {
   outline: none;
   box-shadow: 0 0 0 2px rgba(255,127,50,0.4);
 }
-/* עטיפה מסודרת */
-.file-upload-wrapper {
+
+/* === תמונות פרופיל === */
+.profile-img, .preview-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.placeholder-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #243a52;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  color: #ff7f32;
+  font-size: 20px;
 }
 
-/* הכפתור המעוצב */
-.upload-btn {
-  background-color: #ff7f32;
-  color: #fff;
-  font-weight: 600;
-  border: none;
+/* === מודל עריכה === */
+.edit-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.edit-panel {
+  background: #10263b;
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+  width: 450px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+.edit-panel h3 {
+  color: #ff7f32;
+  margin-top: 0;
+}
+
+.edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 18px;
+  align-items: center;
+}
+
+.edit-grid label {
+  color: #bcd0dc;
+  font-size: 13px;
+}
+
+.edit-grid input, .edit-grid select {
+  padding: 8px;
   border-radius: 6px;
-  padding: 8px 14px;
+  border: 1px solid rgba(255,127,50,0.08);
+  background: #132534;
+  color: #fff;
+}
+
+.panel-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.cancel-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 0 6px rgba(255, 127, 50, 0.3);
 }
 
-.upload-btn:hover {
-  background-color: #e96c25;
-  transform: translateY(-1px);
-  box-shadow: 0 0 10px rgba(255, 127, 50, 0.5);
+.no-data {
+  text-align: center;
+  color: #ccc;
+  margin-top: 20px;
 }
 
-/* מסתיר את input[type=file] המקורי */
-.file-upload-wrapper input[type="file"] {
-  display: none;
+.loading, .error {
+  color: #ff7f32;
+  text-align: center;
+  font-weight: bold;
 }
