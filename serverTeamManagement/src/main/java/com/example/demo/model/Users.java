@@ -1,8 +1,12 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 @Entity
 public class Users{
     @Id
@@ -12,7 +16,7 @@ public class Users{
     private String name;
     private String email;
     private String password;
-    private String role;
+//    private String role;
     private boolean active;
     private String imagePath;
     @OneToMany(mappedBy="user")
@@ -20,20 +24,31 @@ public class Users{
     @OneToMany(mappedBy="projectLeader")
     private List<Project> leaderProjects;
 
+    @ManyToMany
+    @JsonIgnore
+    private Set<Role> roles=new HashSet<>();
+
     public Users() {
 
     }
 
-    public Users(Long id, String name, String email, String password, String role, boolean active, String imagePath, List<EmployeeInProject> employeeProjects, List<Project> leaderProjects) {
+    public Users(Long id, String name, String email, String password,  boolean active, String imagePath, List<EmployeeInProject> employeeProjects, List<Project> leaderProjects) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.role = role;
         this.active = active;
         this.imagePath = imagePath;
         this.employeeProjects = employeeProjects;
         this.leaderProjects = leaderProjects;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     public String getImagePath() {
@@ -42,14 +57,6 @@ public class Users{
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 
     public boolean isActive() {
@@ -108,3 +115,4 @@ public class Users{
         this.leaderProjects = leaderProjects;
     }
 }
+

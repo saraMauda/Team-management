@@ -3,15 +3,19 @@ package com.example.demo.controller;
 import com.example.demo.dto.UsersDTO;
 import com.example.demo.model.Users;
 import com.example.demo.service.ImageUtils;
+import com.example.demo.service.RoleRepository;
 import com.example.demo.service.UsersMapper;
 import com.example.demo.service.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.MediaType;
+
 
 
 import java.io.IOException;
@@ -30,9 +34,15 @@ public class UsersController {
 
     @Autowired
     private UsersRepository usersRepository;
+    private RoleRepository roleRepository;
 
     @Autowired
     private UsersMapper usersMapper;
+
+    public UsersController(UsersRepository usersRepository, RoleRepository roleRepository) {
+        this.usersRepository = usersRepository;
+        this.roleRepository = roleRepository;
+    }
 
     @GetMapping("get/{id}")
     public ResponseEntity<UsersDTO> getUsers(@PathVariable("id") long id) {
@@ -57,7 +67,7 @@ public class UsersController {
                 .map(existing -> {
                     existing.setName(userDTO.getName());
                     existing.setEmail(userDTO.getEmail());
-                    existing.setRole(userDTO.getRole());
+//                    existing.setRole(userDTO.getRole());
                     existing.setActive(userDTO.isActive());
 
                     if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
@@ -72,6 +82,7 @@ public class UsersController {
 
     //מחיקת משתמש (רק Admin רשאי)
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void>deleteUser(@PathVariable Long id){
         if(!usersRepository.existsById(id)){
             return ResponseEntity.notFound().build();
@@ -104,6 +115,35 @@ public class UsersController {
                 .map(usersMapper::userToUsersDTO)
                 .collect(Collectors.toList());
     }
+//    @PostMapping("/signup")
+//    public ResponseEntity<Users> signUp(@RequestBody Users user){
+//        Users u=usersRepository.findByEmail(user.getEmail());
+//        if(u!=null)
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        String pass=user.getPassword();
+//        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+//        user.getRoles().add(roleRepository.findById((long)1).get());
+//        usersRepository.save(user);
+//        return new ResponseEntity<>(user,HttpStatus.CREATED);
+//
+//    }
+    //מה שהמורה עשתה. gpt אמר לעשות עם אחד שמחזיר רק userDTO
+    //כי אחרת הוא לא יוכל להסתדר איתו בpostman
+    //מחזיר לולאה אינסופית
+    @PostMapping("/signup")
+    public ResponseEntity<UsersDTO> signUp(@RequestBody Users user) {
+        Users existing = usersRepository.findByEmail(user.getEmail());
+        if (existing != null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        user.getRoles().add(roleRepository.findById(1L).get());
+        Users saved = usersRepository.save(user);
+
+        UsersDTO dto = usersMapper.userToUsersDTO(saved);
+        return new ResponseEntity<>(dto, HttpStatus.CREATED);
+    }
+
 
 
 }

@@ -22,7 +22,7 @@ public interface UsersMapper {
         usersDTO.setActive(user.isActive());
         usersDTO.setName(user.getName());
         usersDTO.setEmail(user.getEmail());
-        usersDTO.setRole(user.getRole());
+
 
         if (user.getImagePath() != null) {
             try {
