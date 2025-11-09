@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/projects")
-@CrossOrigin
 public class ProjectController {
 
     @Autowired

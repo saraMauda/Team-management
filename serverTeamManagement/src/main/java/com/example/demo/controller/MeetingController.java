@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/meetings")
-@CrossOrigin
 public class MeetingController {
 
     @Autowired
