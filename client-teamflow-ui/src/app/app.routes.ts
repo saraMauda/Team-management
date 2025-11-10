@@ -9,6 +9,15 @@ import { ManageMeetingsComponent } from './components/dashboard/admin/meetings/m
 import { ManageProjectsComponent } from './components/dashboard/admin/projects/manage-projects/manage-projects.component';
 import { ManageUsersComponent } from './components/dashboard/admin/users/manage-users/manage-users.component';
 import { LeaderDashboardComponent } from './components/dashboard/team-leader/leader-dashboard/leader-dashboard.component';
+import { FeedbackComponent } from './components/dashboard/team-leader/feedback/feedback.component';
+import { TeamProjectsComponent } from './components/dashboard/team-leader/team-projects/team-projects.component';
+import { TeamMeetingsComponent } from './components/dashboard/team-leader/team-meetings/team-meetings.component';
+import { TeamReportsComponent } from './components/dashboard/team-leader/team-reports/team-reports.component';
+import { EmployeeDashboardComponent } from './components/dashboard/employee/employee-dashboard/employee-dashboard.component';
+import { MyProjectsComponent } from './components/dashboard/employee/my-projects/my-projects.component';
+import { MeetingsComponent } from './components/dashboard/employee/meetings/meetings.component';
+import { MyReportsComponent } from './components/dashboard/employee/my-reports/my-reports.component';
+import { AddReportComponent } from './components/dashboard/employee/add-report/add-report.component';
 
 
 export const routes: Routes = [
@@ -27,7 +36,34 @@ export const routes: Routes = [
       { path: 'meetings', component: ManageMeetingsComponent },
     ],
   },
-
+  
+{
+  path: 'leader-dashboard',
+  component: LeaderDashboardComponent,
+  canActivate: [AuthGuard],
+  children: [
+    { path: '', redirectTo: 'team-projects', pathMatch: 'full' },
+    {path: 'team-projects', component: TeamProjectsComponent },
+    { path: 'feedback', component: FeedbackComponent },
+    { path: 'team-projects', component: TeamProjectsComponent },
+    { path: 'team-meetings', component: TeamMeetingsComponent },
+    { path: 'team-reports', component: TeamReportsComponent },
+    
+  ],
+},
+  {
+    path: 'employee-dashboard',
+    component:EmployeeDashboardComponent,
+    canActivate: [AuthGuard],
+    children: [
+      {path: '', redirectTo: 'my-projects', pathMatch: 'full' },
+      {path: 'my-projects', component: MyProjectsComponent },
+      {path:' meetings', component: MeetingsComponent },
+      {path: 'my-reports', component: MyReportsComponent },
+      {path:'add-report', component: AddReportComponent },
+    ],
+  },
+  
     
 
   { path: '', redirectTo: '/login', pathMatch: 'full' },
