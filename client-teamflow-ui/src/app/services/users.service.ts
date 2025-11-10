@@ -16,28 +16,28 @@ export class UsersService {
 
   // 📥 שליפת כל המשתמשים
   getAll(): Observable<UsersDTO[]> {
-    return this.http.get<UsersDTO[]>(this.baseUrl);
+    return this.http.get<UsersDTO[]>(this.baseUrl, { withCredentials: true });
   }
 
   // 📥 שליפת משתמש לפי ID
   getById(id: number): Observable<UsersDTO> {
-    return this.http.get<UsersDTO>(`${this.baseUrl}/get/${id}`);
+    return this.http.get<UsersDTO>(`${this.baseUrl}/get/${id}`, { withCredentials: true });
   }
 
   // 🆕 יצירת משתמש חדש
   // חשוב! בשרת ה-endpoint נקרא /signup
   create(user: Partial<UsersDTO>): Observable<UsersDTO> {
-    return this.http.post<UsersDTO>(`${this.baseUrl}/signup`, user);
+    return this.http.post<UsersDTO>(`${this.baseUrl}/signup`, user, { withCredentials: true });
   }
 
   // ✏️ עדכון משתמש קיים
   update(id: number, user: Partial<UsersDTO>): Observable<UsersDTO> {
-    return this.http.put<UsersDTO>(`${this.baseUrl}/${id}`, user);
+    return this.http.put<UsersDTO>(`${this.baseUrl}/${id}`, user, { withCredentials: true });
   }
 
   // ❌ מחיקת משתמש לפי ID
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+    return this.http.delete<void>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
 
   // 📸 העלאת תמונה למשתמש מסוים

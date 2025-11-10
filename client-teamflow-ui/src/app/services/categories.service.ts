@@ -11,22 +11,22 @@ export class CategoriesService {
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<Category[]> {
-    return this.http.get<Category[]>(this.baseUrl);
+    return this.http.get<Category[]>(this.baseUrl, { withCredentials: true });
   }
 
   getById(id: number): Observable<Category> {
-    return this.http.get<Category>(`${this.baseUrl}/${id}`);
+    return this.http.get<Category>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
 
   create(category: Partial<Category>): Observable<Category> {
-    return this.http.post<Category>(this.baseUrl, category);
+    return this.http.post<Category>(this.baseUrl, category, { withCredentials: true });
   }
 
   update(id: number, category: Partial<Category>): Observable<Category> {
-    return this.http.put<Category>(`${this.baseUrl}/${id}`, category);
+    return this.http.put<Category>(`${this.baseUrl}/${id}`, category, { withCredentials: true });
   }
 
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+    return this.http.delete<void>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
 }

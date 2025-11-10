@@ -14,22 +14,22 @@ export class MeetingsService {
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<MeetingDTO[]> {
-    return this.http.get<MeetingDTO[]>(this.baseUrl);
+    return this.http.get<MeetingDTO[]>(this.baseUrl, { withCredentials: true });
   }
 
   getById(id: number): Observable<MeetingDTO> {
-    return this.http.get<MeetingDTO>(`${this.baseUrl}/${id}`);
+    return this.http.get<MeetingDTO>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
 
   create(meeting: Partial<MeetingDTO>): Observable<MeetingDTO> {
-    return this.http.post<MeetingDTO>(this.baseUrl, meeting);
+    return this.http.post<MeetingDTO>(this.baseUrl, meeting, { withCredentials: true });
   }
 
   update(id: number, meeting: Partial<MeetingDTO>): Observable<MeetingDTO> {
-    return this.http.put<MeetingDTO>(`${this.baseUrl}/${id}`, meeting);
+    return this.http.put<MeetingDTO>(`${this.baseUrl}/${id}`, meeting, { withCredentials: true });
   }
 
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+    return this.http.delete<void>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
 }

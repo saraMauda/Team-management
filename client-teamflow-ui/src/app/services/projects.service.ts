@@ -14,22 +14,22 @@ export class ProjectsService {
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<ProjectDTO[]> {
-    return this.http.get<ProjectDTO[]>(this.baseUrl);
+    return this.http.get<ProjectDTO[]>(this.baseUrl, { withCredentials: true });
   }
 
   getById(id: number): Observable<ProjectDTO> {
-    return this.http.get<ProjectDTO>(`${this.baseUrl}/${id}`);
+    return this.http.get<ProjectDTO>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
 
   create(project: Partial<ProjectDTO>): Observable<ProjectDTO> {
-    return this.http.post<ProjectDTO>(this.baseUrl, project);
+    return this.http.post<ProjectDTO>(this.baseUrl, project, { withCredentials: true });
   }
 
   update(id: number, project: Partial<ProjectDTO>): Observable<ProjectDTO> {
-    return this.http.put<ProjectDTO>(`${this.baseUrl}/${id}`, project);
+    return this.http.put<ProjectDTO>(`${this.baseUrl}/${id}`, project, { withCredentials: true });
   }
 
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+    return this.http.delete<void>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
 }

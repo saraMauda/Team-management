@@ -14,22 +14,22 @@ export class ReportsService {
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<ReportDTO[]> {
-    return this.http.get<ReportDTO[]>(this.baseUrl);
+    return this.http.get<ReportDTO[]>(this.baseUrl, { withCredentials: true });
   }
 
   getById(id: number): Observable<ReportDTO> {
-    return this.http.get<ReportDTO>(`${this.baseUrl}/${id}`);
+    return this.http.get<ReportDTO>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
 
   create(report: Partial<ReportDTO>): Observable<ReportDTO> {
-    return this.http.post<ReportDTO>(this.baseUrl, report);
+    return this.http.post<ReportDTO>(this.baseUrl, report, { withCredentials: true });
   }
 
   update(id: number, report: Partial<ReportDTO>): Observable<ReportDTO> {
-    return this.http.put<ReportDTO>(`${this.baseUrl}/${id}`, report);
+    return this.http.put<ReportDTO>(`${this.baseUrl}/${id}`, report, { withCredentials: true });
   }
 
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+    return this.http.delete<void>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
 }

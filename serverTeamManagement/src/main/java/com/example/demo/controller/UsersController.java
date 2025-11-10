@@ -170,6 +170,12 @@ public ResponseEntity<UsersDTO> signUp(@RequestBody Users user) {
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,cookie.toString())
                 .body("you've been signed out!");
     }
+    @GetMapping("/authenticated")
+    public ResponseEntity<?> isAuthenticated() {
+        // אם הגענו לכאן – המשמעות היא שה־Cookie תקף
+        return ResponseEntity.ok(true);
+    }
+
 
 
 
