@@ -1,0 +1,25 @@
+<div class="leader-home" *ngIf="!loading; else loadingTpl">
+  <h2 class="leader-home-title">Welcome Back, Team Leader 👋</h2>
+  <div class="leader-stats-grid">
+    <div class="leader-card">
+      <h3>Team Members</h3>
+      <p>{{ teamCount }}</p>
+    </div>
+    <div class="leader-card">
+      <h3>Active Projects</h3>
+      <p>{{ activeProjects }}</p>
+    </div>
+    <div class="leader-card">
+      <h3>Open Reports</h3>
+      <p>{{ openReports }}</p>
+    </div>
+    <div class="leader-card">
+      <h3>Upcoming Meetings</h3>
+      <p>{{ upcomingMeetings }}</p>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="leader-loading">Loading team data...</div>
+</ng-template>

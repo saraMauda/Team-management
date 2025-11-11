@@ -1,1 +1,41 @@
-<p>team-meetings works!</p>
+<div class="team-meetings-container" *ngIf="!loading; else loadingTpl">
+  <h2 class="title">Team Meetings</h2>
+
+  <div *ngIf="error" class="error-msg">{{ error }}</div>
+
+  <div class="meetings-grid" *ngIf="meetings.length > 0; else noMeetingsTpl">
+    <div class="meeting-card" *ngFor="let m of meetings">
+      <div class="meeting-header">
+        <h3>{{ m.topic }}</h3>
+        <span
+          class="meeting-status"
+          [class.past]="isPast(m.date)"
+          [class.upcoming]="!isPast(m.date)"
+        >
+          {{ isPast(m.date) ? 'Completed' : 'Upcoming' }}
+        </span>
+      </div>
+
+      <p class="desc">{{ m.description || 'No details provided.' }}</p>
+
+      <div class="meta">
+        <span><strong>Date:</strong> {{ formatDate(m.date) }}</span>
+        <span><strong>Time:</strong> {{ m.time || '-' }}</span>
+        <span><strong>Location:</strong> {{ m.location || 'TBD' }}</span>
+      </div>
+
+      <div class="actions">
+        <button class="join-btn" *ngIf="!isPast(m.date)">Join</button>
+        <button class="view-btn">View Details</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="loading">Loading team meetings...</div>
+</ng-template>
+
+<ng-template #noMeetingsTpl>
+  <div class="no-meetings">No meetings scheduled yet.</div>
+</ng-template>

@@ -15,23 +15,36 @@ isLoggedIn$ = this._isLoggedIn.asObservable();
   }
 
   /** התחברות למערכת */
-  signin(email: string, password: string) {
-    return this.http.post(`${API_BASE_URL}/users/signin`, { email, password }, { withCredentials: true ,responseType: 'text' })
-      .pipe(
-        tap({
-          next: () => {
-            console.log('✅ Sign-in successful');
-            this._isLoggedIn.next(true);
+/** התחברות למערכת */
+signin(email: string, password: string) {
+  return this.http.post<any>(`${API_BASE_URL}/users/signin`, { email, password }, { withCredentials: true })
+    .pipe(
+      tap({
+        next: (response) => {
+          console.log('✅ Sign-in successful:', response);
+          this._isLoggedIn.next(true);
+
+          // שמירה של פרטי המשתמש (אם תרצי להשתמש מאוחר יותר)
+          localStorage.setItem('user', JSON.stringify(response));
+
+          // ניתוב לפי roleString
+          const role = response.role;
+          if (role === 'ROLE_ADMIN') {
             this.router.navigate(['/admin-dashboard']);
-          },
-          
-          error: (err: any) => {
-            console.error('❌ Sign-in failed:', err);
-            this._isLoggedIn.next(false);
+          } else if (role === 'ROLE_TEAMLEADER') {
+            this.router.navigate(['/leader-dashboard']);
+          } else {
+            this.router.navigate(['/employee-dashboard']);
           }
-        })
-      );
-  }
+        },
+        error: (err: any) => {
+          console.error('❌ Sign-in failed:', err);
+          this._isLoggedIn.next(false);
+        }
+      })
+    );
+}
+
 
 
 

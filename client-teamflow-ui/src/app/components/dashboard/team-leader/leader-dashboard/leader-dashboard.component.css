@@ -1,19 +1,150 @@
-.dashboard-layout {
-  display: flex;
-  height: 100vh;
-  background-color: #0e2433;
+/* ✅ Base */
+html, body, app-root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #10263b;
+  overflow: hidden;
 }
 
-.sidebar {
-  width: 240px;
-  background-color: #132b3b;
-  color: white;
+/* ✅ Main layout */
+.leader-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: #10263b;
+  color: #fff;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+/* ✅ Sidebar */
+.leader-side-nav {
+  width: 220px;
+  background-color: #0e1c2b;
+  border-right: 1px solid rgba(255,127,50,0.2);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  padding-top: 20px;
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  border-right: 2px solid #ff7f32;
 }
-.nav-links a.active {
+
+/* Logo area */
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+
+.logo-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 3px rgba(255,127,50,0.5));
+}
+
+.logo-text {
+  color: #ff7f32;
+  font-size: 27px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* ✅ Sidebar Links */
+.leader-side-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.leader-side-nav a {
+  color: #cfd9e4;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 20px;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.leader-side-nav a:hover,
+.leader-side-nav a.active {
+  color: #ff7f32;
+  font-weight: 700;
+}
+
+/* ✅ Main Content */
+.leader-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: 220px;
+  height: 100vh;
+  background-color: #10263b;
+}
+
+/* ✅ Header */
+app-header {
+  flex-shrink: 0;
+  background-color: #0f2234;
+  height: 65px;
+  border-bottom: 1px solid rgba(255,127,50,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 25px;
+  color: #fff;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* ✅ Content Scrollable Area */
+.leader-content {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #10263b;
+  color: #fff;
+  padding: 30px;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* ✅ Footer */
+app-footer {
+  flex-shrink: 0;
+  height: 45px;
+  background-color: #0f2234;
+  color: #cfd9e4;
+  text-align: center;
+  font-size: 14px;
+  border-top: 1px solid rgba(255,127,50,0.25);
+  margin: 0;
+}
+
+/* ✅ Scrollbar styling */
+.leader-content::-webkit-scrollbar {
+  width: 8px;
+}
+.leader-content::-webkit-scrollbar-thumb {
   background-color: #ff7f32;
-  color: #0e2433;
+  border-radius: 10px;
+}
+.leader-content::-webkit-scrollbar-track {
+  background-color: #0e1c2b;
+}
+
+/* ✅ Consistent box-sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
 }

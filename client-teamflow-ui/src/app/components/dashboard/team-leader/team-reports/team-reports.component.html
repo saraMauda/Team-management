@@ -1,1 +1,36 @@
-<p>team-reports works!</p>
+<div class="team-reports-container" *ngIf="!loading; else loadingTpl">
+  <h2 class="title">Team Reports</h2>
+
+  <div *ngIf="error" class="error-msg">{{ error }}</div>
+
+  <div class="reports-grid" *ngIf="reports.length > 0; else noReportsTpl">
+    <div class="report-card" *ngFor="let r of reports">
+      <div class="report-header">
+        <h3>{{ r.title }}</h3>
+        <span class="status" [style.color]="getStatusColor(r.status)">
+          ● {{ r.status }}
+        </span>
+      </div>
+
+      <p class="desc">{{ r.description || 'No description provided.' }}</p>
+
+      <div class="meta">
+        <span><strong>Project:</strong> {{ r.projectName || 'N/A' }}</span>
+        <span><strong>Submitted by:</strong> {{ r.employeeName || 'Unknown' }}</span>
+        <span><strong>Date:</strong> {{ r.submissionDate | date:'mediumDate' }}</span>
+      </div>
+
+      <div class="actions">
+        <button class="view-btn">View Details</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="loading">Loading team reports...</div>
+</ng-template>
+
+<ng-template #noReportsTpl>
+  <div class="no-reports">No reports found for your team.</div>
+</ng-template>

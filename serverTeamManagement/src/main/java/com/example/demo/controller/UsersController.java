@@ -27,7 +27,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -160,9 +162,11 @@ public ResponseEntity<UsersDTO> signUp(@RequestBody Users user) {
         CustomUserDetails userDetails=(CustomUserDetails)authentication.getPrincipal();
 
         ResponseCookie jwtCookie=jwtUtils.generateJwtCookie(userDetails);
-
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("email", userDetails.getUsername());
+        responseBody.put("role", userDetails.getRoleString());
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,jwtCookie.toString())
-                .body(userDetails.getUsername());
+                .body(responseBody);
     }
     @PostMapping("/signout")
     public ResponseEntity<?> signOut(){

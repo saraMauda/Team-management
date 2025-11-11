@@ -74,6 +74,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // 🟢 פתוחים לכולם (לא דורשים אימות)
                         .requestMatchers("/api/users/signin").permitAll()
+                        .requestMatchers("/api/users/authenticated").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/error").permitAll()
 

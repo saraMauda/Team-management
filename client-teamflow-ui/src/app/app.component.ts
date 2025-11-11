@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -10,4 +11,9 @@ import { RouterOutlet } from '@angular/router';
 })
 export class AppComponent {
   title = 'TeamFlow';
+
+  constructor(private authService: AuthService) {
+    // 🔹 נוודא שהמערכת בודקת אם המשתמש עדיין מחובר ברגע שטוענים את האפליקציה
+    this.authService.checkInitialAuthState();
+  }
 }

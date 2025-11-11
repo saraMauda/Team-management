@@ -1,1 +1,31 @@
-<p>feedback works!</p>
+<div class="feedback-container" *ngIf="!loading; else loadingTpl">
+  <h2 class="title">Team Feedback</h2>
+
+  <div *ngIf="error" class="error-msg">{{ error }}</div>
+
+  <div class="feedback-list" *ngIf="feedbacks.length > 0; else noFeedbackTpl">
+    <div class="feedback-item" *ngFor="let f of feedbacks">
+      <div class="feedback-header">
+        <span class="sender">{{ f.sender || 'Anonymous' }}</span>
+        <span class="date">{{ f.date | date: 'short' }}</span>
+      </div>
+      <p class="message">{{ f.content || f.feedback || 'No feedback message.' }}</p>
+    </div>
+  </div>
+
+  <div class="feedback-form">
+    <textarea
+      [(ngModel)]="newFeedback"
+      placeholder="Write a feedback message..."
+    ></textarea>
+    <button (click)="sendFeedback()">Send</button>
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="loading">Loading feedbacks...</div>
+</ng-template>
+
+<ng-template #noFeedbackTpl>
+  <div class="no-feedback">No feedback yet.</div>
+</ng-template>

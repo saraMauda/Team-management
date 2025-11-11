@@ -1,21 +1,24 @@
-<div class="dashboard-layout">
-  <aside class="sidebar">
-    <div class="logo-area">
-      <img src="assets/logo.png" alt="TeamFlow Logo" class="logo" />
-      <h2>Leader Panel</h2>
+<div class="leader-layout">
+  <aside class="leader-side-nav">
+    <div class="logo-container">
+      <img src="assets/logo.png" alt="TeamFlow Logo" class="logo-img" />
+      <span class="logo-text">Leader Panel</span>
     </div>
 
-    <nav class="nav-links">
-      <a routerLink="team-projects" routerLinkActive="active">Team Projects</a>
-      <a routerLink="team-reports" routerLinkActive="active">Team Reports</a>
-      <a routerLink="team-meetings" routerLinkActive="active">Meetings</a>
-      <a routerLink="feedback" routerLinkActive="active">Feedback</a>
-    </nav>
+    <ul>
+      <li><a routerLink="/leader-dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a></li>
+      <li><a routerLink="/leader-dashboard/team-projects" routerLinkActive="active">Team Projects</a></li>
+      <li><a routerLink="/leader-dashboard/team-reports" routerLinkActive="active">Team Reports</a></li>
+      <li><a routerLink="/leader-dashboard/team-meetings" routerLinkActive="active">Meetings</a></li>
+      <li><a routerLink="/leader-dashboard/feedback" routerLinkActive="active">Feedback</a></li>
+    </ul>
   </aside>
 
-  <section class="content">
+  <div class="leader-main">
     <app-header></app-header>
-    <router-outlet></router-outlet>
+    <div class="leader-content">
+      <router-outlet></router-outlet>
+    </div>
     <app-footer></app-footer>
-  </section>
+  </div>
 </div>

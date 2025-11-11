@@ -1,1 +1,35 @@
-<p>team-projects works!</p>
+<div class="team-projects-container" *ngIf="!loading; else loadingTpl">
+  <h2 class="title">Team Projects</h2>
+
+  <div *ngIf="error" class="error-msg">{{ error }}</div>
+
+  <div class="projects-grid" *ngIf="projects.length > 0; else noProjectsTpl">
+    <div class="project-card" *ngFor="let p of projects">
+      <h3>{{ p.name }}</h3>
+      <p class="desc">{{ p.description || 'No description available.' }}</p>
+
+      <div class="progress-bar">
+        <div
+          class="progress"
+          [style.width.%]="p.progress"
+          [style.background]="getProgressColor(p.progress)"
+        ></div>
+      </div>
+
+      <div class="status">
+        <strong>Status:</strong> {{ p.status }}
+      </div>
+      <div class="leader">
+        <strong>Leader:</strong> {{ p.leaderName || 'N/A' }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="loading">Loading projects...</div>
+</ng-template>
+
+<ng-template #noProjectsTpl>
+  <div class="no-projects">No active projects found.</div>
+</ng-template>

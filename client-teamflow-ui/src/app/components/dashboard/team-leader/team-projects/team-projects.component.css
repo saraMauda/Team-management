@@ -1,0 +1,75 @@
+.team-projects-container {
+  padding: 30px;
+  color: #fff;
+}
+
+.title {
+  font-size: 26px;
+  color: #ff7f32;
+  margin-bottom: 25px;
+  font-weight: 700;
+}
+
+.error-msg {
+  color: #f44336;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.project-card {
+  background-color: #0f2234;
+  border: 1px solid rgba(255, 127, 50, 0.25);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+}
+
+.project-card h3 {
+  color: #ff7f32;
+  margin-bottom: 10px;
+}
+
+.desc {
+  font-size: 14px;
+  color: #cfd9e4;
+  margin-bottom: 15px;
+}
+
+.progress-bar {
+  background: #10263b;
+  border-radius: 10px;
+  height: 10px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 10px;
+  border-radius: 10px;
+  transition: width 0.4s ease;
+}
+
+.status,
+.leader {
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.loading,
+.no-projects {
+  text-align: center;
+  color: #cfd9e4;
+  padding: 40px;
+  font-size: 16px;
+}
