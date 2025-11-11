@@ -80,7 +80,7 @@ public class WebSecurityConfig {
 
                         // 🟡 הרשאות לפי תפקידים:
                         // ADMIN
-                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/users/**").hasAnyRole("ADMIN","TEAMLEADER")
 
                         .requestMatchers("/api/projects/**").permitAll()
 

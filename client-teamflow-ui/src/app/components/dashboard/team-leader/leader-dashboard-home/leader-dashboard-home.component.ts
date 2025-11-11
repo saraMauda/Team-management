@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { forkJoin } from 'rxjs';
 import { ProjectsService } from '../../../../services/projects.service';
 import { ReportsService } from '../../../../services/reports.service';
 import { UsersService } from '../../../../services/users.service';
@@ -18,6 +19,7 @@ export class LeaderDashboardHomeComponent implements OnInit {
   openReports = 0;
   upcomingMeetings = 0;
   loading = true;
+  error = '';
 
   constructor(
     private usersService: UsersService,
@@ -27,26 +29,46 @@ export class LeaderDashboardHomeComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    Promise.all([
-      this.usersService.getAll().toPromise(),
-      this.projectsService.getAll().toPromise(),
-      this.reportsService.getAll().toPromise(),
-      this.meetingsService.getAll().toPromise()
-    ])
-      .then(([users, projects, reports, meetings]) => {
+    this.loadDashboardData();
+  }
+
+  loadDashboardData(): void {
+    forkJoin({
+      users: this.usersService.getAll(),
+      projects: this.projectsService.getAll(),
+      reports: this.reportsService.getAll(),
+      meetings: this.meetingsService.getAll()
+    }).subscribe({
+      next: ({ users, projects, reports, meetings }) => {
         const safeUsers = users ?? [];
         const safeProjects = projects ?? [];
         const safeReports = reports ?? [];
         const safeMeetings = meetings ?? [];
 
-        this.teamCount = safeUsers.filter(u => (u as any).role === 'ROLE_EMPLOYEE').length;
-        this.activeProjects = safeProjects.filter(p => (p as any).status === 'ACTIVE').length;
-        this.openReports = safeReports.filter(r => (r as any).status === 'OPEN').length;
-        this.upcomingMeetings = safeMeetings.filter(m => {
-          const dateValue = (m as any).date;
+        this.teamCount = safeUsers.filter(
+          (u: any) => u.role === 'ROLE_EMPLOYEE'
+        ).length;
+
+        this.activeProjects = safeProjects.filter(
+          (p: any) => p.status === 'ACTIVE'
+        ).length;
+
+        this.openReports = safeReports.filter(
+          (r: any) => r.status === 'OPEN'
+        ).length;
+
+        this.upcomingMeetings = safeMeetings.filter((m: any) => {
+          const dateValue = m.date;
           return dateValue && new Date(dateValue) > new Date();
         }).length;
-      })
-      .finally(() => (this.loading = false));
+      },
+      error: (err) => {
+        console.error('❌ Failed to load dashboard data', err);
+        this.error = 'Failed to load data from server.';
+      },
+      complete: () => {
+        this.loading = false;
+      }
+    });
   }
 }

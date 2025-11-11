@@ -1,5 +1,18 @@
-<div class="login-container">
-  <h2>Login</h2>
+<div class="login-page">
+
+  <!-- 🔹 HEADER למעלה -->
+  <header class="login-header">
+    <div class="logo-section">
+      <img src="assets/logo.png" alt="TeamFlow logo" class="header-logo" />
+      <h1 class="site-name">TeamFlow</h1>
+    </div>
+  </header>
+
+  <!-- 🔸 תוכן ראשי -->
+  <main class="login-main">
+    <section class="login-box">
+      <h2>Welcome Back</h2>
+      <p class="subtitle">Please log in to continue managing your team</p>
   <form (ngSubmit)="onSubmit()">
     <div>
       <label>Email</label>
@@ -15,4 +28,9 @@
 
     <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
   </form>
+    </section>
+  </main>
+
 </div>
+
+
