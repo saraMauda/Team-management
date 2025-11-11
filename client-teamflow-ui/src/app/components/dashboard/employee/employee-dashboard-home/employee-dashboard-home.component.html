@@ -1,0 +1,27 @@
+<div class="employee-home" *ngIf="!loading; else loadingTpl">
+  <h2 class="employee-home-title">Welcome Back 👋</h2>
+  <p class="employee-subtitle">Here’s a quick look at your work summary</p>
+
+  <div class="employee-stats-grid">
+    <div class="stat-card">
+      <h3>Active Projects</h3>
+      <p>{{ activeProjects }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Reports Submitted</h3>
+      <p>{{ submittedReports }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Upcoming Meetings</h3>
+      <p>{{ upcomingMeetings }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Tasks In Progress</h3>
+      <p>{{ tasksInProgress }}</p>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="loading">Loading your dashboard...</div>
+</ng-template>

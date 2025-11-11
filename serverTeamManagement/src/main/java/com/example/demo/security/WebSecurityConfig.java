@@ -82,14 +82,17 @@ public class WebSecurityConfig {
                         // ADMIN
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
 
-                        // ADMIN + TEAMLEADER
-                        .requestMatchers("/api/projects/**").hasAnyRole("ADMIN", "TEAMLEADER")
+                        .requestMatchers("/api/projects/**").permitAll()
+
+
 
                         // TEAMLEADER + EMPLOYEE
                         .requestMatchers("/api/reports/**").permitAll()
 
                         // כל המשתמשים המחוברים (כולל EMPLOYEE)
-                        .requestMatchers("/api/meetings/**").authenticated()
+//                        .requestMatchers("/api/meetings/**").authenticated()
+                        .requestMatchers("/api/meetings/**").permitAll()
+
 
                         // כל השאר - דורש התחברות
                         .anyRequest().authenticated()

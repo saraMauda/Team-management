@@ -32,4 +32,15 @@ export class ProjectsService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
+
+getByEmployeeId(employeeId: number) {
+  return this.http.get<any[]>(`${API_BASE_URL}/projects/byEmployee/${employeeId}`, {
+    withCredentials: true
+  });
+}
+getMyProjects() {
+  return this.http.get<any[]>(`${API_BASE_URL}/projects/byEmployee`, { withCredentials: true });
+}
+
+
 }

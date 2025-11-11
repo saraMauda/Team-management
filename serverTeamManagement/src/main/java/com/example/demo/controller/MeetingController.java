@@ -5,7 +5,9 @@ import com.example.demo.model.Meeting;
 import com.example.demo.service.MeetingMapper;
 import com.example.demo.service.MeetingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,4 +74,15 @@ public class MeetingController {
                 .map(meetingMapper::meetingToMeetingDTO)
                 .collect(Collectors.toList());
     }
+    @GetMapping("/byEmployee")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public List<MeetingDTO> getMeetingsForLoggedEmployee(Authentication authentication) {
+        String email = authentication.getName(); // המייל של המשתמש המחובר
+        return meetingRepository.findByProject_ProjectEmployeeProjects_User_Email(email)
+                .stream()
+                .map(meetingMapper::meetingToMeetingDTO)
+                .collect(Collectors.toList());
+    }
+
+
 }

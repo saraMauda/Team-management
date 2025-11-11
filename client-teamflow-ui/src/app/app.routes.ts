@@ -26,7 +26,7 @@ import { MyProjectsComponent } from './components/dashboard/employee/my-projects
 import { MeetingsComponent } from './components/dashboard/employee/meetings/meetings.component';
 import { MyReportsComponent } from './components/dashboard/employee/my-reports/my-reports.component';
 import { AddReportComponent } from './components/dashboard/employee/add-report/add-report.component';
-
+import { EmployeeDashboardHomeComponent } from './components/dashboard/employee/employee-dashboard-home/employee-dashboard-home.component';
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
 
@@ -59,19 +59,20 @@ export const routes: Routes = [
   ],
 },
 
-  // 🟩 Employee Dashboard
-  {
-    path: 'employee-dashboard',
-    component: EmployeeDashboardComponent,
-    canActivate: [AuthGuard],
-    children: [
-      { path: '', redirectTo: 'my-projects', pathMatch: 'full' },
-      { path: 'my-projects', component: MyProjectsComponent },
-      { path: 'meetings', component: MeetingsComponent },
-      { path: 'my-reports', component: MyReportsComponent },
-      { path: 'add-report', component: AddReportComponent },
-    ],
-  },
+{
+  path: 'employee-dashboard',
+  component: EmployeeDashboardComponent,
+  canActivate: [AuthGuard],
+  children: [
+    { path: '', component: EmployeeDashboardHomeComponent }, // 👈 זה הדף החדש
+    { path: 'my-projects', component: MyProjectsComponent },
+    { path: 'my-reports', component: MyReportsComponent },
+    { path: 'add-report', component: AddReportComponent },
+    { path: 'meetings', component: MeetingsComponent },
+  ],
+},
+
+
 
   // Default routes
   { path: '', redirectTo: '/login', pathMatch: 'full' },

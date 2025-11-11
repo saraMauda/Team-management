@@ -10,6 +10,7 @@ import java.util.List;
 public interface ReportRepository extends JpaRepository<Report, Long> {
     // דוחות לפי עובד
     List<Report> findByReportEmployeeInProject_User_Id(Long userId);
+    List<Report> findByReportEmployeeInProject_User_Email(String email);
 
     // דוחות לפי פרויקט
     List<Report> findByReportEmployeeInProject_Project_ProjectId(Long projectId);

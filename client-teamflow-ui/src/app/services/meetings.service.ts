@@ -32,4 +32,8 @@ export class MeetingsService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
+  getMyMeetings() {
+  return this.http.get<any[]>(`${API_BASE_URL}/meetings/byEmployee`, { withCredentials: true });
+}
+
 }

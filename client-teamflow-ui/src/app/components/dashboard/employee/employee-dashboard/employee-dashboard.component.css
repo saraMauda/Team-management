@@ -1,0 +1,115 @@
+html, body, app-root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #10263b;
+  overflow: hidden;
+}
+
+.employee-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: #10263b;
+  color: #fff;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.employee-side-nav {
+  width: 220px;
+  background-color: #0e1c2b;
+  border-right: 1px solid rgba(255,127,50,0.2);
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+
+.logo-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 3px rgba(255,127,50,0.5));
+}
+
+.logo-text {
+  color: #ff7f32;
+  font-size: 27px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.employee-side-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.employee-side-nav a {
+  color: #cfd9e4;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 20px;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.employee-side-nav a:hover,
+.employee-side-nav a.active {
+  color: #ff7f32;
+  font-weight: 700;
+}
+
+.employee-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: 220px;
+  height: 100vh;
+  background-color: #10263b;
+}
+
+.employee-content {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #10263b;
+  color: #fff;
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+.employee-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.employee-content::-webkit-scrollbar-thumb {
+  background-color: #ff7f32;
+  border-radius: 10px;
+}
+
+.employee-content::-webkit-scrollbar-track {
+  background-color: #0e1c2b;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}

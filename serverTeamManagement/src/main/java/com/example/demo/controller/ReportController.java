@@ -5,7 +5,9 @@ import com.example.demo.model.Report;
 import com.example.demo.service.ReportMapper;
 import com.example.demo.service.ReportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -85,4 +87,15 @@ public class ReportController {
     public void deleteReport(@PathVariable Long id){
         reportRepository.deleteById(id);
     }
+
+    @GetMapping("/byEmployee")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public List<ReportDTO> getReportsForLoggedEmployee(Authentication authentication) {
+        String email = authentication.getName(); // המייל של המשתמש המחובר
+        return reportRepository.findByReportEmployeeInProject_User_Email(email)
+                .stream()
+                .map(reportMapper::reportToReportDTO)
+                .collect(Collectors.toList());
+    }
+
 }

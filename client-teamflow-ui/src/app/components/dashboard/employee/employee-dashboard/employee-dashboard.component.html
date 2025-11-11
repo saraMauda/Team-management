@@ -1,21 +1,41 @@
-<div class="dashboard-layout">
-  <aside class="sidebar">
-    <div class="logo-area">
-      <img src="assets/logo.png" alt="TeamFlow Logo" class="logo" />
-      <h2>Employee</h2>
+<div class="employee-layout">
+  <aside class="employee-side-nav">
+    <div class="logo-container">
+      <img src="assets/logo.png" alt="TeamFlow Logo" class="logo-img" />
+      <span class="logo-text">TeamFlow</span>
     </div>
 
-    <nav class="nav-links">
-      <a routerLink="my-projects" routerLinkActive="active">My Projects</a>
-      <a routerLink="my-reports" routerLinkActive="active">My Reports</a>
-      <a routerLink="meetings" routerLinkActive="active">Meetings</a>
-      <a routerLink="add-report" routerLinkActive="active">Add Report</a>
-    </nav>
+    <ul>
+      <li>
+        <a routerLink="/employee-dashboard/my-projects" routerLinkActive="active">
+          My Projects
+        </a>
+      </li>
+      <li>
+        <a routerLink="/employee-dashboard/my-reports" routerLinkActive="active">
+          My Reports
+        </a>
+      </li>
+      <li>
+        <a routerLink="/employee-dashboard/add-report" routerLinkActive="active">
+          Add Report
+        </a>
+      </li>
+      <li>
+        <a routerLink="/employee-dashboard/meetings" routerLinkActive="active">
+          Meetings
+        </a>
+      </li>
+    </ul>
   </aside>
 
-  <section class="content">
+  <div class="employee-main">
     <app-header></app-header>
-    <router-outlet></router-outlet>
+
+    <div class="employee-content">
+      <router-outlet></router-outlet>
+    </div>
+
     <app-footer></app-footer>
-  </section>
+  </div>
 </div>

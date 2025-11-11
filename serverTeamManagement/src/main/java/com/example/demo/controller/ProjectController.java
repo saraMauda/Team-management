@@ -4,8 +4,12 @@ import com.example.demo.dto.ProjectDTO;
 import com.example.demo.model.Project;
 import com.example.demo.service.ProjectMapper;
 import com.example.demo.service.ProjectRepository;
+//import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -71,12 +75,22 @@ public class ProjectController {
                 .collect(Collectors.toList());
     }
     //שליפת פרויקטים לפי עובד
-    @GetMapping("/byEmployee/{employeeId}")
-    public List<ProjectDTO> getProjectsByEmployee(@PathVariable Long employeeId) {
-        return projectRepository.findByProjectEmployeeProjects_User_Id(employeeId)
+//    @GetMapping("/byEmployee/{employeeId}")
+//    public List<ProjectDTO> getProjectsByEmployee(@PathVariable Long employeeId) {
+//        return projectRepository.findByProjectEmployeeProjects_User_Id(employeeId)
+//                .stream()
+//                .map(projectMapper::projectToProjectDTO)
+//                .collect(Collectors.toList());
+//    }
+    @GetMapping("/byEmployee")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public List<ProjectDTO> getProjectsForLoggedEmployee(Authentication authentication) {
+        String email = authentication.getName(); // כתובת המייל של המשתמש המחובר
+        return projectRepository.findByProjectEmployeeProjects_User_Email(email)
                 .stream()
                 .map(projectMapper::projectToProjectDTO)
                 .collect(Collectors.toList());
     }
+
 
 }
