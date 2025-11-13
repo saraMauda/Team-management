@@ -81,12 +81,7 @@ public class WebSecurityConfig {
                         // 🟡 הרשאות לפי תפקידים:
                         // ADMIN
                         .requestMatchers("/api/users/**").hasAnyRole("ADMIN","TEAMLEADER")
-<<<<<<< Updated upstream
 
-                        .requestMatchers("/api/projects/**").permitAll()
-
-=======
->>>>>>> Stashed changes
 
 
                         // TEAMLEADER + EMPLOYEE
