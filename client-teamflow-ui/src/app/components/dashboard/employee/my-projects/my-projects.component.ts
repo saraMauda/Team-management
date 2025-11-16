@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProjectsService } from '../../../../services/projects.service';
+import { UsersService } from '../../../../services/users.service';
 
 @Component({
   selector: 'app-my-projects',
@@ -10,33 +11,68 @@ import { ProjectsService } from '../../../../services/projects.service';
   styleUrls: ['./my-projects.component.css']
 })
 export class MyProjectsComponent implements OnInit {
+
   projects: any[] = [];
   loading = true;
   error: string | null = null;
 
-  constructor(private projectsService: ProjectsService) {}
+  loggedEmail: string | null = null;
+  loggedUserId: number | null = null;
+
+  constructor(
+    private projectsService: ProjectsService,
+    private usersService: UsersService
+  ) {}
 
   ngOnInit(): void {
-    this.loadProjects();
+    this.loadLoggedUser();
   }
 
-loadProjects(): void {
-  this.projectsService.getMyProjects().subscribe({
-    next: (data) => {
-      this.projects = data;
+  loadLoggedUser(): void {
+    const userJson = localStorage.getItem('user');
+
+    if (!userJson) {
+      this.error = 'User not found';
       this.loading = false;
-    },
-    error: (err) => {
-      console.error('❌ Failed to load projects', err);
-      this.error = 'Failed to load your projects.';
-      this.loading = false;
+      return;
     }
-  });
-}
 
+    const user = JSON.parse(userJson);
+    this.loggedEmail = user.email ?? null;
 
+    if (!this.loggedEmail) {
+      this.error = 'Email missing';
+      this.loading = false;
+      return;
+    }
 
-  getProgressColor(progress: number): string {
+    this.usersService.getByEmail(this.loggedEmail).subscribe({
+      next: (u) => {
+        this.loggedUserId = u.id;
+        this.loadProjects();
+      },
+      error: () => {
+        this.error = 'Cannot load user details';
+        this.loading = false;
+      }
+    });
+  }
+
+  loadProjects(): void {
+    this.projectsService.getAll().subscribe({
+      next: (data) => {
+        this.projects = data.filter(p =>
+          p.employeeIds && p.employeeIds.includes(this.loggedUserId!)
+        );
+        this.loading = false;
+      },
+      error: () => {
+        this.error = 'Failed to load projects';
+        this.loading = false;
+      }
+    });
+  }
+    getProgressColor(progress: number): string {
     if (progress >= 80) return '#4caf50';
     if (progress >= 50) return '#ff9800';
     return '#f44336';

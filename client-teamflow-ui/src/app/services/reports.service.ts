@@ -21,9 +21,6 @@ export class ReportsService {
     return this.http.get<ReportDTO>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
 
-  // create(report: Partial<ReportDTO>): Observable<ReportDTO> {
-  //   return this.http.post<ReportDTO>(this.baseUrl, report, { withCredentials: true });
-  // }
   create(report: any) {
   return this.http.post(`${API_BASE_URL}/reports`, report, { withCredentials: true });
 }

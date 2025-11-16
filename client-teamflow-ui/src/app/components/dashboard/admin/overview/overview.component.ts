@@ -60,7 +60,7 @@ export class OverviewComponent implements OnInit {
     };
 
     // Users
-    this.usersService.getAll().subscribe({
+    this.usersService.getAllUsers().subscribe({
       next: (users: UsersDTO[]) => {
         this.totalUsers = users.length;
         this.activeUsers = users.filter(u => u.active).length;

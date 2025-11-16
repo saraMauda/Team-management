@@ -1,8 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { UsersService } from '../../../../../services/users.service';
+import { TeamService } from '../../../../../services/team.service';
+
 import { UsersDTO } from '../../../../../models/users-dto.model';
+import { TeamDTO } from '../../../../../models/team-dto.model';
 
 @Component({
   selector: 'app-manage-users',
@@ -12,6 +16,7 @@ import { UsersDTO } from '../../../../../models/users-dto.model';
   styleUrls: ['./manage-users.component.css']
 })
 export class ManageUsersComponent implements OnInit {
+
   users: UsersDTO[] = [];
   loading = false;
   error: string | null = null;
@@ -24,7 +29,7 @@ export class ManageUsersComponent implements OnInit {
     name: '',
     email: '',
     password: '',
-    roleString: 'ROLE_EMPLOYEE',
+    role: 'ROLE_EMPLOYEE',
     active: true
   };
 
@@ -32,17 +37,35 @@ export class ManageUsersComponent implements OnInit {
   editingImageFile: File | null = null;
   previewImageBase64: string | null = null;
 
-  constructor(private usersService: UsersService) {}
+  /** ------- TEAMS (SERVER SIDE) ------- */
+  teams: TeamDTO[] = [];
+
+  teamLeaders: UsersDTO[] = [];
+  teamEmployees: UsersDTO[] = [];
+
+  expandedTeams: { [leaderId: number]: boolean } = {};
+
+  selectedMemberToAdd: { [leaderId: number]: number | null } = {};
+
+  constructor(
+    private usersService: UsersService,
+    private teamService: TeamService
+  ) {}
 
   ngOnInit(): void {
     this.loadUsers();
+    this.loadTeams();
   }
 
+  /** -------------------------------
+   *        LOAD USERS
+   --------------------------------*/
   loadUsers(): void {
     this.loading = true;
-    this.usersService.getAll().subscribe({
+    this.usersService.getAllUsers().subscribe({
       next: (data) => {
         this.users = data;
+        this.refreshRoleLists();
         this.loading = false;
       },
       error: () => {
@@ -52,30 +75,46 @@ export class ManageUsersComponent implements OnInit {
     });
   }
 
-  // ➕ יצירת משתמש חדש
+  /** -------------------------------
+   *        LOAD TEAMS
+   --------------------------------*/
+  loadTeams(): void {
+    this.teamService.getAllTeams().subscribe({
+      next: (data) => {
+        this.teams = data || [];
+      },
+      error: (err) => {
+        console.error('❌ Failed to load teams', err);
+      }
+    });
+  }
+
+  refreshRoleLists(): void {
+    this.teamLeaders = this.users.filter(u => this.isTeamLeader(u));
+    this.teamEmployees = this.users.filter(u => this.isEmployee(u));
+  }
+
+  /** -------------------------------
+   *        ADD USER
+   --------------------------------*/
   addUser(): void {
-    if (!this.newUser.name || !this.newUser.email || !this.newUser.roleString) return;
+    if (!this.newUser.name || !this.newUser.email) return;
 
     const payload: Partial<UsersDTO> = {
       name: this.newUser.name.trim(),
       email: this.newUser.email.trim(),
       password: this.newUser.password || '1234',
-      roleString: this.newUser.roleString,
-      active: this.newUser.active ?? true
+      role: this.newUser.role,
+      active: this.newUser.active
     };
 
     this.saving = true;
+
     this.usersService.create(payload).subscribe({
       next: (user) => {
         this.users.unshift(user);
-        this.newUser = {
-          name: '',
-          email: '',
-          password: '',
-          roleString: 'ROLE_EMPLOYEE',
-          active: true
-        };
-        this.showAddForm = false;
+        this.refreshRoleLists();
+        this.resetAddForm();
         this.saving = false;
       },
       error: () => {
@@ -85,17 +124,30 @@ export class ManageUsersComponent implements OnInit {
     });
   }
 
-  // ✏️ פתיחת עריכה
+  resetAddForm(): void {
+    this.newUser = {
+      name: '',
+      email: '',
+      password: '',
+      role: 'ROLE_EMPLOYEE',
+      active: true
+    };
+    this.showAddForm = false;
+  }
+
+  /** -------------------------------
+   *        EDIT USER
+   --------------------------------*/
   openEdit(user: UsersDTO): void {
     this.editingUser = { ...user };
     this.previewImageBase64 = user.image || null;
     this.showEditForm = true;
   }
 
-  // 📸 בחירת תמונה לעריכה
-  onEditImageSelected(ev: Event) {
+  onEditImageSelected(ev: Event): void {
     const input = ev.target as HTMLInputElement;
     if (!input.files?.length) return;
+
     this.editingImageFile = input.files[0];
 
     const reader = new FileReader();
@@ -103,18 +155,18 @@ export class ManageUsersComponent implements OnInit {
     reader.readAsDataURL(this.editingImageFile);
   }
 
-  // 💾 עדכון משתמש
   updateUser(): void {
     if (!this.editingUser?.id) return;
-    this.saving = true;
 
+    this.saving = true;
     const id = this.editingUser.id;
     const payload: Partial<UsersDTO> = { ...this.editingUser };
 
-    const finalizeUpdate = () => {
+    const finalize = () => {
       this.usersService.update(id, payload).subscribe({
-        next: (updatedUser) => {
-          this.users = this.users.map(u => u.id === updatedUser.id ? updatedUser : u);
+        next: (updated) => {
+          this.users = this.users.map(u => u.id === updated.id ? updated : u);
+          this.refreshRoleLists();
           this.cancelEdit();
           this.saving = false;
         },
@@ -127,9 +179,9 @@ export class ManageUsersComponent implements OnInit {
 
     if (this.editingImageFile) {
       this.usersService.uploadImage(id, this.editingImageFile).subscribe({
-        next: (resultText) => {
-          payload.image = resultText;
-          finalizeUpdate();
+        next: (base64) => {
+          payload.image = base64;
+          finalize();
         },
         error: () => {
           alert('❌ Failed to upload image.');
@@ -137,15 +189,24 @@ export class ManageUsersComponent implements OnInit {
         }
       });
     } else {
-      finalizeUpdate();
+      finalize();
     }
   }
 
-  // ❌ מחיקת משתמש
   deleteUser(id: number): void {
-    if (!confirm('Are you sure you want to delete this user?')) return;
+    if (!confirm('Are you sure?')) return;
+
     this.usersService.delete(id).subscribe({
-      next: () => this.users = this.users.filter(u => u.id !== id),
+      next: () => {
+        this.users = this.users.filter(u => u.id !== id);
+
+        // Remove from teams
+        this.teams.forEach(team => {
+          team.members = team.members.filter(m => m.id !== id);
+        });
+
+        this.refreshRoleLists();
+      },
       error: () => alert('❌ Failed to delete user.')
     });
   }
@@ -157,13 +218,95 @@ export class ManageUsersComponent implements OnInit {
     this.editingImageFile = null;
   }
 
-  // 🧾 הצגה נעימה של תפקיד
+  /** -------------------------------
+   *        HELPER FUNCTIONS
+   --------------------------------*/
+  isTeamLeader(u: UsersDTO): boolean {
+    return u.role?.includes('TEAMLEADER') ?? false;
+  }
+
+  isEmployee(u: UsersDTO): boolean {
+    return u.role?.includes('EMPLOYEE') ?? false;
+  }
+
   prettyRole(role: string): string {
-    const map: Record<string, string> = {
+    const map: any = {
       'ROLE_ADMIN': 'Admin',
       'ROLE_TEAMLEADER': 'Team Leader',
       'ROLE_EMPLOYEE': 'Employee'
     };
     return map[role] || role;
+  }
+
+  /** -------------------------------
+   *        TEAMS LOGIC
+   --------------------------------*/
+
+  getTeamByLeader(leaderId: number): TeamDTO | null {
+    return this.teams.find(t => t.leaderId === leaderId) || null;
+  }
+
+  isTeamExpanded(leaderId: number): boolean {
+    return !!this.expandedTeams[leaderId];
+  }
+
+  toggleTeam(leaderId: number): void {
+    const team = this.getTeamByLeader(leaderId);
+
+    if (!team) {
+      // Create empty team
+      this.teamService.createTeam(leaderId, []).subscribe({
+        next: newTeam => {
+          this.teams.push(newTeam);
+          this.expandedTeams[leaderId] = true;
+        },
+        error: () => alert('❌ Failed to create team.')
+      });
+    } else {
+      this.expandedTeams[leaderId] = !this.expandedTeams[leaderId];
+    }
+  }
+
+  getTeamMembers(leaderId: number): UsersDTO[] {
+    return this.getTeamByLeader(leaderId)?.members || [];
+  }
+
+  isMemberInTeam(leaderId: number, userId: number): boolean {
+    const team = this.getTeamByLeader(leaderId);
+    return !!team?.members.some(m => m.id === userId);
+  }
+
+  /** ADD member */
+  addMemberToLeader(leaderId: number): void {
+    const memberId = this.selectedMemberToAdd[leaderId];
+    if (memberId == null) return;
+
+    const team = this.getTeamByLeader(leaderId);
+    if (!team) return;
+
+    this.teamService.addMember(team.id, memberId).subscribe({
+      next: updated => {
+        this.teams = this.teams.map(t => t.id === updated.id ? updated : t);
+        this.selectedMemberToAdd[leaderId] = null;
+      },
+      error: () => alert('❌ Failed to add member.')
+    });
+  }
+
+  /** REMOVE member */
+  removeMemberFromLeader(leaderId: number, memberId: number): void {
+    const team = this.getTeamByLeader(leaderId);
+    if (!team) return;
+
+    const teamMemberEntry = team.members.find(m => m.id === memberId);
+    if (!teamMemberEntry) return;
+
+    // memberId הוא ה־userId במקרה שלך → זה גם מה שהשרת מצפה
+    this.teamService.removeMember(memberId).subscribe({
+      next: () => {
+        team.members = team.members.filter(m => m.id !== memberId);
+      },
+      error: () => alert('❌ Failed to remove member.')
+    });
   }
 }

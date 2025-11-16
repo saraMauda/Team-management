@@ -1,4 +1,4 @@
-export interface ProjectDTO {
+export interface Project {
   id?: number;
   name: string;
   description?: string;
@@ -9,13 +9,9 @@ export interface ProjectDTO {
   status?: string | null;
   progress?: number | null;
 
-  leaderName?: string | null;
   leaderId?: number | null;
-
-  categoryName?: string | null;
   categoryId?: number | null;
 
   location?: string | null;
-
   employeeIds?: number[];
 }

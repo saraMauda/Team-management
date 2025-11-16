@@ -34,7 +34,7 @@ export class LeaderDashboardHomeComponent implements OnInit {
 
   loadDashboardData(): void {
     forkJoin({
-      users: this.usersService.getAll(),
+      users: this.usersService.getAllUsers(),
       projects: this.projectsService.getAll(),
       reports: this.reportsService.getAll(),
       meetings: this.meetingsService.getAll()

@@ -1,208 +1,185 @@
-/* === מבנה כללי === */
+/* ===== בסיס ===== */
 .users-container {
-  padding: 20px;
-  color: #fff;
+  padding: 20px 25px;
+  color: #e8f1f8;
   background-color: #10263b;
 }
 
-h2 {
+.header-row h1 {
+  font-size: 32px;
   color: #ff7f32;
-  font-size: 26px;
-  margin-bottom: 20px;
-  border-bottom: 2px solid rgba(255, 127, 50, 0.3);
-  padding-bottom: 10px;
+  margin: 0 0 18px 0;
 }
 
+/* Status box */
+.status-box {
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.status-box.loading {
+  background-color: rgba(255,255,255,0.04);
+  color: #cbd5f5;
+}
+
+.status-box.error {
+  background-color: rgba(255, 60, 60, 0.12);
+  color: #ff9b9b;
+  border: 1px solid rgba(255, 60, 60, 0.4);
+}
+
+/* Panel */
+.panel {
+  background: #182b3d;
+  padding: 18px 22px;
+  border-radius: 14px;
+  box-shadow: 0 12px 25px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 25px;
+}
+
+.panel-title {
+  font-size: 20px;
+  color: #9fb3c8;
+  margin-bottom: 16px;
+}
+
+.panel-subtitle {
+  font-size: 14px;
+  color: #9fb3c8;
+}
+
+/* Toolbar */
 .toolbar {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 }
 
-/* === כפתורים כלליים === */
-.add-btn, .save-btn {
+/* Buttons – main */
+.add-btn,
+.save-btn,
+.assign-btn {
   background-color: #ff7f32;
   border: none;
-  color: #fff;
-  padding: 8px 15px;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.add-btn:hover, .save-btn:hover {
-  background-color: #ff924c;
-}
-
-/* === טופס הוספת משתמש (inline + responsive) === */
-.add-user-form {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  background-color: #0e1c2b;
-  padding: 18px 22px;
+  padding: 9px 16px;
   border-radius: 10px;
-  margin-bottom: 25px;
-  gap: 20px; /* רווח בין השדות */
+  cursor: pointer;
+  font-weight: 600;
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(255,127,50,0.35);
+  transition: background-color 0.25s, transform 0.1s ease-in-out;
 }
 
-.add-user-form .form-row {
+.add-btn:hover,
+.save-btn:hover,
+.assign-btn:hover {
+  background-color: #ff9b57;
+  transform: translateY(-1px);
+}
+
+/* Cancel btn */
+.cancel-btn {
+  background: transparent;
+  border: 1px solid #9fb3c8;
+  color: #ddd;
+  padding: 9px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.cancel-btn:hover {
+  background-color: rgba(255,255,255,0.08);
+}
+
+/* Add user form */
+.add-user-form {
+  margin-bottom: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px 22px;
+}
+
+.form-col {
   display: flex;
   flex-direction: column;
-  flex: 1 1 220px;
-  min-width: 200px;
 }
 
-.add-user-form label {
+.form-col label {
+  margin-bottom: 6px;
+  color: #cbd5e1;
   font-size: 13px;
-  color: #bcd0dc;
-  margin-bottom: 5px;
 }
 
-.add-user-form input,
-.add-user-form select {
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid rgba(255,127,50,0.6);
-  background-color: #132534;
+.form-col input,
+.form-col select {
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,127,50,0.35);
+  background-color: #112436;
   color: #fff;
   font-size: 14px;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition: 0.25s ease;
 }
 
-.add-user-form input:focus,
-.add-user-form select:focus {
-  border-color: #ff7f32;
-  background-color: #162e45;
+.form-col input:focus,
+.form-col select:focus {
   outline: none;
+  border-color: #ff7f32;
+  background-color: #18384f;
 }
 
-.add-user-form .form-actions {
+.form-actions {
+  margin-top: 16px;
   display: flex;
-  align-items: center;
   justify-content: flex-end;
-  flex: 0 0 auto;
 }
 
-.add-user-form .save-btn {
-  margin-top: 22px;
-  padding: 8px 20px;
-}
-
-/* === Responsive - טאבלט ומובייל === */
-@media (max-width: 992px) {
-  .add-user-form {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 15px 25px;
-  }
-
-  .add-user-form .form-row {
-    flex: 1 1 45%;
-    min-width: 240px;
-  }
-}
-
-@media (max-width: 600px) {
-  .add-user-form {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .add-user-form .form-row {
-    width: 100%;
-  }
-
-  .add-user-form .form-actions {
-    justify-content: center;
-  }
-}
-
-/* === טבלת משתמשים === */
+/* Users table */
 .users-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #0e1c2b;
-  border-radius: 10px;
+  margin-top: 8px;
   overflow: hidden;
-  margin-top: 10px;
-}
-
-.users-table th, .users-table td {
-  padding: 12px 15px;
-  text-align: left;
+  border-radius: 10px;
 }
 
 .users-table th {
   background-color: #13314d;
+  padding: 12px 14px;
+  text-align: left;
   color: #ff7f32;
-  font-weight: 700;
-}
-
-.users-table tr:nth-child(even) {
-  background-color: #122b44;
-}
-
-/* === סטטוס === */
-.status {
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 12px;
-  color: #fff;
-}
-
-.status.active {
-  background-color: #3cb371;
-}
-
-.status.inactive {
-  background-color: #c23b22;
-}
-
-/* === כפתורים של טבלה === */
-.delete-btn {
-  background-color: #c23b22;
-  border: none;
-  color: #fff;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: 0.2s;
-}
-
-.delete-btn:hover {
-  background-color: #d64c3a;
-}
-
-.edit-btn {
-  background-color: #285b8f;
-  border: none;
-  color: #ffffff;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
   font-size: 14px;
-  transition: background-color 0.25s, transform 0.1s ease-in-out;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-  margin-right: 7px;
+  font-weight: 600;
 }
 
-.edit-btn:hover {
-  background-color: #3376b0;
-  transform: translateY(-1px);
+.users-table td {
+  padding: 12px 14px;
+  background-color: #122b44;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 14px;
 }
 
-.edit-btn:active {
-  background-color: #1f4a73;
-  transform: scale(0.98);
+.users-table tr:nth-child(even) td {
+  background-color: #0f2438;
 }
 
-/* === תמונות פרופיל === */
-.profile-img, .preview-img {
+.no-data {
+  text-align: center;
+  padding: 18px;
+  color: #8fa3b9;
+}
+
+/* Profile images */
+.profile-img,
+.preview-img {
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -213,19 +190,69 @@ h2 {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: #243a52;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: #1b3248;
+  display: grid;
+  place-items: center;
   color: #ff7f32;
-  font-size: 20px;
 }
 
-/* === מודל עריכה === */
+/* Status pill */
+.status {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 12px;
+  color: #fff;
+}
+
+.status.active {
+  background-color: #23a35d;
+}
+
+.status.inactive {
+  background-color: #b33425;
+}
+
+/* Action buttons in table */
+.edit-btn,
+.delete-btn {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  margin-right: 6px;
+}
+
+.edit-btn {
+  background-color: #285b8f;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.edit-btn:hover {
+  background-color: #3376b0;
+  transform: translateY(-1px);
+}
+
+.delete-btn {
+  background-color: #c23b22;
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.delete-btn:hover {
+  background-color: #d64c3a;
+  transform: translateY(-1px);
+}
+
+/* === EDIT MODAL === */
 .edit-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.65);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -233,63 +260,278 @@ h2 {
 }
 
 .edit-panel {
-  background: #10263b;
-  padding: 20px;
-  border-radius: 10px;
-  color: white;
-  width: 450px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+  background: #0f2234;
+  padding: 26px 30px;
+  border-radius: 14px;
+  width: 520px;
+  color: #fff;
+  box-shadow: 0 10px 35px rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,127,50,0.25);
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 .edit-panel h3 {
-  color: #ff7f32;
   margin-top: 0;
+  margin-bottom: 18px;
+  color: #ff7f32;
+  font-size: 22px;
+  font-weight: 700;
 }
 
 .edit-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px 18px;
-  align-items: center;
+  gap: 14px 18px;
+}
+
+.edit-grid .field {
+  display: flex;
+  flex-direction: column;
+}
+
+.edit-grid .field.full {
+  grid-column: 1 / -1;
 }
 
 .edit-grid label {
-  color: #bcd0dc;
+  color: #c5d4e0;
   font-size: 13px;
+  margin-bottom: 4px;
 }
 
-.edit-grid input, .edit-grid select {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid rgba(255,127,50,0.08);
+.edit-grid input,
+.edit-grid select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
   background: #132534;
+  border: 1px solid rgba(255,127,50,0.35);
   color: #fff;
+  font-size: 14px;
+  transition: 0.25s ease;
 }
 
+.edit-grid input:focus,
+.edit-grid select:focus {
+  background: #18384f;
+  border-color: #ff7f32;
+  outline: none;
+}
+
+input[type="file"] {
+  background: #132534;
+  color: #d4e0ea;
+  padding: 7px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,127,50,0.35);
+}
+
+/* Preview img inside modal – קצת יותר גדול */
+.preview-img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ff7f32;
+  margin-top: 6px;
+}
+
+/* Buttons row in modal */
 .panel-actions {
   display: flex;
-  gap: 10px;
   justify-content: flex-end;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+/* ===== TEAMS SECTION ===== */
+.teams-panel {
+  margin-top: 8px;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.teams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
   margin-top: 16px;
 }
 
-.cancel-btn {
+.team-card {
+  background: #122b44;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.leader-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.leader-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff7f32, #ffb347);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: #10263b;
+}
+
+.leader-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.leader-name {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.leader-email {
+  font-size: 12px;
+  color: #9fb3c8;
+}
+
+.toggle-team-btn {
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #fff;
-  padding: 8px 12px;
-  border-radius: 6px;
+  border: 1px solid rgba(255,127,50,0.7);
+  color: #ff9b57;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
   cursor: pointer;
+  transition: 0.2s;
 }
 
-.no-data {
-  text-align: center;
-  color: #ccc;
-  margin-top: 20px;
+.toggle-team-btn:hover {
+  background-color: rgba(255,127,50,0.15);
 }
 
-.loading, .error {
-  color: #ff7f32;
-  text-align: center;
-  font-weight: bold;
+/* Team body */
+.team-body {
+  margin-top: 6px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 10px;
+}
+
+.members-section .subtitle {
+  font-size: 13px;
+  color: #cbd5e1;
+  margin-bottom: 6px;
+}
+
+.no-members {
+  font-size: 12px;
+  color: #8fa3b9;
+  font-style: italic;
+}
+
+.members-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.member-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #0f2234;
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 12px;
+  color: #e8f1f8;
+}
+
+.member-name {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.remove-member-btn {
+  background: none;
+  border: none;
+  color: #ff9b9b;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+/* Add member row */
+.add-member-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.add-member-row label {
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.add-member-row select {
+  flex: 1;
+  padding: 7px 9px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,127,50,0.35);
+  background-color: #112436;
+  color: #fff;
+  font-size: 13px;
+}
+
+/* Empty text */
+.empty-text {
+  margin-top: 10px;
+  color: #8fa3b9;
+  font-size: 14px;
+}
+
+/* Autofill fix */
+input:-webkit-autofill {
+  background-color: #132534 !important;
+  -webkit-text-fill-color: #fff !important;
+  transition: background-color 10000s ease-in-out 0s;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .edit-panel {
+    width: 95%;
+  }
+
+  .add-member-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .add-member-row select {
+    width: 100%;
+  }
 }

@@ -36,7 +36,7 @@ public class MeetingController {
                 .orElseThrow(() -> new RuntimeException("Meeting not found"));
         return meetingMapper.meetingToMeetingDTO(meeting);
     }
-    //  יצירת ישיבה חדשה
+
     @PostMapping
     public MeetingDTO createMeeting(@RequestBody MeetingDTO meetingDTO) {
         Meeting meeting = meetingMapper.meetingDTOToMeeting(meetingDTO);
@@ -44,7 +44,6 @@ public class MeetingController {
         return meetingMapper.meetingToMeetingDTO(savedMeeting);
     }
 
-    //  עדכון ישיבה קיימת
     @PutMapping("/{id}")
     public MeetingDTO updateMeeting(@PathVariable Long id, @RequestBody MeetingDTO meetingDTO) {
         Meeting existing = meetingRepository.findById(id)
@@ -56,17 +55,16 @@ public class MeetingController {
         existing.setCreatedAt(meetingDTO.getCreatedAt());
         existing.setMeetingLocation(meetingDTO.getMeetingLocation());
         existing.setStatus(meetingDTO.getStatus());
+
         Meeting updated = meetingRepository.save(existing);
         return meetingMapper.meetingToMeetingDTO(updated);
     }
 
-    //  מחיקת ישיבה
     @DeleteMapping("/{id}")
     public void deleteMeeting(@PathVariable Long id) {
         meetingRepository.deleteById(id);
     }
 
-    //  ישיבות לפי פרויקט (מומלץ להוסיף גם ב־Repository)
     @GetMapping("/byProject/{projectId}")
     public List<MeetingDTO> getMeetingsByProject(@PathVariable Long projectId) {
         return meetingRepository.findByProject_ProjectId(projectId)
@@ -74,15 +72,15 @@ public class MeetingController {
                 .map(meetingMapper::meetingToMeetingDTO)
                 .collect(Collectors.toList());
     }
+
+    // ✔ פגישות לעובד מחובר
     @GetMapping("/byEmployee")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public List<MeetingDTO> getMeetingsForLoggedEmployee(Authentication authentication) {
-        String email = authentication.getName(); // המייל של המשתמש המחובר
+        String email = authentication.getName();
         return meetingRepository.findByProject_ProjectEmployeeProjects_User_Email(email)
                 .stream()
                 .map(meetingMapper::meetingToMeetingDTO)
                 .collect(Collectors.toList());
     }
-
-
 }

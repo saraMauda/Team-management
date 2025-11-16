@@ -1,1 +1,31 @@
 /* You can add global styles to this file, and also import other style files */
+/* === עיצוב כללי לגלילה באתר === */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0d1f2e; /* כהה */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ff7f32; /* כתום */
+  border-radius: 8px;
+  border: 2px solid #0d1f2e;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ffa45c;
+}
+
+/* גלילה רק לאזור התוכן (לא לניווט) */
+.main-content {
+  height: 100vh;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+/* מבטיח שלא ייחתך */
+body {
+  overflow: hidden;
+}

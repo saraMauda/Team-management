@@ -1,125 +1,229 @@
 <div class="users-container">
-  <h2>Manage Users</h2>
 
+  <div class="header-row">
+    <h1>Manage Users</h1>
+  </div>
+
+  <!-- טעינה / שגיאה -->
+  <div *ngIf="loading" class="status-box loading">Loading users...</div>
+  <div *ngIf="error" class="status-box error">{{ error }}</div>
+
+  <!-- ▶️ טולבר -->
   <div class="toolbar">
     <button class="add-btn" (click)="showAddForm = !showAddForm">
       {{ showAddForm ? 'Cancel' : '+ Add User' }}
     </button>
   </div>
 
-  <!-- טופס הוספת משתמש -->
-  <div *ngIf="showAddForm" class="add-user-form">
-    <div class="form-row">
-      <label>Name</label>
-      <input type="text" [(ngModel)]="newUser.name" placeholder="User name" />
-    </div>
+  <!-- ➕ טופס הוספת משתמש -->
+  <div *ngIf="showAddForm" class="add-user-form panel">
 
-    <div class="form-row">
-      <label>Email</label>
-      <input type="email" [(ngModel)]="newUser.email" placeholder="Email address" />
-    </div>
+    <div class="form-grid">
+      <div class="form-col">
+        <label>Name</label>
+        <input type="text" [(ngModel)]="newUser.name" placeholder="User name" />
+      </div>
 
-    <div class="form-row">
-      <label>Password</label>
-      <input type="password" [(ngModel)]="newUser.password" placeholder="Initial password" />
-    </div>
+      <div class="form-col">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="newUser.email" placeholder="Email address" />
+      </div>
 
-    <div class="form-row">
-      <label>Role</label>
-      <select [(ngModel)]="newUser.roleString">
-        <option value="ROLE_EMPLOYEE">Employee</option>
-        <option value="ROLE_TEAMLEADER">Team Leader</option>
-        <option value="ROLE_ADMIN">Admin</option>
-      </select>
+      <div class="form-col">
+        <label>Password</label>
+        <input type="password" [(ngModel)]="newUser.password" placeholder="Initial password" />
+      </div>
+
+      <div class="form-col">
+        <label>Role</label>
+        <select [(ngModel)]="newUser.role">
+          <option value="ROLE_EMPLOYEE">Employee</option>
+          <option value="ROLE_TEAMLEADER">Team Leader</option>
+          <option value="ROLE_ADMIN">Admin</option>
+        </select>
+      </div>
     </div>
 
     <div class="form-actions">
       <button class="save-btn" (click)="addUser()" [disabled]="saving">
-        {{ saving ? 'Saving...' : 'Save' }}
+        {{ saving ? 'Saving...' : 'Save User' }}
       </button>
     </div>
+
   </div>
 
-  <!-- טבלת משתמשים -->
-  <table class="users-table" *ngIf="users.length > 0; else noUsers">
-    <thead>
-      <tr>
-        <th>Image</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Role</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let user of users">
-        <td>
-         
-  <img *ngIf="user.image"
-       [src]="user.image.startsWith('data:') ? user.image : 'data:image/png;base64,' + user.image"
-       class="profile-img"
-       alt="User image" />
-    <div *ngIf="!user.image" class="placeholder-img">👤</div>
-        
-        <td>{{ user.name }}</td>
-        <td>{{ user.email }}</td>
-        <td>{{ prettyRole(user.role) }}</td>
-        <td>
-          <span [class.active]="user.active" [class.inactive]="!user.active">
-            {{ user.active ? 'Active' : 'Inactive' }}
-          </span>
-        </td>
-        <td>
-          <button class="edit-btn" (click)="openEdit(user)">Edit</button>
-          <button class="delete-btn" (click)="deleteUser(user.id)">Delete</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <!-- 🧑‍💼 טבלת משתמשים -->
+  <div class="panel">
+    <div class="panel-title">All Users</div>
 
-  <ng-template #noUsers>
-    <p class="no-data">No users found.</p>
-  </ng-template>
+    <table class="users-table" *ngIf="users.length > 0; else noUsers">
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th style="width: 150px;">Actions</th>
+        </tr>
+      </thead>
 
-  <!-- חלון עריכה -->
+      <tbody>
+        <ng-container *ngFor="let user of users">
+          <tr>
+            <td>
+              <img *ngIf="user.image"
+                   [src]="user.image.startsWith('data:') ? user.image : 'data:image/png;base64,' + user.image"
+                   class="profile-img"/>
+
+              <div *ngIf="!user.image" class="placeholder-img">👤</div>
+            </td>
+
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ prettyRole(user.role) }}</td>
+
+            <td>
+              <span class="status" [class.active]="user.active" [class.inactive]="!user.active">
+                {{ user.active ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+
+            <td>
+              <button class="edit-btn" (click)="openEdit(user)">Edit</button>
+              <button class="delete-btn" (click)="deleteUser(user.id!)">Delete</button>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+
+    <ng-template #noUsers>
+      <p class="no-data">No users found.</p>
+    </ng-template>
+  </div>
+
+  <!-- ✏️ מודאל עריכה -->
   <div *ngIf="showEditForm && editingUser" class="edit-overlay">
     <div class="edit-panel">
       <h3>Edit User</h3>
 
       <div class="edit-grid">
-        <label>Name</label>
-        <input type="text" [(ngModel)]="editingUser.name" />
+        <div class="field">
+          <label>Name</label>
+          <input type="text" [(ngModel)]="editingUser.name" />
+        </div>
 
-        <label>Email</label>
-        <input type="text" [(ngModel)]="editingUser.email" />
+        <div class="field">
+          <label>Email</label>
+          <input type="text" [(ngModel)]="editingUser.email" />
+        </div>
 
-        <label>Role</label>
-        <select [(ngModel)]="editingUser.roleString">
-          <option value="ROLE_EMPLOYEE">Employee</option>
-          <option value="ROLE_TEAMLEADER">Team Leader</option>
-          <option value="ROLE_ADMIN">Admin</option>
-        </select>
+        <div class="field">
+          <label>Role</label>
+          <select [(ngModel)]="editingUser.role">
+            <option value="ROLE_EMPLOYEE">Employee</option>
+            <option value="ROLE_TEAMLEADER">Team Leader</option>
+            <option value="ROLE_ADMIN">Admin</option>
+          </select>
+        </div>
 
-        <label>Status</label>
-        <select [(ngModel)]="editingUser.active">
-          <option [ngValue]="true">Active</option>
-          <option [ngValue]="false">Inactive</option>
-        </select>
+        <div class="field">
+          <label>Status</label>
+          <select [(ngModel)]="editingUser.active">
+            <option [ngValue]="true">Active</option>
+            <option [ngValue]="false">Inactive</option>
+          </select>
+        </div>
 
-        <label>Profile Image</label>
-        <input type="file" (change)="onEditImageSelected($event)" />
-        <img *ngIf="previewImageBase64"
-             [src]="previewImageBase64"
-             class="preview-img" />
+        <div class="field full">
+          <label>Profile Image</label>
+          <input type="file" (change)="onEditImageSelected($event)" />
+          <img *ngIf="previewImageBase64"
+               [src]="previewImageBase64"
+               class="preview-img"/>
+        </div>
       </div>
 
       <div class="panel-actions">
         <button class="save-btn" (click)="updateUser()" [disabled]="saving">
-          {{ saving ? 'Saving...' : 'Save' }}
+          {{ saving ? 'Saving...' : 'Save Changes' }}
         </button>
         <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
       </div>
     </div>
   </div>
+
+  <!-- 👥 TEAMS SECTION -->
+  <div class="panel teams-panel">
+    <div class="panel-header">
+      <div>
+        <div class="panel-title">Teams</div>
+        <div class="panel-subtitle">Assign employees to Team Leaders (frontend only)</div>
+      </div>
+    </div>
+
+    <div *ngIf="teamLeaders.length === 0" class="empty-text">
+      No Team Leaders found. Create users with role "Team Leader" to manage teams.
+    </div>
+
+    <div class="teams-grid" *ngIf="teamLeaders.length > 0">
+      <div class="team-card" *ngFor="let leader of teamLeaders">
+
+        <div class="team-header">
+          <div class="leader-info">
+            <div class="leader-avatar">
+              {{ leader.name?.charAt(0) || 'L' }}
+            </div>
+            <div class="leader-text">
+              <div class="leader-name">{{ leader.name }}</div>
+              <div class="leader-email">{{ leader.email }}</div>
+            </div>
+          </div>
+
+          <button class="toggle-team-btn" (click)="toggleTeam(leader.id!)">
+            {{ isTeamExpanded(leader.id) ? 'Hide team' : 'Show team' }}
+          </button>
+        </div>
+
+        <div class="team-body" *ngIf="isTeamExpanded(leader.id)">
+          <!-- Members -->
+          <div class="members-section">
+            <div class="subtitle">Team Members</div>
+
+            <div *ngIf="getTeamMembers(leader.id).length === 0" class="no-members">
+              No employees in this team yet.
+            </div>
+
+            <div class="members-chips" *ngIf="getTeamMembers(leader.id).length > 0">
+              <div class="member-chip" *ngFor="let m of getTeamMembers(leader.id)">
+                <span class="member-name">{{ m.name }}</span>
+                <button class="remove-member-btn" (click)="removeMemberFromLeader(leader.id!, m.id!)">×</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add member -->
+          <div class="add-member-row">
+            <label>Add Employee:</label>
+            <select [(ngModel)]="selectedMemberToAdd[leader.id!]">
+              <option [ngValue]="null">-- Select Employee --</option>
+              <option *ngFor="let emp of teamEmployees"
+                      [ngValue]="emp.id"
+                      [disabled]="isMemberInTeam(leader.id!, emp.id!)">
+                {{ emp.name }} ({{ emp.email }})
+              </option>
+            </select>
+
+            <button class="assign-btn" (click)="addMemberToLeader(leader.id!)">
+              Add to Team
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
 </div>

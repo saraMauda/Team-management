@@ -78,15 +78,6 @@ public class WebSecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/error").permitAll()
 
-                        // 🟡 הרשאות לפי תפקידים:
-                        // ADMIN
-                        .requestMatchers("/api/users/**").hasAnyRole("ADMIN","TEAMLEADER")
-<<<<<<< Updated upstream
-
-                        .requestMatchers("/api/projects/**").permitAll()
-
-=======
->>>>>>> Stashed changes
 
 
                         // TEAMLEADER + EMPLOYEE
@@ -95,7 +86,7 @@ public class WebSecurityConfig {
                         // כל המשתמשים המחוברים (כולל EMPLOYEE)
 //                        .requestMatchers("/api/meetings/**").authenticated()
                         .requestMatchers("/api/meetings/**").permitAll()
-
+                        .requestMatchers("/api/teams/**").permitAll()
 
                         // כל השאר - דורש התחברות
                         .anyRequest().authenticated()

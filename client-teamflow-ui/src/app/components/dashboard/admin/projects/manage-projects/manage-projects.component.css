@@ -1,143 +1,273 @@
-.projects-container {
-  color: #fff;
+/* ===== בסיס ===== */
+.projects-wrapper {
+  padding: 20px 25px;
+  color: #e8f1f8;
   background-color: #10263b;
-  padding: 25px;
 }
 
-/* Add/Edit Form */
-.project-form, .edit-panel {
-  background-color: #0f2234;
-  border: 1px solid rgba(255, 127, 50, 0.3);
-  border-radius: 12px;
-  padding: 25px;
-  margin-top: 25px;
-  box-shadow: 0 0 15px rgba(255, 127, 50, 0.2);
-}
-
-h3 {
+.page-title {
+  font-size: 32px;
   color: #ff7f32;
-  margin-bottom: 15px;
+  margin: 0 0 18px 0;
 }
 
-.form-grid, .edit-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 15px;
+/* כפתור עליון */
+.add-btn {
+  background-color: #ff7f32;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(255,127,50,0.35);
+  transition: background-color 0.25s, transform 0.1s ease-in-out;
+  margin-bottom: 16px;
 }
 
-.form-group, .edit-grid label {
+.add-btn:hover {
+  background-color: #ff9b57;
+  transform: translateY(-1px);
+}
+
+/* Panel */
+.panel {
+  background: #182b3d;
+  padding: 18px 22px;
+  border-radius: 14px;
+  box-shadow: 0 12px 25px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 25px;
+}
+
+.panel-title {
+  font-size: 20px;
+  color: #9fb3c8;
+  margin-bottom: 16px;
+}
+
+/* Form rows */
+.form-row {
   display: flex;
   flex-direction: column;
+  margin-bottom: 12px;
 }
 
-label {
-  color: #ff7f32;
-  font-weight: 600;
-  margin-bottom: 5px;
+.form-row label {
+  margin-bottom: 6px;
+  color: #cbd5e1;
+  font-size: 13px;
 }
 
-input, textarea, select {
-  background-color: #10263b;
-  color: white;
-  border: 1px solid rgba(255, 127, 50, 0.4);
-  border-radius: 6px;
-  padding: 8px;
+.form-row input,
+.form-row textarea,
+.form-row select {
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,127,50,0.35);
+  background-color: #112436;
+  color: #fff;
+  font-size: 14px;
+  transition: 0.25s ease;
 }
 
-textarea {
-  min-height: 60px;
+.form-row textarea {
+  min-height: 70px;
   resize: vertical;
 }
 
-input:focus, textarea:focus, select:focus {
+.form-row input:focus,
+.form-row textarea:focus,
+.form-row select:focus {
   outline: none;
   border-color: #ff7f32;
+  background-color: #18384f;
 }
 
-/* Buttons */
-.save-btn, .cancel-btn, .edit-btn, .delete-btn, .add-btn {
+/* Employees chips */
+.checkbox-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hint-text {
+  font-size: 13px;
+  color: #9fb3c8;
+  font-style: italic;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #0f2234;
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 12px;
+  color: #e8f1f8;
+}
+
+.chip input[type="checkbox"] {
+  margin-right: 4px;
+}
+
+.chip-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff7f32, #ffb347);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: #10263b;
+}
+
+.chip-name {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* כפתורי שמירה/ביטול */
+.edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.save-btn {
+  background-color: #00a8ff;
   border: none;
-  border-radius: 6px;
+  padding: 9px 16px;
+  border-radius: 10px;
   cursor: pointer;
   font-weight: 600;
-  padding: 8px 15px;
-}
-
-.save-btn, .add-btn {
-  background-color: #ff7f32;
   color: #fff;
+  box-shadow: 0 3px 10px rgba(0,168,255,0.35);
+  transition: background-color 0.25s, transform 0.1s ease-in-out;
 }
 
-.save-btn:hover, .add-btn:hover {
-  background-color: #ff9955;
+.save-btn:hover {
+  background-color: #33b9ff;
+  transform: translateY(-1px);
 }
 
 .cancel-btn {
   background-color: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
+  color: #ff7f32;
+  border-radius: 10px;
+  border: 1px solid #ff7f32;
+  padding: 9px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s ease;
 }
 
 .cancel-btn:hover {
-  border-color: #ff7f32;
-  color: #ff7f32;
+  background-color: rgba(255,127,50,0.15);
 }
 
-.edit-btn {
-  background-color: #3498db;
-  color: white;
-}
-
-.edit-btn:hover {
-  background-color: #5dade2;
-}
-
-.delete-btn {
-  background-color: #e74c3c;
-  color: white;
-}
-
-.delete-btn:hover {
-  background-color: #ff6655;
-}
-
-/* Overlay */
-.edit-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(4, 8, 12, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
-.panel-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-/* Table */
+/* Projects table */
 .projects-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 25px;
-  background-color: #0f2234;
-}
-
-.projects-table th, .projects-table td {
-  padding: 10px;
-  text-align: left;
+  margin-top: 8px;
+  overflow: hidden;
+  border-radius: 10px;
 }
 
 .projects-table th {
+  background-color: #13314d;
+  padding: 12px 14px;
+  text-align: left;
   color: #ff7f32;
-  border-bottom: 1px solid rgba(255, 127, 50, 0.3);
+  font-size: 14px;
+  font-weight: 600;
 }
 
-.status.active { color: #27ae60; }
-.status.completed { color: #2ecc71; }
-.status.onhold { color: #f1c40f; }
-.status.inactive { color: #e74c3c; }
+.projects-table td {
+  padding: 12px 14px;
+  background-color: #122b44;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 14px;
+}
+
+.projects-table tr:nth-child(even) td {
+  background-color: #0f2438;
+}
+
+.empty-text {
+  text-align: center;
+  padding: 18px;
+  color: #8fa3b9;
+}
+
+/* Action buttons */
+.edit-btn,
+.delete-btn {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  margin-right: 6px;
+}
+
+.edit-btn {
+  background-color: #285b8f;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.edit-btn:hover {
+  background-color: #3376b0;
+  transform: translateY(-1px);
+}
+
+.delete-btn {
+  background-color: #c23b22;
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.delete-btn:hover {
+  background-color: #d64c3a;
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .projects-wrapper {
+    padding: 15px;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .panel {
+    padding: 14px 16px;
+  }
+
+  .projects-table th,
+  .projects-table td {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+
+  .edit-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .save-btn,
+  .cancel-btn {
+    width: 100%;
+    text-align: center;
+  }
+}

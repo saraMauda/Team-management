@@ -1,10 +1,15 @@
-// src/app/components/dashboard/admin/projects/manage-projects/manage-projects.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { ProjectsService } from '../../../../../services/projects.service';
+import { UsersService } from '../../../../../services/users.service';
+import { EmployeeProjectService } from '../../../../../services/employee-project.service';
+import { TeamService } from '../../../../../services/team.service';
+
 import { ProjectDTO } from '../../../../../models/project-dto.model';
+import { UsersDTO } from '../../../../../models/users-dto.model';
+import { TeamDTO } from '../../../../../models/team-dto.model';
 
 @Component({
   selector: 'app-manage-projects',
@@ -16,172 +21,295 @@ import { ProjectDTO } from '../../../../../models/project-dto.model';
 export class ManageProjectsComponent implements OnInit {
 
   projects: ProjectDTO[] = [];
+  users: UsersDTO[] = [];
+  teamLeaders: UsersDTO[] = [];
+  employees: UsersDTO[] = [];
+
+  /** כל הצוותים מהשרת */
+  teams: TeamDTO[] = [];
+
+  /** עובדים זמינים לפי הצוות של ה-Leader */
+  availableEmployeesNew: UsersDTO[] = [];
+  availableEmployeesEdit: UsersDTO[] = [];
 
   loading = false;
   error: string | null = null;
+
+  /** טופס הוספת פרויקט */
+  showAddForm = false;
   saving = false;
 
-  showAddForm = false;
-  showEditForm = false;
-
-  // פרויקט חדש
-  newProject: Partial<ProjectDTO> = {
+  newProject: {
+    id?: number;
+    name: string;
+    description: string;
+    startDate: string | null;
+    endDate: string | null;
+    status: string;
+    progress: number;
+    location: string | null;
+    leaderId: number | null;
+    employeeIds: number[];
+  } = {
     name: '',
     description: '',
-    status: 'ACTIVE',
     startDate: null,
     endDate: null,
+    status: 'ACTIVE',
     progress: 0,
-    leaderName: '',
-    categoryName: ''
+    location: null,
+    leaderId: null,
+    employeeIds: []
   };
 
-  // פרויקט לעריכה
+  /** טופס עריכת פרויקט */
+  showEditForm = false;
   editingProject: ProjectDTO | null = null;
 
-  constructor(private projectsService: ProjectsService) {}
+  constructor(
+    private projectsService: ProjectsService,
+    private usersService: UsersService,
+    private employeeProjectService: EmployeeProjectService,
+    private teamService: TeamService
+  ) {}
 
   ngOnInit(): void {
     this.loadProjects();
+    this.loadUsers();
+    this.loadTeams();
   }
 
-  // טעינת כל הפרויקטים
+  /* ------------------ LOAD DATA ------------------- */
+
   loadProjects(): void {
     this.loading = true;
-    this.error = null;
-
     this.projectsService.getAll().subscribe({
-      next: (projects) => {
-        this.projects = projects || [];
+      next: (data: ProjectDTO[]) => {
+        this.projects = data;
         this.loading = false;
       },
       error: () => {
-        this.error = 'Failed to load projects.';
+        this.error = 'Failed to load projects';
         this.loading = false;
       }
     });
   }
 
-  // הוספת פרויקט חדש
-  addProject(): void {
-    if (!this.newProject.name || !this.newProject.name.trim()) {
-      this.error = 'Project name is required.';
+  loadUsers(): void {
+    this.usersService.getAllUsers().subscribe({
+      next: (data: UsersDTO[]) => {
+        this.users = data;
+        this.teamLeaders = data.filter(u => u.role === 'ROLE_TEAMLEADER');
+        this.employees = data.filter(u => u.role === 'ROLE_EMPLOYEE');
+      },
+      error: () => {
+        this.error = 'Failed to load users';
+      }
+    });
+  }
+
+  loadTeams(): void {
+    this.teamService.getAllTeams().subscribe({
+      next: (data: TeamDTO[]) => {
+        this.teams = data || [];
+        // אם כבר נבחר Leader בטפסים – נסנכרן מחדש
+        this.syncAvailableEmployeesForNew();
+        this.syncAvailableEmployeesForEdit();
+      },
+      error: () => {
+        console.error('Failed to load teams');
+      }
+    });
+  }
+
+  /* ------------------ HELPERS לצוותים ------------------- */
+
+  private getTeamByLeader(leaderId: number | null | undefined): TeamDTO | null {
+    if (leaderId == null) return null;
+    return this.teams.find(t => t.leaderId === leaderId) || null;
+  }
+
+  /** עובדים זמינים בטופס הוספה */
+  private syncAvailableEmployeesForNew(): void {
+    const team = this.getTeamByLeader(this.newProject.leaderId);
+    this.availableEmployeesNew = team?.members || [];
+
+    // מנקה בחירות שלא שייכות לצוות
+    this.newProject.employeeIds = this.newProject.employeeIds.filter(id =>
+      this.availableEmployeesNew.some(emp => emp.id === id)
+    );
+  }
+
+  /** עובדים זמינים בטופס עריכה */
+  private syncAvailableEmployeesForEdit(): void {
+    if (!this.editingProject) {
+      this.availableEmployeesEdit = [];
       return;
     }
 
-    const payload: Partial<ProjectDTO> = {
-      name: this.newProject.name.trim(),
-      description: this.newProject.description?.trim() || '',
-      status: this.newProject.status || 'ACTIVE',
-      startDate: this.newProject.startDate ?? null,
-      endDate: this.newProject.endDate ?? null,
-      progress: this.newProject.progress ?? 0,
-      leaderName: this.newProject.leaderName || '',
-      categoryName: this.newProject.categoryName || ''
-    };
+    const team = this.getTeamByLeader(this.editingProject.leaderId ?? null);
+    this.availableEmployeesEdit = team?.members || [];
+
+    this.editingProject.employeeIds = (this.editingProject.employeeIds ?? [])
+      .filter(id => this.availableEmployeesEdit.some(emp => emp.id === id));
+  }
+
+  /* ------------------ ADD PROJECT ------------------- */
+
+  /** כשמשנים Team Leader בטופס הוספה */
+  onNewLeaderChange(leaderId: number | null): void {
+    this.newProject.leaderId = leaderId;
+    this.syncAvailableEmployeesForNew();
+  }
+
+  toggleEmployee(event: Event, id: number): void {
+    const checked = (event.target as HTMLInputElement).checked;
+
+    if (checked) {
+      if (!this.newProject.employeeIds.includes(id)) {
+        this.newProject.employeeIds.push(id);
+      }
+    } else {
+      this.newProject.employeeIds =
+        this.newProject.employeeIds.filter(item => item !== id);
+    }
+  }
+
+  addProject(): void {
+    if (!this.newProject.name || !this.newProject.leaderId) {
+      alert('Project must have a name and a team leader');
+      return;
+    }
 
     this.saving = true;
+
+    const payload: Partial<ProjectDTO> = {
+      name: this.newProject.name,
+      description: this.newProject.description,
+      startDate: this.newProject.startDate || undefined,
+      endDate: this.newProject.endDate || undefined,
+      status: this.newProject.status,
+      progress: this.newProject.progress,
+      location: this.newProject.location || undefined,
+      leaderId: this.newProject.leaderId || undefined,
+      employeeIds: this.newProject.employeeIds
+    };
+
     this.projectsService.create(payload).subscribe({
-      next: (created) => {
-        this.projects = [...this.projects, created];
-        this.newProject = {
-          name: '',
-          description: '',
-          status: 'ACTIVE',
-          startDate: null,
-          endDate: null,
-          progress: 0
-        };
-        this.showAddForm = false;
+      next: (created: ProjectDTO) => {
+        this.projects.unshift(created);
+        this.resetAddForm();
         this.saving = false;
       },
-      error: (err) => {
-        console.error('❌ Creation failed:', err);
-        this.error = 'Failed to create project.';
+      error: () => {
+        alert('❌ Failed to create project');
         this.saving = false;
       }
     });
   }
 
-  // פתיחת עריכה
+  resetAddForm(): void {
+    this.newProject = {
+      name: '',
+      description: '',
+      startDate: null,
+      endDate: null,
+      status: 'ACTIVE',
+      progress: 0,
+      location: null,
+      leaderId: null,
+      employeeIds: []
+    };
+    this.availableEmployeesNew = [];
+    this.showAddForm = false;
+  }
+
+  /* ------------------ EDIT PROJECT ------------------- */
+
   openEdit(project: ProjectDTO): void {
-    this.editingProject = { ...project };
+    this.showAddForm = false;
+
+    this.editingProject = {
+      ...project,
+      employeeIds: [...(project.employeeIds || [])]
+    };
+
+    this.syncAvailableEmployeesForEdit();
     this.showEditForm = true;
-    this.error = null;
   }
 
-  cancelEdit(): void {
-    this.editingProject = null;
-    this.showEditForm = false;
-    this.saving = false;
+  /** כשמשנים Leader בטופס עריכה */
+  onEditLeaderChange(leaderId: number | null): void {
+    if (!this.editingProject) return;
+    this.editingProject.leaderId = leaderId ?? null;
+    this.syncAvailableEmployeesForEdit();
   }
 
-  // עדכון פרויקט
+  toggleEmployeeEdit(event: Event, id: number): void {
+    if (!this.editingProject) return;
+
+    const checked = (event.target as HTMLInputElement).checked;
+
+    if (!this.editingProject.employeeIds) {
+      this.editingProject.employeeIds = [];
+    }
+
+    if (checked) {
+      if (!this.editingProject.employeeIds.includes(id)) {
+        this.editingProject.employeeIds.push(id);
+      }
+    } else {
+      this.editingProject.employeeIds =
+        this.editingProject.employeeIds.filter(empId => empId !== id);
+    }
+  }
+
   updateProject(): void {
     if (!this.editingProject || this.editingProject.id == null) return;
 
-    const id: number = this.editingProject.id;
+    this.saving = true;
 
     const payload: Partial<ProjectDTO> = {
-      name: this.editingProject.name?.trim() || '',
-      description: this.editingProject.description?.trim() || '',
+      name: this.editingProject.name,
+      description: this.editingProject.description,
+      startDate: this.editingProject.startDate,
+      endDate: this.editingProject.endDate,
       status: this.editingProject.status,
-      startDate: this.editingProject.startDate ?? null,
-      endDate: this.editingProject.endDate ?? null,
-      progress: this.editingProject.progress ?? 0,
-      leaderName: this.editingProject.leaderName,
-      categoryName: this.editingProject.categoryName
+      progress: this.editingProject.progress,
+      location: this.editingProject.location,
+      leaderId: this.editingProject.leaderId,
+      employeeIds: this.editingProject.employeeIds
     };
 
-    this.saving = true;
-    this.projectsService.update(id, payload).subscribe({
-      next: (updated) => {
-        const idx = this.projects.findIndex(p => p.id === updated.id);
-        if (idx !== -1) {
-          this.projects[idx] = { ...updated };
-        }
+    this.projectsService.update(this.editingProject.id, payload).subscribe({
+      next: (updated: ProjectDTO) => {
+        this.projects = this.projects.map(p => p.id === updated.id ? updated : p);
         this.cancelEdit();
+        this.saving = false;
       },
       error: () => {
-        this.error = 'Failed to update project.';
+        alert('❌ Failed to update project');
         this.saving = false;
       }
     });
   }
 
-  // מחיקת פרויקט
-  deleteProject(id: number | undefined): void {
-    if (id == null) return;
-    if (!confirm('Are you sure you want to delete this project?')) return;
+  cancelEdit(): void {
+    this.showEditForm = false;
+    this.editingProject = null;
+    this.availableEmployeesEdit = [];
+  }
+
+  /* ------------------ DELETE ------------------- */
+
+  deleteProject(id: number): void {
+    if (!confirm('Delete project?')) return;
 
     this.projectsService.delete(id).subscribe({
       next: () => {
         this.projects = this.projects.filter(p => p.id !== id);
       },
-      error: () => {
-        this.error = 'Failed to delete project.';
-      }
+      error: () => alert('❌ Failed to delete project')
     });
-  }
-
-  // עיצוב סטטוס
-  getStatusClass(status: string | undefined | null): string {
-    if (!status) return 'inactive';
-    const s = status.toUpperCase();
-    if (s === 'ACTIVE') return 'active';
-    if (s === 'COMPLETED') return 'completed';
-    if (s === 'ON_HOLD') return 'onhold';
-    return 'inactive';
-  }
-
-  getStatusLabel(status: string | undefined | null): string {
-    if (!status) return 'Inactive';
-    const map: Record<string, string> = {
-      ACTIVE: 'Active',
-      COMPLETED: 'Completed',
-      ON_HOLD: 'On Hold',
-      INACTIVE: 'Inactive'
-    };
-    return map[status.toUpperCase()] || status;
   }
 }

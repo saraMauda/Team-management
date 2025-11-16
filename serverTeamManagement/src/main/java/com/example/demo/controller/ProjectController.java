@@ -2,15 +2,19 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.ProjectDTO;
 import com.example.demo.model.Project;
+import com.example.demo.model.Users;
+import com.example.demo.model.EmployeeInProject;
 import com.example.demo.service.ProjectMapper;
 import com.example.demo.service.ProjectRepository;
-//import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import com.example.demo.service.UsersRepository;
+import com.example.demo.service.EmployeeInProjectRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 
-
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,9 +26,19 @@ public class ProjectController {
     private ProjectRepository projectRepository;
 
     @Autowired
+    private UsersRepository usersRepository;
+
+    @Autowired
+    private EmployeeInProjectRepository employeeInProjectRepository;
+
+    @Autowired
     private ProjectMapper projectMapper;
 
+    // ---------------------------------------
+    // 🔹 1. שליפת כל הפרויקטים (ADMIN בלבד)
+    // ---------------------------------------
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public List<ProjectDTO> getAllProjects() {
         return projectRepository.findAll()
                 .stream()
@@ -32,65 +46,149 @@ public class ProjectController {
                 .collect(Collectors.toList());
     }
 
+    // ---------------------------------------
+    // 🔹 2. שליפה לפי מזהה
+    // ---------------------------------------
     @GetMapping("/{id}")
     public ProjectDTO getProject(@PathVariable Long id) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
         return projectMapper.projectToProjectDTO(project);
     }
-    //יצירת פרויקט חדש
+
+    // ---------------------------------------
+    // 🔹 3. יצירת פרויקט חדש (יצירה עם מנהל + עובדים)
+    // ---------------------------------------
     @PostMapping
-    public ProjectDTO createProject(@RequestBody ProjectDTO projectDTO){
-        Project project=projectMapper.projectDTOToProject(projectDTO);
-        Project saved=projectRepository.save(project);
-        return projectMapper.projectToProjectDTO(saved);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ProjectDTO createProject(@RequestBody ProjectDTO dto) {
+
+        Project project = new Project();
+        project.setProjectName(dto.getName());
+        project.setProjectDescription(dto.getDescription());
+        project.setProjectStartDate(dto.getStartDate());
+        project.setProjectEndDate(dto.getEndDate());
+        project.setProjectStatus(dto.getStatus());
+        project.setProgressPercentage(dto.getProgress() != null ? dto.getProgress() : 0);
+
+        // 🔹 שיוך מנהל פרויקט
+        if (dto.getLeaderId() != null) {
+            Users leader = usersRepository.findById(dto.getLeaderId())
+                    .orElseThrow(() -> new RuntimeException("Leader not found"));
+            project.setProjectLeader(leader);
+        }
+
+        Project savedProject = projectRepository.save(project);
+
+        // 🔹 שיוך עובדים לפרויקט (אם נשלח employeeIds)
+        if (dto.getEmployeeIds() != null) {
+            for (Long empId : dto.getEmployeeIds()) {
+                Users user = usersRepository.findById(empId)
+                        .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+                EmployeeInProject link = new EmployeeInProject();
+                link.setProject(savedProject);
+                link.setUser(user);
+                link.setAssignedDate(LocalDate.now());
+                link.setStatus("ACTIVE");
+
+                employeeInProjectRepository.save(link);
+            }
+        }
+
+        return projectMapper.projectToProjectDTO(savedProject);
     }
+
+    // ---------------------------------------
+    // 🔹 4. עדכון פרויקט (שם, תאריכים, סטטוס)
+    // ---------------------------------------
     @PutMapping("/{id}")
-    public ProjectDTO updateProject(@PathVariable Long id, @RequestBody ProjectDTO projectDTO){
-        Project existing = projectRepository.findById(id)
+    @PreAuthorize("hasRole('ADMIN')")
+    public ProjectDTO updateProject(@PathVariable Long id, @RequestBody ProjectDTO dto) {
+
+        Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
-        existing.setProjectName(projectDTO.getName());
-        existing.setProjectDescription(projectDTO.getDescription());
-        existing.setProjectStartDate(projectDTO.getStartDate());
-        existing.setProjectEndDate(projectDTO.getEndDate());
-        existing.setProjectStatus(projectDTO.getStatus());
-        existing.setProgressPercentage(projectDTO.getProgress());
+        project.setProjectName(dto.getName());
+        project.setProjectDescription(dto.getDescription());
+        project.setProjectStartDate(dto.getStartDate());
+        project.setProjectEndDate(dto.getEndDate());
+        project.setProjectStatus(dto.getStatus());
+        project.setProgressPercentage(dto.getProgress());
 
-        Project updated = projectRepository.save(existing);
+        // שינוי מנהל פרויקט
+        if (dto.getLeaderId() != null) {
+            Users leader = usersRepository.findById(dto.getLeaderId())
+                    .orElseThrow(() -> new RuntimeException("Leader not found"));
+            project.setProjectLeader(leader);
+        }
+
+        Project updated = projectRepository.save(project);
         return projectMapper.projectToProjectDTO(updated);
     }
 
-    //מחיקת פרויקט
+    // ---------------------------------------
+    // 🔹 5. מחיקת פרויקט
+    // ---------------------------------------
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteProject(@PathVariable Long id) {
         projectRepository.deleteById(id);
     }
-    // שליפת פרויקטים לפי מנהל צוות
+
+    // ---------------------------------------
+    // 🔹 6. פרויקטים של מנהל צוות
+    // ---------------------------------------
     @GetMapping("/byLeader/{leaderId}")
+    @PreAuthorize("hasAnyRole('ADMIN','TEAMLEADER')")
     public List<ProjectDTO> getProjectsByLeader(@PathVariable Long leaderId) {
         return projectRepository.findByProjectLeader_Id(leaderId)
                 .stream()
                 .map(projectMapper::projectToProjectDTO)
                 .collect(Collectors.toList());
     }
-    //שליפת פרויקטים לפי עובד
-//    @GetMapping("/byEmployee/{employeeId}")
-//    public List<ProjectDTO> getProjectsByEmployee(@PathVariable Long employeeId) {
-//        return projectRepository.findByProjectEmployeeProjects_User_Id(employeeId)
-//                .stream()
-//                .map(projectMapper::projectToProjectDTO)
-//                .collect(Collectors.toList());
-//    }
+
+    // ---------------------------------------
+    // 🔹 7. פרויקטים של עובד מחובר
+    // ---------------------------------------
     @GetMapping("/byEmployee")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public List<ProjectDTO> getProjectsForLoggedEmployee(Authentication authentication) {
-        String email = authentication.getName(); // כתובת המייל של המשתמש המחובר
+
+        String email = authentication.getName();
+
         return projectRepository.findByProjectEmployeeProjects_User_Email(email)
                 .stream()
                 .map(projectMapper::projectToProjectDTO)
                 .collect(Collectors.toList());
     }
 
+    // ---------------------------------------
+    // 🔹 8. הוספת עובד לפרויקט קיים
+    // ---------------------------------------
+    @PostMapping("/{projectId}/addEmployee/{userId}")
+    @PreAuthorize("hasAnyRole('ADMIN','TEAMLEADER')")
+    public String addEmployeeToProject(@PathVariable Long projectId, @PathVariable Long userId) {
 
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+
+        Users user = usersRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        boolean alreadyAssigned =
+                employeeInProjectRepository.existsByUser_IdAndProject_ProjectId(userId, projectId);
+
+        if (alreadyAssigned) return "Employee already assigned";
+
+        EmployeeInProject link = new EmployeeInProject();
+        link.setProject(project);
+        link.setUser(user);
+        link.setAssignedDate(LocalDate.now());
+        link.setStatus("ACTIVE");
+
+        employeeInProjectRepository.save(link);
+
+        return "Employee added successfully";
+    }
 }

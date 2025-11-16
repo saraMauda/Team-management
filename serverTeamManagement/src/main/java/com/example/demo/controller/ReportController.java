@@ -22,7 +22,6 @@ public class ReportController {
     @Autowired
     private ReportMapper reportMapper;
 
-    // שליפת כל הדוחות
     @GetMapping
     public List<ReportDTO> getAllReports() {
         return reportRepository.findAll()
@@ -31,7 +30,6 @@ public class ReportController {
                 .collect(Collectors.toList());
     }
 
-    // שליפת דוח לפי מזהה
     @GetMapping("/{id}")
     public ReportDTO getReportById(@PathVariable Long id) {
         Report report = reportRepository.findById(id)
@@ -45,37 +43,39 @@ public class ReportController {
         Report savedReport = reportRepository.save(report);
         return reportMapper.reportToReportDTO(savedReport);
     }
-//עדכון הדוח
+
     @PutMapping("/{id}")
     public ReportDTO updateReport(@PathVariable Long id, @RequestBody ReportDTO reportDTO) {
         Report existing = reportRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Report not found"));
+
         existing.setReportTitle(reportDTO.getTitle());
         existing.setReportDescription(reportDTO.getDescription());
         existing.setReportDate(reportDTO.getReportDate());
         existing.setLastEdited(reportDTO.getLastEdited());
 
-        Report update = reportRepository.save(existing);
-        return reportMapper.reportToReportDTO(update);
+        Report updated = reportRepository.save(existing);
+        return reportMapper.reportToReportDTO(updated);
     }
-    //אישור או דחיית דוח
+
     @PutMapping("/{id}/approve")
     public ReportDTO approvalReport(@PathVariable Long id){
-        Report report=reportRepository.findById(id)
+        Report report = reportRepository.findById(id)
                 .orElseThrow(()->new RuntimeException("Report not found"));
+
         report.setReportStatus("APPROVED");
-        Report update=reportRepository.save(report);
+        Report update = reportRepository.save(report);
         return reportMapper.reportToReportDTO(update);
     }
-    //דוחות לפי עובד
-@GetMapping("/byEmployee/{employeeId}")
+
+    @GetMapping("/byEmployee/{employeeId}")
     public List<ReportDTO>getReportsByEmployee(@PathVariable Long employeeId){
         return reportRepository.findByReportEmployeeInProject_User_Id(employeeId)
                 .stream()
                 .map(reportMapper::reportToReportDTO)
                 .collect(Collectors.toList());
-}
-//דוחות לפי פרויקט
+    }
+
     @GetMapping("/byProject/{projectId}")
     public List<ReportDTO>getReportsByProject(@PathVariable Long projectId){
         return reportRepository.findByReportEmployeeInProject_Project_ProjectId(projectId)
@@ -83,19 +83,20 @@ public class ReportController {
                 .map(reportMapper::reportToReportDTO)
                 .collect(Collectors.toList());
     }
+
     @DeleteMapping("/{id}")
     public void deleteReport(@PathVariable Long id){
         reportRepository.deleteById(id);
     }
 
+    // ✔ דוחות לעובד מחובר
     @GetMapping("/byEmployee")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public List<ReportDTO> getReportsForLoggedEmployee(Authentication authentication) {
-        String email = authentication.getName(); // המייל של המשתמש המחובר
+        String email = authentication.getName();
         return reportRepository.findByReportEmployeeInProject_User_Email(email)
                 .stream()
                 .map(reportMapper::reportToReportDTO)
                 .collect(Collectors.toList());
     }
-
 }

@@ -1,144 +1,212 @@
-<!-- src/app/components/dashboard/admin/projects/manage-projects/manage-projects.component.html -->
+<div class="projects-wrapper">
 
-<div class="projects-container">
-  <h2>Manage Projects</h2>
+  <h2 class="page-title">Manage Projects</h2>
 
-  <div class="toolbar">
-    <button class="add-btn" (click)="showAddForm = !showAddForm">
-      {{ showAddForm ? 'Cancel' : '+ Add Project' }}
-    </button>
+  <!-- כפתור הוספה -->
+  <button class="add-btn" (click)="showAddForm = !showAddForm">
+    {{ showAddForm ? 'Cancel' : '+ Add Project' }}
+  </button>
+
+  <!-- ------------------ ADD PROJECT PANEL ------------------ -->
+  <div *ngIf="showAddForm" class="panel">
+
+    <h3 class="panel-title">Add Project</h3>
+
+    <div class="form-row">
+      <label>Project Name</label>
+      <input type="text" [(ngModel)]="newProject.name">
+    </div>
+
+    <div class="form-row">
+      <label>Description</label>
+      <textarea [(ngModel)]="newProject.description"></textarea>
+    </div>
+
+    <div class="form-row">
+      <label>Start Date</label>
+      <input type="date" [(ngModel)]="newProject.startDate">
+    </div>
+
+    <div class="form-row">
+      <label>End Date</label>
+      <input type="date" [(ngModel)]="newProject.endDate">
+    </div>
+
+    <div class="form-row">
+      <label>Status</label>
+      <select [(ngModel)]="newProject.status">
+        <option value="ACTIVE">Active</option>
+        <option value="COMPLETED">Completed</option>
+        <option value="ON_HOLD">On Hold</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>Progress</label>
+      <input type="number" min="0" max="100" [(ngModel)]="newProject.progress">
+    </div>
+
+    <div class="form-row">
+      <label>Team Leader</label>
+      <select [(ngModel)]="newProject.leaderId"
+              (ngModelChange)="onNewLeaderChange($event)">
+        <option [ngValue]="null">-- Select leader --</option>
+        <option *ngFor="let leader of teamLeaders" [value]="leader.id">
+          {{ leader.name }} ({{ leader.email }})
+        </option>
+      </select>
+    </div>
+
+    <!-- עובדים – רק מצוות המנהל שנבחר -->
+    <div class="form-row">
+      <label>Employees (team members)</label>
+
+      <div class="checkbox-container chip-list">
+
+        <div *ngIf="!newProject.leaderId" class="hint-text">
+          Select a Team Leader to see their team members.
+        </div>
+
+        <div *ngIf="newProject.leaderId && availableEmployeesNew.length === 0"
+             class="hint-text">
+          This leader has no team members yet.
+        </div>
+
+        <label class="checkbox-item chip"
+               *ngFor="let emp of availableEmployeesNew">
+          <input type="checkbox"
+                 [checked]="newProject.employeeIds.includes(emp.id!)"
+                 (change)="toggleEmployee($event, emp.id!)">
+          {{ emp.name ? emp.name.charAt(0) : '?' }}
+          <span class="chip-name">{{ emp.name }}</span>
+        </label>
+
+      </div>
+    </div>
+
+    <div class="edit-actions">
+      <button class="save-btn" (click)="addProject()" [disabled]="saving">
+        {{ saving ? 'Saving...' : 'Save Project' }}
+      </button>
+      <button class="cancel-btn" (click)="resetAddForm()">Cancel</button>
+    </div>
   </div>
 
-  <!-- טופס הוספה -->
-  @if (showAddForm) {
-    <div class="project-form">
-      <h3>Add New Project</h3>
+  <!-- ------------------ EDIT PROJECT PANEL ------------------ -->
+  <div *ngIf="showEditForm && editingProject" class="panel">
 
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Project Name</label>
-          <input type="text" [(ngModel)]="newProject.name" placeholder="Enter project name" />
+    <h3 class="panel-title">Edit Project</h3>
+
+    <div class="form-row">
+      <label>Project Name</label>
+      <input type="text" [(ngModel)]="editingProject!.name">
+    </div>
+
+    <div class="form-row">
+      <label>Description</label>
+      <textarea [(ngModel)]="editingProject!.description"></textarea>
+    </div>
+
+    <div class="form-row">
+      <label>Start Date</label>
+      <input type="date" [(ngModel)]="editingProject!.startDate">
+    </div>
+
+    <div class="form-row">
+      <label>End Date</label>
+      <input type="date" [(ngModel)]="editingProject!.endDate">
+    </div>
+
+    <div class="form-row">
+      <label>Status</label>
+      <select [(ngModel)]="editingProject!.status">
+        <option value="ACTIVE">Active</option>
+        <option value="COMPLETED">Completed</option>
+        <option value="ON_HOLD">On Hold</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <label>Progress</label>
+      <input type="number" min="0" max="100" [(ngModel)]="editingProject!.progress">
+    </div>
+
+    <div class="form-row">
+      <label>Team Leader</label>
+      <select [(ngModel)]="editingProject!.leaderId"
+              (ngModelChange)="onEditLeaderChange($event)">
+        <option [ngValue]="null">-- Select leader --</option>
+        <option *ngFor="let leader of teamLeaders" [value]="leader.id">
+          {{ leader.name }} ({{ leader.email }})
+        </option>
+      </select>
+    </div>
+
+    <!-- עובדים – רק מצוות המנהל שנבחר -->
+    <div class="form-row">
+      <label>Employees (team members)</label>
+
+      <div class="checkbox-container chip-list">
+
+        <div *ngIf="!editingProject!.leaderId" class="hint-text">
+          Select a Team Leader to see their team members.
         </div>
 
-        <div class="form-group">
-          <label>Description</label>
-          <textarea [(ngModel)]="newProject.description" placeholder="Short description"></textarea>
+        <div *ngIf="editingProject!.leaderId && availableEmployeesEdit.length === 0"
+             class="hint-text">
+          This leader has no team members yet.
         </div>
 
-        <div class="form-group">
-          <label>Status</label>
-          <select [(ngModel)]="newProject.status">
-            <option value="ACTIVE">Active</option>
-            <option value="COMPLETED">Completed</option>
-            <option value="ON_HOLD">On Hold</option>
-            <option value="INACTIVE">Inactive</option>
-          </select>
-        </div>
+        <label class="checkbox-item chip"
+               *ngFor="let emp of availableEmployeesEdit">
+          <input type="checkbox"
+                 [checked]="editingProject?.employeeIds?.includes(emp.id!)"
+                 (change)="toggleEmployeeEdit($event, emp.id!)">
+          <span class="chip-avatar">{{ emp.name?.charAt(0) }}</span>
+          <span class="chip-name">{{ emp.name }}</span>
+        </label>
 
-        <div class="form-group">
-          <label>Start Date</label>
-          <input type="date" [(ngModel)]="newProject.startDate" />
-        </div>
-
-        <div class="form-group">
-          <label>End Date</label>
-          <input type="date" [(ngModel)]="newProject.endDate" />
-        </div>
-
-        <div class="form-group">
-          <label>Progress (%)</label>
-          <input type="number" [(ngModel)]="newProject.progress" min="0" max="100" />
-        </div>
-      </div>
-
-      <div class="form-actions">
-        <button class="save-btn" (click)="addProject()" [disabled]="saving">
-          {{ saving ? 'Saving...' : 'Save Project' }}
-        </button>
-        <button class="cancel-btn" (click)="showAddForm = false">Cancel</button>
       </div>
     </div>
-  }
 
-  <!-- הודעות טעינה/שגיאה -->
-  @if (loading) {
-    <p class="loading">Loading projects...</p>
-  } @else if (error) {
-    <p class="error">{{ error }}</p>
-  } @else {
-    <table class="projects-table" *ngIf="projects.length > 0; else noProjects">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Description</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (project of projects; track project.id) {
-          <tr>
-            <td>{{ project.id }}</td>
-            <td>{{ project.name }}</td>
-            <td>{{ project.description }}</td>
-            <td>
-              <span class="status" [ngClass]="getStatusClass(project.status)">
-                {{ getStatusLabel(project.status) }}
-              </span>
-            </td>
-            <td>
-              <button class="edit-btn" (click)="openEdit(project)">Edit</button>
-              <button class="delete-btn" (click)="deleteProject(project.id)">Delete</button>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-
-    <ng-template #noProjects>
-      <p class="no-data">No projects found.</p>
-    </ng-template>
-  }
-
-  <!-- חלון עריכה -->
-  @if (showEditForm && editingProject) {
-    <div class="edit-overlay">
-      <div class="edit-panel">
-        <h3>Edit Project</h3>
-
-        <div class="edit-grid">
-          <label>Name</label>
-          <input type="text" [(ngModel)]="editingProject.name" />
-
-          <label>Description</label>
-          <textarea [(ngModel)]="editingProject.description"></textarea>
-
-          <label>Status</label>
-          <select [(ngModel)]="editingProject.status">
-            <option value="ACTIVE">Active</option>
-            <option value="COMPLETED">Completed</option>
-            <option value="ON_HOLD">On Hold</option>
-            <option value="INACTIVE">Inactive</option>
-          </select>
-
-          <label>Start Date</label>
-          <input type="date" [(ngModel)]="editingProject.startDate" />
-
-          <label>End Date</label>
-          <input type="date" [(ngModel)]="editingProject.endDate" />
-
-          <label>Progress (%)</label>
-          <input type="number" [(ngModel)]="editingProject.progress" min="0" max="100" />
-        </div>
-
-        <div class="panel-actions">
-          <button class="save-btn" (click)="updateProject()" [disabled]="saving">
-            {{ saving ? 'Saving...' : 'Save' }}
-          </button>
-          <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
-        </div>
-      </div>
+    <div class="edit-actions">
+      <button class="save-btn" (click)="updateProject()" [disabled]="saving">
+        {{ saving ? 'Saving...' : 'Save Changes' }}
+      </button>
+      <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
     </div>
-  }
+  </div>
+
+  <!-- ------------------ PROJECTS TABLE ------------------ -->
+  <table class="projects-table" *ngIf="projects.length > 0">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Leader</th>
+        <th>Status</th>
+        <th>Progress</th>
+        <th>Dates</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let project of projects">
+        <td>{{ project.name }}</td>
+        <td>{{ project.leaderName }}</td>
+        <td>{{ project.status }}</td>
+        <td>{{ project.progress }}%</td>
+        <td>{{ project.startDate }} → {{ project.endDate }}</td>
+        <td>
+          <button class="edit-btn" (click)="openEdit(project)">Edit</button>
+          <button class="delete-btn" (click)="deleteProject(project.id!)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p *ngIf="projects.length === 0" class="empty-text">
+    No projects found.
+  </p>
+
 </div>

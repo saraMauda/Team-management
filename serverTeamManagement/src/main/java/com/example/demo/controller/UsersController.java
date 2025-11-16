@@ -179,6 +179,11 @@ public ResponseEntity<UsersDTO> signUp(@RequestBody Users user) {
         // אם הגענו לכאן – המשמעות היא שה־Cookie תקף
         return ResponseEntity.ok(true);
     }
+    @GetMapping("/by-email/{email}")
+    public UsersDTO getUserByEmail(@PathVariable String email) {
+        Users user = usersRepository.findByEmail(email);
+        return usersMapper.userToUsersDTO(user);
+    }
 
 
 

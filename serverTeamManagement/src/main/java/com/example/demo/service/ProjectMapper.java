@@ -1,9 +1,12 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.ProjectDTO;
+import com.example.demo.model.EmployeeInProject;
 import com.example.demo.model.Project;
 import org.mapstruct.Mapper;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface ProjectMapper {
@@ -11,7 +14,10 @@ public interface ProjectMapper {
     List<ProjectDTO> projectsToProjectDTOs(List<Project> projects);
 
     default ProjectDTO projectToProjectDTO(Project project) {
+        if (project == null) return null;
+
         ProjectDTO dto = new ProjectDTO();
+
         dto.setId(project.getProjectId());
         dto.setName(project.getProjectName());
         dto.setDescription(project.getProjectDescription());
@@ -19,28 +25,23 @@ public interface ProjectMapper {
         dto.setEndDate(project.getProjectEndDate());
         dto.setStatus(project.getProjectStatus());
         dto.setProgress(project.getProgressPercentage());
+        dto.setLocation(project.getProjectLocation());
+        dto.setCategoryId(project.getProjectCategory() != null ? project.getProjectCategory().getCategoryId() : null);
+        dto.setCategoryName(project.getProjectCategory() != null ? project.getProjectCategory().getCategoryName() : null);
 
-        if (project.getProjectLeader() != null)
+        if (project.getProjectLeader() != null) {
+            dto.setLeaderId(project.getProjectLeader().getId());
             dto.setLeaderName(project.getProjectLeader().getName());
+        }
 
-        if (project.getProjectCategory() != null)
-            dto.setCategoryName(project.getProjectCategory().getCategoryName());
+        if (project.getProjectEmployeeProjects() != null) {
+            List<Long> employeeIds = project.getProjectEmployeeProjects()
+                    .stream()
+                    .map(e -> e.getUser().getId())
+                    .collect(Collectors.toList());
+            dto.setEmployeeIds(employeeIds);
+        }
 
         return dto;
-    }
-
-    // ✅ חשוב מאוד: לוודא שגם מזהה וגם progress נשמרים
-    default Project projectDTOToProject(ProjectDTO dto) {
-        Project p = new Project();
-        if (dto.getId() != null) {
-            p.setProjectId(dto.getId());
-        }
-        p.setProjectName(dto.getName());
-        p.setProjectDescription(dto.getDescription());
-        p.setProjectStartDate(dto.getStartDate());
-        p.setProjectEndDate(dto.getEndDate());
-        p.setProjectStatus(dto.getStatus());
-        p.setProgressPercentage(dto.getProgress());
-        return p;
     }
 }
