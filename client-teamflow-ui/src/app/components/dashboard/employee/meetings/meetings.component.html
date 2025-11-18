@@ -6,22 +6,21 @@
   <div class="meetings-grid" *ngIf="meetings.length > 0; else noMeetingsTpl">
     <div class="meeting-card" *ngFor="let m of meetings">
       <div class="meeting-header">
-        <h3>{{ m.topic }}</h3>
-        <span
-          class="meeting-status"
-          [class.past]="isPast(m.date)"
-          [class.upcoming]="!isPast(m.date)"
-        >
-          {{ isPast(m.date) ? 'Completed' : 'Upcoming' }}
+        <h3>{{ m.title }}</h3>
+
+        <span class="meeting-status"
+              [class.past]="isPast(m.meetingDate)"
+              [class.upcoming]="!isPast(m.meetingDate)">
+          {{ isPast(m.meetingDate!) ? 'Completed' : 'Upcoming' }}
         </span>
       </div>
 
       <p class="desc">{{ m.description || 'No details provided.' }}</p>
 
       <div class="meta">
-        <span><strong>Date:</strong> {{ formatDate(m.date) }}</span>
-        <span><strong>Time:</strong> {{ m.time || '-' }}</span>
-        <span><strong>Location:</strong> {{ m.location || 'TBD' }}</span>
+        <span><strong>Date:</strong> {{ formatDate(m.meetingDate) }}</span>
+        <span><strong>Location:</strong> {{ m.meetingLocation || 'TBD' }}</span>
+        <span><strong>Status:</strong> {{ m.status || '-' }}</span>
       </div>
     </div>
   </div>

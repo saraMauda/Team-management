@@ -38,7 +38,7 @@ public class ProjectController {
     // 🔹 1. שליפת כל הפרויקטים (ADMIN בלבד)
     // ---------------------------------------
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','TEAMLEADER')")
     public List<ProjectDTO> getAllProjects() {
         return projectRepository.findAll()
                 .stream()
@@ -103,12 +103,13 @@ public class ProjectController {
     // 🔹 4. עדכון פרויקט (שם, תאריכים, סטטוס)
     // ---------------------------------------
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','TEAMLEADER')")
     public ProjectDTO updateProject(@PathVariable Long id, @RequestBody ProjectDTO dto) {
 
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
+        // 🔹 עדכון בסיסי
         project.setProjectName(dto.getName());
         project.setProjectDescription(dto.getDescription());
         project.setProjectStartDate(dto.getStartDate());
@@ -116,16 +117,49 @@ public class ProjectController {
         project.setProjectStatus(dto.getStatus());
         project.setProgressPercentage(dto.getProgress());
 
-        // שינוי מנהל פרויקט
+        // 🔹 שינוי מנהל פרויקט
         if (dto.getLeaderId() != null) {
             Users leader = usersRepository.findById(dto.getLeaderId())
                     .orElseThrow(() -> new RuntimeException("Leader not found"));
             project.setProjectLeader(leader);
         }
 
+        // ----------------------------------------------------------
+        // 🔥 תיקון מרכזי: אם לא נשלחו workers → לא מוחקים כלום!
+        // ----------------------------------------------------------
+        if (dto.getEmployeeIds() != null) {
+
+            // מוחקים רק אם employeeIds != null
+            List<EmployeeInProject> existingLinks =
+                    employeeInProjectRepository.findByProject_ProjectId(id);
+
+            for (EmployeeInProject link : existingLinks) {
+                employeeInProjectRepository.delete(link);
+            }
+
+            // מוסיפים את החדשים מתוך employeeIds
+            for (Long empId : dto.getEmployeeIds()) {
+                Users user = usersRepository.findById(empId)
+                        .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+                EmployeeInProject link = new EmployeeInProject();
+                link.setProject(project);
+                link.setUser(user);
+                link.setAssignedDate(LocalDate.now());
+                link.setStatus("ACTIVE");
+
+                employeeInProjectRepository.save(link);
+            }
+        }
+        // ----------------------------------------------------------
+        // 🔥 אם employeeIds == null → לא נוגעים בקשרים!
+        // ----------------------------------------------------------
+
         Project updated = projectRepository.save(project);
         return projectMapper.projectToProjectDTO(updated);
     }
+
+
 
     // ---------------------------------------
     // 🔹 5. מחיקת פרויקט
@@ -142,11 +176,15 @@ public class ProjectController {
     @GetMapping("/byLeader/{leaderId}")
     @PreAuthorize("hasAnyRole('ADMIN','TEAMLEADER')")
     public List<ProjectDTO> getProjectsByLeader(@PathVariable Long leaderId) {
-        return projectRepository.findByProjectLeader_Id(leaderId)
-                .stream()
-                .map(projectMapper::projectToProjectDTO)
+
+        List<EmployeeInProject> links =
+                employeeInProjectRepository.findByUser_IdAndRoleDescription(leaderId, "Team Leader");
+
+        return links.stream()
+                .map(link -> projectMapper.projectToProjectDTO(link.getProject()))
                 .collect(Collectors.toList());
     }
+
 
     // ---------------------------------------
     // 🔹 7. פרויקטים של עובד מחובר

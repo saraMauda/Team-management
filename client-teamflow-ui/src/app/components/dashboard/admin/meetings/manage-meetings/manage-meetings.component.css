@@ -1,0 +1,139 @@
+.admin-meetings-container {
+  padding: 20px;
+  color: #dce6ff;
+}
+
+.title {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #d7e3ff;
+  border-bottom: 3px solid #ff9e2b;
+  display: inline-block;
+  padding-bottom: 4px;
+}
+
+/* Grid */
+.meetings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 25px;
+}
+
+/* Card */
+.meeting-card {
+  background: #0f1a2b;
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid #22324b;
+  color: white;
+  transition: 0.2s ease;
+}
+
+.meeting-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+/* Card header */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h3 {
+  margin: 0;
+  color: #ffb657;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* Status Chip */
+.status-chip {
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+}
+
+.status-chip.completed {
+  background: #445b7a;
+  color: #b3c3ff;
+}
+
+.status-chip.upcoming {
+  background: #ff9e2b;
+}
+
+/* Description */
+.desc {
+  margin: 12px 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* Meta */
+.meta {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.meta b {
+  color: #ffb657;
+}
+
+/* Buttons */
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.edit-btn {
+  background: #1e2a47;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.edit-btn:hover {
+  background: #162036;
+}
+
+.delete-btn {
+  background: #b63232;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.delete-btn:hover {
+  background: #992121;
+}
+
+/* Others */
+.no-meetings,
+.loading {
+  text-align: center;
+  padding: 30px;
+  font-size: 18px;
+  color: #9db3d1;
+}
+
+/* Error */
+.error-msg {
+  background: #ffebee;
+  color: #b71c1c;
+  border-left: 4px solid #d32f2f;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}

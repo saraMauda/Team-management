@@ -1,8 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { ProjectsService } from '../../../../services/projects.service';
+import { TeamService } from '../../../../services/team.service';
+import { AuthService } from '../../../../services/auth.service';
+
 import { ProjectDTO } from '../../../../models/project-dto.model';
+import { TeamDTO } from '../../../../models/team-dto.model';
+import { UsersDTO } from '../../../../models/users-dto.model';
 
 @Component({
   selector: 'app-my-projects',
@@ -17,73 +23,132 @@ export class TeamProjectsComponent implements OnInit {
   loading = true;
   error: string | null = null;
 
-  /** מי המשתמש */
   currentUserId: number | null = null;
 
-  /** עריכה */
+  teams: TeamDTO[] = [];
+  leaderTeamMembers: UsersDTO[] = [];
+
   showEditForm = false;
   editingProject: ProjectDTO | null = null;
   saving = false;
 
-  constructor(private projectsService: ProjectsService) {}
+  constructor(
+    private projectsService: ProjectsService,
+    private teamService: TeamService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.loadCurrentUser();
-    this.loadProjects();
   }
 
   loadCurrentUser(): void {
     const stored = localStorage.getItem('user');
-    if (stored) {
-      const obj = JSON.parse(stored);
-      this.currentUserId = obj.id ?? null;
+    if (!stored) {
+      this.error = 'User not found.';
+      this.loading = false;
+      return;
     }
-  }
 
-  loadProjects(): void {
-    this.projectsService.getAll().subscribe({
-      next: (data) => {
-        this.projects = this.filterMyProjects(data);
-        this.loading = false;
+    const obj = JSON.parse(stored);
+    const email = obj.email;
+
+    if (!email) {
+      this.error = 'User email not found.';
+      this.loading = false;
+      return;
+    }
+
+    this.authService.getUserByEmail(email).subscribe({
+      next: (user) => {
+        this.currentUserId = user.id;
+        this.loadTeamsAndProjects();
       },
       error: () => {
-        this.error = 'Failed to load projects';
+        this.error = 'Failed to identify user.';
         this.loading = false;
       }
     });
   }
 
-  /** מציג לעובד רק פרויקטים שהוא חלק מהם */
-  private filterMyProjects(list: ProjectDTO[]): ProjectDTO[] {
-    if (!this.currentUserId) return [];
-    return list.filter(p =>
-      Array.isArray(p.employeeIds) &&
-      p.employeeIds.includes(this.currentUserId!)
-    );
+  loadTeamsAndProjects(): void {
+    this.teamService.getAllTeams().subscribe({
+      next: (data: TeamDTO[]) => {
+        this.teams = data || [];
+        const myTeam = this.teams.find(t => t.leaderId === this.currentUserId!) || null;
+        this.leaderTeamMembers = myTeam?.members || [];
+        this.loadProjectsForLeader();
+      },
+      error: () => {
+        console.error('Failed to load teams');
+        this.leaderTeamMembers = [];
+        this.loadProjectsForLeader();
+      }
+    });
   }
+loadProjectsForLeader(): void {
+  this.projectsService.getAll().subscribe({
+    next: (data: ProjectDTO[]) => {
+      // משתמשים באותו DTO כמו האדמין
+      const all = data || [];
 
-  /** פותח את הפאנל עריכה */
+      // מסננים רק את הפרויקטים של ה־Leader הנוכחי
+      this.projects = all.filter(p => p.leaderId === this.currentUserId);
+
+      this.loading = false;
+    },
+    error: () => {
+      this.error = 'Failed to load projects';
+      this.loading = false;
+    }
+  });
+}
+
+
   openEdit(project: ProjectDTO): void {
-    this.editingProject = { ...project };
     this.showEditForm = true;
+
+    this.editingProject = {
+      ...project,
+      employeeIds: [...(project.employeeIds || [])]
+    };
   }
 
-  /** עדכון בפועל */
+  toggleEmployee(event: Event, id: number): void {
+    if (!this.editingProject) return;
+
+    const checked = (event.target as HTMLInputElement).checked;
+
+    if (!Array.isArray(this.editingProject.employeeIds)) {
+      this.editingProject.employeeIds = [];
+    }
+
+    if (checked) {
+      if (!this.editingProject.employeeIds.includes(id)) {
+        this.editingProject.employeeIds.push(id);
+      }
+    } else {
+      this.editingProject.employeeIds =
+        this.editingProject.employeeIds.filter(empId => empId !== id);
+    }
+  }
+
   updateProject(): void {
     if (!this.editingProject?.id) return;
 
     this.saving = true;
 
     const payload: Partial<ProjectDTO> = {
-      name: this.editingProject.name,
-      description: this.editingProject.description,
-      startDate: this.editingProject.startDate,
-      endDate: this.editingProject.endDate,
-      progress: this.editingProject.progress,
-      status: this.editingProject.status
+      name: this.editingProject!.name,
+      description: this.editingProject!.description,
+      startDate: this.editingProject!.startDate,
+      endDate: this.editingProject!.endDate,
+      status: this.editingProject!.status,
+      progress: this.editingProject!.progress,
+      employeeIds: this.editingProject!.employeeIds
     };
 
-    this.projectsService.update(this.editingProject.id, payload).subscribe({
+    this.projectsService.update(this.editingProject!.id, payload).subscribe({
       next: (updated) => {
         this.projects = this.projects.map(p =>
           p.id === updated.id ? updated : p
@@ -103,7 +168,6 @@ export class TeamProjectsComponent implements OnInit {
     this.editingProject = null;
   }
 
-  /** צבע */
   getProgressColor(progress: number | null | undefined): string {
     if (progress == null) return '#999';
     if (progress >= 80) return '#4caf50';

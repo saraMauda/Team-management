@@ -1,36 +1,65 @@
-<div class="team-reports-container" *ngIf="!loading; else loadingTpl">
-  <h2 class="title">Team Reports</h2>
+<div class="reports-page">
 
-  <div *ngIf="error" class="error-msg">{{ error }}</div>
+  <!-- LEFT LIST (Inbox style) -->
+  <div class="inbox">
 
-  <div class="reports-grid" *ngIf="reports.length > 0; else noReportsTpl">
-    <div class="report-card" *ngFor="let r of reports">
-      <div class="report-header">
-        <h3>{{ r.title }}</h3>
-        <span class="status" [style.color]="getStatusColor(r.status)">
-          ● {{ r.status }}
-        </span>
+    <h2 class="title">Team Reports</h2>
+
+    <div class="report-item"
+         *ngFor="let report of teamReports"
+         (click)="openPanel(report)"
+         [class.active]="selectedReport?.reportId === report.reportId">
+
+      <div class="item-header">
+        <h3>{{ report.title || 'Untitled Report' }}</h3>
+        <span class="date">{{ report.reportDate | date:'dd/MM/yyyy' }}</span>
       </div>
 
-      <p class="desc">{{ r.description || 'No description provided.' }}</p>
+      <p class="preview">{{ report.description }}</p>
 
       <div class="meta">
-        <span><strong>Project:</strong> {{ r.projectName || 'N/A' }}</span>
-        <span><strong>Submitted by:</strong> {{ r.employeeName || 'Unknown' }}</span>
-        <span><strong>Date:</strong> {{ r.submissionDate | date:'mediumDate' }}</span>
+        <span class="employee">👤 {{ report.employeeName }}</span>
       </div>
 
-      <div class="actions">
-        <button class="view-btn">View Details</button>
+    </div>
+
+  </div>
+
+  <!-- RIGHT PANEL (like Gmail email view) -->
+  <div class="details-panel" *ngIf="selectedReport">
+
+    <div class="panel-header">
+      <button class="close-btn" (click)="closePanel()">✖</button>
+      <h2>Report Details</h2>
+    </div>
+
+    <div class="report-info">
+      <p><strong>ID:</strong> {{ selectedReport.reportId }}</p>
+      <p><strong>Date:</strong> {{ selectedReport.reportDate }}</p>
+
+      <strong>Description:</strong>
+      <div class="report-box">
+        {{ selectedReport.description }}
       </div>
     </div>
+
+    <h3 class="comments-title">Comments</h3>
+
+    <div class="comments-list">
+      <div class="comment-item" *ngFor="let c of comments">
+        <div class="bubble">
+          <p>{{ c.text }}</p>
+          <small>{{ c.commentDate | date:'dd/MM HH:mm' }}</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Comment -->
+    <div class="add-comment-box">
+      <textarea [(ngModel)]="newComment" placeholder="Write a comment..."></textarea>
+      <button class="send-btn" (click)="submitComment()">Send</button>
+    </div>
+
   </div>
+
 </div>
-
-<ng-template #loadingTpl>
-  <div class="loading">Loading team reports...</div>
-</ng-template>
-
-<ng-template #noReportsTpl>
-  <div class="no-reports">No reports found for your team.</div>
-</ng-template>

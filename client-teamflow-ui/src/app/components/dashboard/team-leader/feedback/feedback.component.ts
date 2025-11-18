@@ -20,26 +20,7 @@ export class FeedbackComponent implements OnInit {
   constructor(private reportsService: ReportsService) {}
 
   ngOnInit(): void {
-    this.loadFeedbacks();
   }
-
-  loadFeedbacks(): void {
-    this.reportsService.getAll().subscribe({
-      next: (data) => {
-        // כאן את יכולה לשנות לסינון רק פידבקים לצוות של ראש הצוות
-        this.feedbacks = data
-          .filter((f: any) => f.type === 'FEEDBACK' || f.feedback)
-          .reverse(); // רק כדי להציג מהחדש לישן
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('❌ Failed to load feedbacks', err);
-        this.error = 'Failed to load feedbacks.';
-        this.loading = false;
-      }
-    });
-  }
-
   sendFeedback(): void {
     if (!this.newFeedback.trim()) return;
 

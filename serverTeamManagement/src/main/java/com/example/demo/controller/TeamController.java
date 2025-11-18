@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/teams")
@@ -61,6 +62,17 @@ public class TeamController {
         // מחזירים DTO
         List<TeamMember> members = teamMemberRepository.findByTeamId(team.getId());
         return new ResponseEntity<>(teamMapper.toDTO(team, members), HttpStatus.CREATED);
+    }
+    @GetMapping("/byLeader/{leaderId}")
+    public List<TeamDTO> getTeamsByLeader(@PathVariable Long leaderId) {
+        Users leader = usersRepository.findById(leaderId)
+                .orElseThrow(() -> new RuntimeException("Leader not found"));
+
+        List<Team> teams = teamRepository.findByLeaderId(leaderId);
+
+        return teams.stream()
+                .map(team -> teamMapper.toDTO(team))  // ✔ תיקון
+                .collect(Collectors.toList());
     }
 
     // 🔹 החזרת כל הצוותים

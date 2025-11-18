@@ -47,4 +47,11 @@ export class TeamService {
       withCredentials: true
     });
   }
+  /** ✔ מחזיר צוותים לפי מנהל צוות */
+getTeamsByLeader(leaderId: number): Observable<TeamDTO[]> {
+  return this.http.get<TeamDTO[]>(`${this.baseUrl}/byLeader/${leaderId}`, {
+    withCredentials: true
+  });
+}
+
 }

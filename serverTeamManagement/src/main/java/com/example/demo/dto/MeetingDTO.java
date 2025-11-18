@@ -4,35 +4,37 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class MeetingDTO {
-    private Long id;
+
+    private Long meetingId;
     private String title;
-    private String description;
     private LocalDate meetingDate;
+    private String description;
     private String meetingLocation;
     private String status;
     private LocalDateTime createdAt;
-    private String projectName;
+    private Long projectId;
 
     public MeetingDTO() {
     }
 
-    public MeetingDTO(Long id, String title, String description, LocalDate meetingDate, String meetingLocation, String status, LocalDateTime createdAt, String projectName) {
-        this.id = id;
+    public MeetingDTO(Long meetingId, String title, LocalDate meetingDate, String description,
+                      String meetingLocation, String status, LocalDateTime createdAt, Long projectId) {
+        this.meetingId = meetingId;
         this.title = title;
-        this.description = description;
         this.meetingDate = meetingDate;
+        this.description = description;
         this.meetingLocation = meetingLocation;
         this.status = status;
         this.createdAt = createdAt;
-        this.projectName = projectName;
+        this.projectId = projectId;
     }
 
-    public Long getId() {
-        return id;
+    public Long getMeetingId() {
+        return meetingId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setMeetingId(Long meetingId) {
+        this.meetingId = meetingId;
     }
 
     public String getTitle() {
@@ -43,20 +45,20 @@ public class MeetingDTO {
         this.title = title;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public LocalDate getMeetingDate() {
         return meetingDate;
     }
 
     public void setMeetingDate(LocalDate meetingDate) {
         this.meetingDate = meetingDate;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getMeetingLocation() {
@@ -83,11 +85,11 @@ public class MeetingDTO {
         this.createdAt = createdAt;
     }
 
-    public String getProjectName() {
-        return projectName;
+    public Long getProjectId() {
+        return projectId;
     }
 
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 }

@@ -3,44 +3,45 @@ package com.example.demo.service;
 import com.example.demo.dto.MeetingDTO;
 import com.example.demo.model.Meeting;
 import org.mapstruct.Mapper;
-import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface MeetingMapper {
 
-    List<MeetingDTO> meetingsToMeetingDTOs(List<Meeting> meetings);
+    // ========= ENTITY → DTO =========
+    default MeetingDTO toDTO(Meeting meeting) {
 
-    default MeetingDTO meetingToMeetingDTO(Meeting meeting) {
         MeetingDTO dto = new MeetingDTO();
-        dto.setId(meeting.getMeetingId());
+
+        dto.setMeetingId(meeting.getMeetingId());
         dto.setTitle(meeting.getTitle());
-        dto.setDescription(meeting.getDescription());
         dto.setMeetingDate(meeting.getMeetingDate());
+        dto.setDescription(meeting.getDescription());
         dto.setMeetingLocation(meeting.getMeetingLocation());
         dto.setStatus(meeting.getStatus());
         dto.setCreatedAt(meeting.getCreatedAt());
 
-        if (meeting.getProject() != null)
-            dto.setProjectName(meeting.getProject().getProjectName());
+        // ⭐ projectId
+        if (meeting.getProject() != null) {
+            dto.setProjectId(meeting.getProject().getProjectId());
+        }
 
         return dto;
     }
-//    default Meeting meetingDTOToMeeting(MeetingDTO dto){
-//        Meeting meeting=new Meeting();
-//        meeting.setTitle(dto.getTitle());
-//
-//    }
-default Meeting meetingDTOToMeeting(MeetingDTO dto) {
-    Meeting meeting = new Meeting();
 
-    meeting.setMeetingId(dto.getId());
-    meeting.setTitle(dto.getTitle());
-    meeting.setDescription(dto.getDescription());
-    meeting.setMeetingDate(dto.getMeetingDate());
-    meeting.setMeetingLocation(dto.getMeetingLocation());
-    meeting.setStatus(dto.getStatus());
-    meeting.setCreatedAt(dto.getCreatedAt());
+    // ========= DTO → ENTITY =========
+    default Meeting toEntity(MeetingDTO dto) {
 
-    return meeting;
-}
+        Meeting meeting = new Meeting();
+
+        meeting.setMeetingId(dto.getMeetingId());
+        meeting.setTitle(dto.getTitle());
+        meeting.setMeetingDate(dto.getMeetingDate());
+        meeting.setDescription(dto.getDescription());
+        meeting.setMeetingLocation(dto.getMeetingLocation());
+        meeting.setStatus(dto.getStatus());
+        meeting.setCreatedAt(dto.getCreatedAt());
+
+        // ⭐ project יוגדר בקונטרולר
+        return meeting;
+    }
 }

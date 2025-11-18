@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MeetingsService } from '../../../../services/meetings.service';
+import { MeetingDTO } from '../../../../models/meeting-dto.model';
 
 @Component({
   selector: 'app-meetings',
@@ -10,7 +11,7 @@ import { MeetingsService } from '../../../../services/meetings.service';
   styleUrls: ['./meetings.component.css']
 })
 export class MeetingsComponent implements OnInit {
-  meetings: any[] = [];
+  meetings: MeetingDTO[] = [];
   loading = true;
   error: string | null = null;
 
@@ -22,25 +23,26 @@ export class MeetingsComponent implements OnInit {
 
   loadMeetings(): void {
     this.meetingsService.getMyMeetings().subscribe({
-      next: (data:any) => {
+      next: (data: MeetingDTO[]) => {
         this.meetings = data.sort(
-          (a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime()
+          (a: MeetingDTO, b: MeetingDTO) =>
+            new Date(a.meetingDate!).getTime() - new Date(b.meetingDate!).getTime()
         );
         this.loading = false;
       },
-      error: (err: any) => {
-        console.error('❌ Failed to load meetings', err);
+      error: () => {
         this.error = 'Failed to load your meetings.';
         this.loading = false;
       }
     });
   }
 
-  isPast(date: string): boolean {
+  isPast(date: string | undefined): boolean {
+    if (!date) return false;
     return new Date(date) < new Date();
   }
 
-  formatDate(date: string): string {
-    return new Date(date).toLocaleString();
+  formatDate(date: string | undefined): string {
+    return date ? new Date(date).toLocaleString() : '-';
   }
 }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReportsService } from '../../../../services/reports.service';
 import { ProjectsService } from '../../../../services/projects.service';
+import { AuthService } from '../../../../services/auth.service';
 
 @Component({
   selector: 'app-add-report',
@@ -12,22 +13,42 @@ import { ProjectsService } from '../../../../services/projects.service';
   styleUrls: ['./add-report.component.css']
 })
 export class AddReportComponent implements OnInit {
+
   projects: any[] = [];
   selectedProjectId: number | null = null;
   title: string = '';
   description: string = '';
   status: string = 'OPEN';
+  hours: number = 8;            // ⬅ הוספתי ברירת מחדל
   successMessage = '';
   errorMessage = '';
   loading = false;
 
+  currentUserId: number | null = null;   // ⬅ חובה לשרת
+
   constructor(
     private reportsService: ReportsService,
-    private projectsService: ProjectsService
+    private projectsService: ProjectsService,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
-    this.loadProjects();
+    this.loadUser();
+  }
+
+  loadUser() {
+    const stored = localStorage.getItem('user');
+    if (!stored) return;
+
+    const email = JSON.parse(stored).email;
+
+    this.auth.getUserByEmail(email).subscribe({
+      next: (u) => {
+        this.currentUserId = u.id;
+        this.loadProjects();
+      },
+      error: () => this.errorMessage = 'Failed to load user info.'
+    });
   }
 
   loadProjects(): void {
@@ -43,15 +64,25 @@ export class AddReportComponent implements OnInit {
       return;
     }
 
+    if (!this.currentUserId) {
+      this.errorMessage = 'User not found.';
+      return;
+    }
+
+    const today = new Date().toISOString().split('T')[0]; // yyyy-MM-dd
+
     const reportData = {
       projectId: this.selectedProjectId,
-      title: this.title,
-      description: this.description,
-      status: this.status
+      userId: this.currentUserId,      // ⬅ חובה
+      date: today,                     // ⬅ חובה לשרת
+      hours: this.hours,               // ⬅ חובה
+      status: this.status,
+      description: this.description    // ⬅ בשרת זה "description" ולא "title"
     };
 
     this.loading = true;
-    this.reportsService.create(reportData).subscribe({
+
+    this.reportsService.addReport(reportData).subscribe({
       next: () => {
         this.successMessage = 'Report submitted successfully!';
         this.errorMessage = '';
@@ -72,5 +103,6 @@ export class AddReportComponent implements OnInit {
     this.title = '';
     this.description = '';
     this.status = 'OPEN';
+    this.hours = 8;
   }
 }

@@ -96,22 +96,7 @@ export class OverviewComponent implements OnInit {
     });
 
     // Reports
-    this.reportsService.getAll().subscribe({
-      next: (reports: ReportDTO[]) => {
-        this.totalReports = reports.length;
-
-        this.recentReports = [...reports]
-          .sort((a, b) => (b.reportDate ?? '').localeCompare(a.reportDate ?? ''))
-          .slice(0, 5);
-
-        done();
-      },
-      error: err => {
-        console.error('Error loading reports', err);
-        this.error = this.error ?? 'Failed to load some data from server.';
-        done();
-      }
-    });
+const safeReports: any[] = [];
 
     // Meetings
     this.meetingsService.getAll().subscribe({

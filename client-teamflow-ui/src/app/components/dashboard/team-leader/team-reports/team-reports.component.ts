@@ -1,47 +1,104 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ReportsService } from '../../../../services/reports.service';
+import { UsersService } from '../../../../services/users.service';
+import { AuthService } from '../../../../services/auth.service';
+import { API_BASE_URL } from '../../../../app.config';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-team-reports',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule, DatePipe],
   templateUrl: './team-reports.component.html',
   styleUrls: ['./team-reports.component.css']
 })
 export class TeamReportsComponent implements OnInit {
-  reports: any[] = [];
-  loading = true;
-  error: string | null = null;
 
-  constructor(private reportsService: ReportsService) {}
+  leaderId: number = 0;
+  teamReports: any[] = [];
+
+  selectedReport: any = null;
+  comments: any[] = [];
+  newComment: string = '';
+  panelOpen: boolean = false;
+
+  constructor(
+    private reportsService: ReportsService,
+    private usersService: UsersService,
+    private auth: AuthService,
+    private http: HttpClient
+  ) {}
 
   ngOnInit(): void {
-    this.loadReports();
+    this.loadLeaderId();
   }
 
-  loadReports(): void {
-    this.reportsService.getAll().subscribe({
-      next: (data) => {
-        // 🔹 כאן תוכלי לסנן רק את הדוחות של העובדים בצוות שלך (אם יש שדה כזה)
-        this.reports = data.filter((r: any) => r.status !== 'ARCHIVED');
-        this.loading = false;
+  /** ✨ שליפת ה־leaderId מהעוגייה באמצעות אימייל */
+  loadLeaderId() {
+    const email = this.auth.getCurrentUserEmail();
+    if (!email) {
+      console.error('❌ No email in cookie');
+      return;
+    }
+
+    this.usersService.getByEmail(email).subscribe({
+      next: user => {
+        this.leaderId = user.id;
+        this.loadReports();
       },
-      error: (err) => {
-        console.error('❌ Failed to load reports', err);
-        this.error = 'Failed to load team reports.';
-        this.loading = false;
-      }
+      error: err => console.error(err)
     });
   }
 
-  getStatusColor(status: string): string {
-    switch (status) {
-      case 'OPEN': return '#ff9800';
-      case 'IN_REVIEW': return '#03a9f4';
-      case 'APPROVED': return '#4caf50';
-      case 'REJECTED': return '#f44336';
-      default: return '#cfd9e4';
-    }
+  /** 🔥 שליפת כל הדוחות של הצוות */
+  loadReports() {
+    this.http.get<any[]>(`${API_BASE_URL}/reports/byLeader/${this.leaderId}`, {
+      withCredentials: true
+    }).subscribe({
+      next: reps => {
+        this.teamReports = reps;
+      },
+      error: err => console.error(err)
+    });
+  }
+
+  /** 🔥 פתיחת חלון תגובות + טעינת תגובות */
+  openPanel(report: any) {
+    this.selectedReport = report;
+    this.panelOpen = true;
+
+    this.http.get<any[]>(`${API_BASE_URL}/report-comments/${report.id}`, {
+      withCredentials: true
+    }).subscribe({
+      next: comments => this.comments = comments,
+      error: err => console.error(err)
+    });
+  }
+
+  closePanel() {
+    this.panelOpen = false;
+    this.selectedReport = null;
+    this.newComment = '';
+    this.comments = [];
+  }
+
+  /** ✨ הוספת תגובה */
+  submitComment() {
+    if (!this.newComment.trim()) return;
+
+    const body = { text: this.newComment };
+
+    this.http.post(`${API_BASE_URL}/report-comments/add/${this.selectedReport.id}`,
+      body,
+      { withCredentials: true }
+    ).subscribe({
+      next: () => {
+        this.newComment = '';
+        this.openPanel(this.selectedReport); // Reload panel
+      },
+      error: err => console.error('❌ Error adding comment:', err)
+    });
   }
 }

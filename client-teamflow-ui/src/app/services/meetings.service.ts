@@ -21,9 +21,10 @@ export class MeetingsService {
     return this.http.get<MeetingDTO>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
 
-  create(meeting: Partial<MeetingDTO>): Observable<MeetingDTO> {
-    return this.http.post<MeetingDTO>(this.baseUrl, meeting, { withCredentials: true });
-  }
+create(meeting: Partial<MeetingDTO>): Observable<MeetingDTO> {
+  return this.http.post<MeetingDTO>(`${this.baseUrl}/create`, meeting, { withCredentials: true });
+}
+
 
   update(id: number, meeting: Partial<MeetingDTO>): Observable<MeetingDTO> {
     return this.http.put<MeetingDTO>(`${this.baseUrl}/${id}`, meeting, { withCredentials: true });
@@ -32,8 +33,18 @@ export class MeetingsService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
-  getMyMeetings() {
-  return this.http.get<any[]>(`${API_BASE_URL}/meetings/byEmployee`, { withCredentials: true });
+getMyMeetings(): Observable<MeetingDTO[]> {
+  return this.http.get<MeetingDTO[]>(
+    `${API_BASE_URL}/meetings/my`,
+    { withCredentials: true }
+  );
 }
+getTeamMeetings(projectId: number) {
+  return this.http.get<MeetingDTO[]>(
+    `${API_BASE_URL}/meetings/team/${projectId}`,
+    { withCredentials: true }
+  );
+}
+
 
 }

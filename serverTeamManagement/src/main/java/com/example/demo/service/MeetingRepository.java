@@ -8,9 +8,9 @@ import java.util.List;
 
 @Repository
 public interface MeetingRepository extends JpaRepository<Meeting, Long> {
+    List<Meeting> findByProject_ProjectIdIn(List<Long> projectIds);
 
     List<Meeting> findByProject_ProjectId(Long projectId);
-
     // ✔ פגישות לפי העובד המחובר
     List<Meeting> findByProject_ProjectEmployeeProjects_User_Email(String email);
 }

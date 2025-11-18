@@ -46,16 +46,16 @@
       <input type="number" min="0" max="100" [(ngModel)]="newProject.progress">
     </div>
 
-    <div class="form-row">
-      <label>Team Leader</label>
-      <select [(ngModel)]="newProject.leaderId"
-              (ngModelChange)="onNewLeaderChange($event)">
-        <option [ngValue]="null">-- Select leader --</option>
-        <option *ngFor="let leader of teamLeaders" [value]="leader.id">
-          {{ leader.name }} ({{ leader.email }})
-        </option>
-      </select>
-    </div>
+<div class="form-row">
+  <label>Team Leader</label>
+  <select [(ngModel)]="newProject.leaderId"
+          (ngModelChange)="onNewLeaderChange($event)">
+    <option [ngValue]="null">-- Select leader --</option>
+    <option *ngFor="let leader of teamLeaders" [ngValue]="leader.id">
+      {{ leader.name }} ({{ leader.email }})
+    </option>
+  </select>
+</div>
 
     <!-- עובדים – רק מצוות המנהל שנבחר -->
     <div class="form-row">
@@ -131,16 +131,17 @@
       <input type="number" min="0" max="100" [(ngModel)]="editingProject!.progress">
     </div>
 
-    <div class="form-row">
-      <label>Team Leader</label>
-      <select [(ngModel)]="editingProject!.leaderId"
-              (ngModelChange)="onEditLeaderChange($event)">
-        <option [ngValue]="null">-- Select leader --</option>
-        <option *ngFor="let leader of teamLeaders" [value]="leader.id">
-          {{ leader.name }} ({{ leader.email }})
-        </option>
-      </select>
-    </div>
+<div class="form-row">
+  <label>Team Leader</label>
+  <select [(ngModel)]="editingProject!.leaderId"
+          (ngModelChange)="onEditLeaderChange($event)">
+    <option [ngValue]="null">-- Select leader --</option>
+    <option *ngFor="let leader of teamLeaders" [ngValue]="leader.id">
+      {{ leader.name }} ({{ leader.email }})
+    </option>
+  </select>
+</div>
+
 
     <!-- עובדים – רק מצוות המנהל שנבחר -->
     <div class="form-row">

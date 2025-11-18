@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.ReportDTO;
+import com.example.demo.model.EmployeeInProject;
 import com.example.demo.model.Report;
+import com.example.demo.service.EmployeeInProjectRepository;
 import com.example.demo.service.ReportMapper;
 import com.example.demo.service.ReportRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +25,8 @@ public class ReportController {
     @Autowired
     private ReportMapper reportMapper;
 
+    @Autowired
+    private EmployeeInProjectRepository employeeInProjectRepository;
     @GetMapping
     public List<ReportDTO> getAllReports() {
         return reportRepository.findAll()
@@ -38,11 +43,32 @@ public class ReportController {
     }
 
     @PostMapping
-    public ReportDTO createReport(@RequestBody ReportDTO reportDTO) {
-        Report report = reportMapper.reportDTOToReport(reportDTO);
-        Report savedReport = reportRepository.save(report);
-        return reportMapper.reportToReportDTO(savedReport);
+    public ReportDTO createReport(@RequestBody ReportDTO dto) {
+
+        if (dto.getProjectId() == null || dto.getUserId() == null)
+            throw new RuntimeException("projectId and userId are required");
+
+        // מוצאים את המשבצת של המשתמש בפרויקט
+        EmployeeInProject link = employeeInProjectRepository
+                .findByUser_IdAndProject_ProjectId(dto.getUserId(), dto.getProjectId())
+                .orElseThrow(() -> new RuntimeException("User is not assigned to this project"));
+
+        Report report = new Report();
+        report.setReportTitle(dto.getTitle());
+        report.setReportDescription(dto.getDescription());
+        report.setReportStatus(dto.getStatus());
+
+        report.setReportDate(dto.getDate());
+        report.setLastEdited(LocalDate.now());
+
+        // שייכות הדוח
+        report.setReportEmployeeInProject(link);
+
+        Report saved = reportRepository.save(report);
+
+        return reportMapper.reportToReportDTO(saved);
     }
+
 
     @PutMapping("/{id}")
     public ReportDTO updateReport(@PathVariable Long id, @RequestBody ReportDTO reportDTO) {
@@ -99,4 +125,23 @@ public class ReportController {
                 .map(reportMapper::reportToReportDTO)
                 .collect(Collectors.toList());
     }
+    @GetMapping("/byLeader/{leaderId}")
+    public List<ReportDTO> getReportsForLeader(@PathVariable Long leaderId) {
+
+        // 1. מוצאים את כל העובדים בצוות של המנהל
+        List<EmployeeInProject> teamMembers =
+                employeeInProjectRepository.findByProject_ProjectLeader_Id(leaderId);
+
+        // 2. מוצאים עבור כל אחד את כל הדוחות
+        List<Report> reports = teamMembers.stream()
+                .flatMap(member -> reportRepository.findByReportEmployeeInProject_EmployeeProjectId(member.getEmployeeProjectId())
+                        .stream())
+                .collect(Collectors.toList());
+
+        // 3. ממפים ל-DTO
+        return reports.stream()
+                .map(reportMapper::reportToReportDTO)
+                .collect(Collectors.toList());
+    }
+
 }

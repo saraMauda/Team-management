@@ -46,6 +46,28 @@ signin(email: string, password: string) {
 }
 
 
+getUserByEmail(email: string) {
+  return this.http.get<any>(`${API_BASE_URL}/users/by-email/${email}`,
+    { withCredentials: true }
+  );
+}
+  /** קריאת המשתמש מה־localStorage */
+  getCurrentUser(): any | null {
+    const raw = localStorage.getItem('user');
+    if (!raw) return null;
+
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  }
+
+  /** החזרת אימייל המשתמש המחובר */
+  getCurrentUserEmail(): string | null {
+    const u = this.getCurrentUser();
+    return u?.email ?? null;
+  }
 
 
   /** התנתקות */

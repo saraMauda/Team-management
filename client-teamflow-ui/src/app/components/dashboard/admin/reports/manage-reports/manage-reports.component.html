@@ -1,1 +1,61 @@
-<p>manage-reports works!</p>
+<div class="admin-reports-page">
+
+  <h1 class="page-title">Reports Management</h1>
+  <p class="page-subtitle">View reports sorted by teams</p>
+
+  <!-- TEAM BLOCK -->
+  <div class="team-wrapper" *ngFor="let team of teams">
+
+    <div class="team-card">
+
+      <h2 class="team-title">Team Leader: {{ team.leaderName }}</h2>
+      <p class="team-email">📧 {{ team.leaderEmail }}</p>
+
+      <!-- EMPLOYEES LIST -->
+      <div class="employee-card" *ngFor="let emp of team.members">
+
+        <div class="employee-header" (click)="toggleEmployee(emp)">
+          <span class="emp-name">👤 {{ emp.name }}</span>
+          <span class="arrow">{{ expandedEmployee === emp.id ? "▲" : "▼" }}</span>
+        </div>
+
+        <!-- EMPLOYEE REPORTS -->
+        <div class="reports-list" *ngIf="expandedEmployee === emp.id">
+
+          <div *ngIf="employeeReports.length === 0" class="no-reports">
+            No reports for this employee
+          </div>
+
+          <div class="report-row"
+               *ngFor="let r of employeeReports"
+               (click)="openReport(r)">
+
+            <h4>Report #{{ r.reportId }}</h4>
+            <p><strong>Date:</strong> {{ r.reportDate }}</p>
+            <p class="desc">{{ r.description }}</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SIDE PANEL -->
+  <div class="panel" *ngIf="selectedReport">
+
+    <button class="close-btn" (click)="closePanel()">✖</button>
+
+    <h2>Report Details</h2>
+
+    <p><strong>ID:</strong> {{ selectedReport.reportId }}</p>
+    <p><strong>Date:</strong> {{ selectedReport.reportDate }}</p>
+
+    <strong>Description:</strong>
+    <div class="panel-box">
+      {{ selectedReport.description }}
+    </div>
+
+  </div>
+
+</div>

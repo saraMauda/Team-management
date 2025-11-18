@@ -1,101 +1,152 @@
-<div class="my-projects-wrapper" *ngIf="!loading; else loadingTpl">
-  <h2 class="title">My Projects</h2>
+<div class="team-projects-wrapper" *ngIf="!loading; else loadingTpl">
+  <h2 class="page-title">My Team Projects</h2>
+  <p class="subtitle">Manage your projects, progress and team members.</p>
 
-  <div *ngIf="error" class="error-msg">{{ error }}</div>
+  <div *ngIf="error" class="error-box">{{ error }}</div>
 
-  <div class="projects-grid" *ngIf="projects.length > 0; else noProjectsTpl">
+  <div *ngIf="projects.length === 0 && !error" class="empty-box">
+    You currently have no projects as a team leader.
+  </div>
+
+  <div class="projects-grid" *ngIf="projects.length > 0">
 
     <div class="project-card" *ngFor="let p of projects">
-      <h3>{{ p.name }}</h3>
 
-      <p class="desc">
-        {{ p.description || 'No description available.' }}
+      <!-- HEADER -->
+      <div class="card-header">
+        <div>
+          <h3 class="project-name">{{ p.name }}</h3>
+          <div class="dates">
+            {{ p.startDate || 'No start date' }} →
+            {{ p.endDate || 'No end date' }}
+          </div>
+        </div>
+
+        <span class="status-chip"
+              [ngClass]="{
+                'active': p.status === 'ACTIVE',
+                'completed': p.status === 'COMPLETED',
+                'onhold': p.status === 'ON_HOLD'
+              }">
+          {{ p.status }}
+        </span>
+      </div>
+
+      <!-- DESCRIPTION -->
+      <p class="description">
+        {{ p.description || 'No description provided.' }}
       </p>
 
+      <!-- PROGRESS -->
+      <div class="progress-row">
+        <span>Progress</span>
+        <span class="progress-value">{{ p.progress || 0 }}%</span>
+      </div>
+
       <div class="progress-bar">
-        <div
-          class="progress"
-          [style.width.%]="p.progress"
-          [style.background]="getProgressColor(p.progress)">
+        <div class="progress-fill"
+             [style.width.%]="p.progress || 0"
+             [style.background]="getProgressColor(p.progress)">
         </div>
       </div>
 
-      <div class="row">
-        <span class="label">Status:</span>
-        <span>{{ p.status }}</span>
+      <!-- EMPLOYEES INFO -->
+      <div class="employees-row">
+        <span class="label">Employees:</span>
+        <span class="employees-list">
+          <ng-container *ngIf="p.employeeIds!.length > 0; else noEmp">
+            {{ p.employeeIds!.length }} employees assigned
+          </ng-container>
+          <ng-template #noEmp>No employees assigned</ng-template>
+        </span>
       </div>
 
-      <div class="row">
-        <span class="label">Leader:</span>
-        <span>{{ p.leaderName }}</span>
-      </div>
-
-      <div class="actions">
+      <!-- ACTIONS -->
+      <div class="card-actions">
         <button class="edit-btn" (click)="openEdit(p)">Edit</button>
       </div>
 
+      <!-- EDIT PANEL -->
+      <div class="edit-panel" *ngIf="editingProject?.id === p.id">
+
+        <h4>Edit Project</h4>
+
+        <div class="form-grid">
+
+          <div class="form-field">
+            <label>Name</label>
+            <input type="text" [(ngModel)]="editingProject!.name">
+          </div>
+
+          <div class="form-field">
+            <label>Status</label>
+            <select [(ngModel)]="editingProject!.status">
+              <option value="ACTIVE">Active</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="ON_HOLD">On Hold</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label>Start Date</label>
+            <input type="date" [(ngModel)]="editingProject!.startDate">
+          </div>
+
+          <div class="form-field">
+            <label>End Date</label>
+            <input type="date" [(ngModel)]="editingProject!.endDate">
+          </div>
+
+          <div class="form-field">
+            <label>Progress</label>
+            <input type="number" min="0" max="100"
+                   [(ngModel)]="editingProject!.progress">
+          </div>
+
+          <div class="form-field full">
+            <label>Description</label>
+            <textarea [(ngModel)]="editingProject!.description"></textarea>
+          </div>
+
+          <!-- TEAM EMPLOYEES LIST -->
+          <div class="form-field full">
+            <label>Team Members</label>
+
+            <div class="chips-container">
+
+              <div *ngIf="leaderTeamMembers.length === 0" class="hint-text">
+                No team members assigned.
+              </div>
+
+              <label class="chip" *ngFor="let emp of leaderTeamMembers">
+                <input type="checkbox"
+                       [checked]="editingProject!.employeeIds!.includes(emp.id!)"
+                       (change)="toggleEmployee($event, emp.id!)">
+                <span class="chip-avatar">{{ emp.name?.charAt(0) }}</span>
+                <span class="chip-name">{{ emp.name }}</span>
+              </label>
+
+            </div>
+          </div>
+
+        </div>
+
+        <div class="edit-actions">
+          <button class="save-btn"
+                  (click)="updateProject()"
+                  [disabled]="saving">
+            {{ saving ? 'Saving...' : 'Save Changes' }}
+          </button>
+
+          <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
+        </div>
+
+      </div>
+
     </div>
   </div>
 </div>
 
-<!-- עריכה -->
-<div class="edit-overlay" *ngIf="showEditForm && editingProject">
-  <div class="edit-panel">
-
-    <h3>Edit Project</h3>
-
-    <div class="form-group">
-      <label>Name</label>
-      <input type="text" [(ngModel)]="editingProject.name">
-    </div>
-
-    <div class="form-group">
-      <label>Description</label>
-      <textarea [(ngModel)]="editingProject.description"></textarea>
-    </div>
-
-    <div class="form-group">
-      <label>Start Date</label>
-      <input type="date" [(ngModel)]="editingProject.startDate">
-    </div>
-
-    <div class="form-group">
-      <label>End Date</label>
-      <input type="date" [(ngModel)]="editingProject.endDate">
-    </div>
-
-    <div class="form-group">
-      <label>Status</label>
-      <select [(ngModel)]="editingProject.status">
-        <option value="ACTIVE">Active</option>
-        <option value="COMPLETED">Completed</option>
-        <option value="ON_HOLD">On Hold</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Progress (0–100)</label>
-      <input type="number" min="0" max="100" [(ngModel)]="editingProject.progress">
-    </div>
-
-    <div class="actions-row">
-      <button class="save-btn" (click)="updateProject()" [disabled]="saving">
-        {{ saving ? 'Saving...' : 'Save' }}
-      </button>
-
-      <button class="cancel-btn" (click)="cancelEdit()">
-        Cancel
-      </button>
-    </div>
-
-  </div>
-</div>
-
-<!-- תבניות מצב -->
 <ng-template #loadingTpl>
-  <div class="loading">Loading projects...</div>
-</ng-template>
-
-<ng-template #noProjectsTpl>
-  <div class="no-projects">No projects assigned to you.</div>
+  <div class="loading-box">Loading projects...</div>
 </ng-template>

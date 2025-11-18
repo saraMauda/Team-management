@@ -73,11 +73,12 @@ export class ManageProjectsComponent implements OnInit {
     private teamService: TeamService
   ) {}
 
-  ngOnInit(): void {
-    this.loadProjects();
-    this.loadUsers();
-    this.loadTeams();
-  }
+ngOnInit(): void {
+  this.loadUsers();     // קודם משתמשים
+  this.loadTeams();     // אחר־כך צוותים
+  this.loadProjects();  // אחר־כך פרויקטים
+}
+
 
   /* ------------------ LOAD DATA ------------------- */
 
@@ -107,20 +108,23 @@ export class ManageProjectsComponent implements OnInit {
       }
     });
   }
+loadTeams(): void {
+  this.teamService.getAllTeams().subscribe({
+    next: (data: TeamDTO[]) => {
+      this.teams = data || [];
 
-  loadTeams(): void {
-    this.teamService.getAllTeams().subscribe({
-      next: (data: TeamDTO[]) => {
-        this.teams = data || [];
-        // אם כבר נבחר Leader בטפסים – נסנכרן מחדש
+      // המתנה קטנה כדי לוודא ש-ngModel הספיק להתעדכן
+      setTimeout(() => {
         this.syncAvailableEmployeesForNew();
         this.syncAvailableEmployeesForEdit();
-      },
-      error: () => {
-        console.error('Failed to load teams');
-      }
-    });
-  }
+      }, 0);
+    },
+    error: () => {
+      console.error('Failed to load teams');
+    }
+  });
+}
+
 
   /* ------------------ HELPERS לצוותים ------------------- */
 

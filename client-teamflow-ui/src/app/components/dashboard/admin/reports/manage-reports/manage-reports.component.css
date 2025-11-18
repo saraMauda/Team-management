@@ -1,0 +1,243 @@
+/* ===== Page base ===== */
+
+.admin-reports-page {
+  padding: 24px 32px;
+  background: #061727;
+  color: #f5f7fa;
+  min-height: calc(100vh - 80px);
+  box-sizing: border-box;
+  display: flex;
+  gap: 24px;
+  direction: ltr;
+}
+
+/* main column with teams */
+
+.admin-reports-page > .team-wrapper {
+  flex: 1;
+}
+
+/* titles */
+
+.page-title {
+  font-size: 24px;
+  margin: 0 0 4px;
+  color: #f28c28;
+}
+
+.page-subtitle {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: #c0ccda;
+}
+
+/* each team card */
+
+.team-wrapper {
+  margin-bottom: 16px;
+}
+
+.team-card {
+  background: #0b2238;
+  border-radius: 16px;
+  border: 1px solid #f28c28;
+  padding: 14px 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.team-title {
+  margin: 0;
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.team-email {
+  margin: 2px 0 10px;
+  font-size: 13px;
+  color: #c0ccda;
+}
+
+/* employee block */
+
+.employee-card {
+  background: rgba(8, 25, 42, 0.9);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  border: 1px solid #243b55;
+}
+
+.employee-header {
+  padding: 8px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  background: rgba(12, 33, 54, 0.95);
+}
+
+.employee-header:hover {
+  background: rgba(20, 52, 82, 0.95);
+}
+
+.emp-name {
+  font-weight: 600;
+}
+
+.arrow {
+  font-size: 12px;
+  color: #c0ccda;
+}
+
+/* reports list per employee */
+
+.reports-list {
+  padding: 6px 10px 10px;
+  max-height: 220px;
+  overflow-y: auto;
+  background: rgba(7, 23, 39, 0.95);
+}
+
+.no-reports {
+  font-size: 13px;
+  color: #9fa8b8;
+  padding: 4px 2px;
+}
+
+/* “rows” inside employee – like mail items */
+
+.report-row {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(10, 30, 50, 0.9);
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease,
+    box-shadow 0.15s ease;
+}
+
+.report-row:hover {
+  background: rgba(16, 50, 80, 0.95);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.report-row h4 {
+  margin: 0 0 2px;
+  font-size: 14px;
+}
+
+.report-row p {
+  margin: 0;
+  font-size: 13px;
+  color: #d4dde7;
+}
+
+.report-row .desc {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #c0ccda;
+}
+
+/* right panel – read only report details */
+
+.panel {
+  flex: 0 0 30%;
+  max-width: 420px;
+  background: #081a2e;
+  border-radius: 16px;
+  border: 1px solid #1d3557;
+  padding: 16px 18px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  position: sticky;
+  top: 24px;
+  align-self: flex-start;
+}
+
+.panel h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #f28c28;
+}
+
+.panel .panel-box {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #0d2034;
+  border: 1px solid #243b55;
+  min-height: 60px;
+  font-size: 14px;
+}
+
+.panel p {
+  margin: 2px 0;
+  font-size: 14px;
+}
+
+.panel .close-btn {
+  float: right;
+  margin-left: 8px;
+  background: transparent;
+  border: 1px solid #f28c28;
+  color: #f28c28;
+  border-radius: 999px;
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.panel .close-btn:hover {
+  background: #f28c28;
+  color: #061727;
+}
+
+/* Scrollbars */
+
+.reports-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.reports-list::-webkit-scrollbar-thumb {
+  background: #243b55;
+  border-radius: 4px;
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 1100px) {
+  .admin-reports-page {
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .panel {
+    position: static;
+    max-width: 100%;
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-reports-page {
+    padding: 12px;
+  }
+
+  .team-card {
+    padding: 10px 12px;
+  }
+
+  .employee-header {
+    font-size: 13px;
+  }
+
+  .report-row {
+    font-size: 13px;
+  }
+}

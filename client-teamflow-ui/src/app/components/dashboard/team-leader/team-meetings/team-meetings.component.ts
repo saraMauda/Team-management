@@ -1,47 +1,123 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MeetingsService } from '../../../../services/meetings.service';
+import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+
+import { API_BASE_URL } from '../../../../app.config';
+import { AuthService } from '../../../../services/auth.service';
+import { UsersService } from '../../../../services/users.service';
+import { ProjectsService } from '../../../../services/projects.service';
 
 @Component({
   selector: 'app-team-meetings',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './team-meetings.component.html',
   styleUrls: ['./team-meetings.component.css']
 })
 export class TeamMeetingsComponent implements OnInit {
-  meetings: any[] = [];
-  loading = true;
-  error: string | null = null;
 
-  constructor(private meetingsService: MeetingsService) {}
+  leaderId: number | null = null;
+
+  meetings: any[] = [];
+  projects: any[] = [];     // יעלה לפרונט כמו ב־TeamProjects
+  leaderProjects: any[] = []; // תוצאה מסוננת לפי leaderId
+
+  showAddForm = false;
+
+  newMeeting = {
+    projectId: 0,
+    title: '',
+    description: '',
+    meetingLocation: '',
+    meetingDate: '',
+    status: 'Scheduled'
+  };
+
+  constructor(
+    private http: HttpClient,
+    private auth: AuthService,
+    private usersService: UsersService,
+    private projectsService: ProjectsService
+  ) {}
 
   ngOnInit(): void {
-    this.loadMeetings();
+    this.loadCurrentLeader();
   }
 
-  loadMeetings(): void {
-    this.meetingsService.getAll().subscribe({
-      next: (data) => {
-        // כאן אפשר לסנן ישיבות לפי ראש הצוות, אם יש שדה מתאים ב־API
-        this.meetings = data.sort(
-          (a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
-        this.loading = false;
+  /** ✔ אותו מודל בדיוק כמו TeamProjects */
+  loadCurrentLeader(): void {
+    const stored = localStorage.getItem('user');
+    if (!stored) {
+      console.error("❌ No user in localStorage");
+      return;
+    }
+
+    const obj = JSON.parse(stored);
+    const email = obj.email;
+
+    this.auth.getUserByEmail(email).subscribe({
+      next: user => {
+        this.leaderId = user.id;
+        this.loadProjectsForLeader();
+        this.loadMeetings();
       },
-      error: (err) => {
-        console.error('❌ Failed to load meetings', err);
-        this.error = 'Failed to load meetings.';
-        this.loading = false;
-      }
+      error: () => console.error("❌ Cannot load leader user")
     });
   }
 
-  isPast(date: string): boolean {
-    return new Date(date) < new Date();
+  /** ✔ כמו TeamProjects → load all → filter */
+  loadProjectsForLeader(): void {
+    this.projectsService.getAll().subscribe({
+      next: (all: any[]) => {
+        this.projects = all || [];
+        this.leaderProjects = this.projects.filter(p => p.leaderId === this.leaderId);
+        console.log("Leader Projects:", this.leaderProjects);
+      },
+      error: () => console.error("❌ Failed loading all projects")
+    });
   }
 
-  formatDate(date: string): string {
-    return new Date(date).toLocaleString();
+  /** ✔ מביאים את כל הפגישות */
+  loadMeetings() {
+    this.http.get<any[]>(`${API_BASE_URL}/meetings`, {
+      withCredentials: true
+    }).subscribe({
+      next: (data) => {
+        this.meetings = data;
+      },
+      error: err => console.error("❌ Error loading meetings:", err)
+    });
+  }
+
+  toggleAddForm() {
+    this.showAddForm = !this.showAddForm;
+  }
+
+  /** ✔ יצירת פגישה */
+  createMeeting() {
+    if (this.newMeeting.projectId === 0) {
+      alert("Please select a project!");
+      return;
+    }
+
+    this.http.post(`${API_BASE_URL}/meetings/create`, this.newMeeting, {
+      withCredentials: true
+    }).subscribe({
+      next: () => {
+        this.toggleAddForm();
+        this.loadMeetings();
+
+        this.newMeeting = {
+          projectId: 0,
+          title: '',
+          description: '',
+          meetingLocation: '',
+          meetingDate: '',
+          status: 'Scheduled'
+        };
+      },
+      error: err => console.error("❌ Error creating meeting:", err)
+    });
   }
 }

@@ -1,16 +1,18 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.MeetingDTO;
+import com.example.demo.model.EmployeeInProject;
 import com.example.demo.model.Meeting;
-import com.example.demo.service.MeetingMapper;
-import com.example.demo.service.MeetingRepository;
+import com.example.demo.model.Project;
+import com.example.demo.model.Users;
+import com.example.demo.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/meetings")
@@ -20,67 +22,108 @@ public class MeetingController {
     private MeetingRepository meetingRepository;
 
     @Autowired
+    private ProjectRepository projectRepository;
+
+    @Autowired
+    private EmployeeInProjectRepository employeeInProjectRepository;
+
+    @Autowired
+    private UsersRepository usersRepository;
+
+    @Autowired
     private MeetingMapper meetingMapper;
 
+    // =====================================
+    // 1. עובד רגיל – רואה meetings של עצמו
+    // =====================================
+    @GetMapping("/my")
+    @PreAuthorize("hasRole('EMPLOYEE') or hasRole('TEAMLEADER')")
+    public List<MeetingDTO> getMyMeetings(Authentication auth) {
+
+        Users user = usersRepository.findByEmail(auth.getName());
+
+        List<EmployeeInProject> links =
+                employeeInProjectRepository.findByUser_Id(user.getId());
+
+        List<Long> projectIds = links.stream()
+                .map(ep -> ep.getProject().getProjectId())
+                .toList();
+
+        List<Meeting> meetings =
+                meetingRepository.findByProject_ProjectIdIn(projectIds);
+
+        return meetings.stream().map(meetingMapper::toDTO).toList();
+    }
+
+    // ==========================================
+    // 2. ראש צוות – רואה פגישות של פרויקט שלו
+    // ==========================================
+    @GetMapping("/team/{projectId}")
+    @PreAuthorize("hasRole('TEAMLEADER')")
+    public List<MeetingDTO> getTeamMeetings(@PathVariable Long projectId,
+                                            Authentication auth) {
+
+        Users leader = usersRepository.findByEmail(auth.getName());
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+
+        // בדיקה נכונה — מנהל הפרויקט
+        if (project.getProjectLeader() == null ||
+                !project.getProjectLeader().getId().equals(leader.getId())) {
+
+            throw new RuntimeException("You are not the team leader of this project");
+        }
+
+        List<Meeting> meetings =
+                meetingRepository.findByProject_ProjectId(projectId);
+
+        return meetings.stream().map(meetingMapper::toDTO).toList();
+    }
+
+    // ============================
+    // 3. יצירת פגישת צוות — מנהל בלבד
+    // ============================
+    @PostMapping("/create")
+    @PreAuthorize("hasRole('TEAMLEADER')")
+    public MeetingDTO createMeeting(@RequestBody MeetingDTO dto,
+                                    Authentication auth) {
+
+        Users leader = usersRepository.findByEmail(auth.getName());
+
+        Project project = projectRepository.findById(dto.getProjectId())
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+
+        // בדיקה נכונה — מנהל הפרויקט
+        if (project.getProjectLeader() == null ||
+                !project.getProjectLeader().getId().equals(leader.getId())) {
+
+            throw new RuntimeException("You are not the team leader of this project");
+        }
+
+        Meeting meeting = meetingMapper.toEntity(dto);
+        meeting.setCreatedAt(LocalDateTime.now());
+        meeting.setProject(project);
+
+        meetingRepository.save(meeting);
+
+        return meetingMapper.toDTO(meeting);
+    }
+
+    // ============================
+    // 4. אדמין רואה הכול
+    // ============================
     @GetMapping
-    public List<MeetingDTO> getAllMeetings() {
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<MeetingDTO> getAll() {
         return meetingRepository.findAll()
-                .stream()
-                .map(meetingMapper::meetingToMeetingDTO)
-                .collect(Collectors.toList());
+                .stream().map(meetingMapper::toDTO).toList();
     }
 
-    @GetMapping("/{id}")
-    public MeetingDTO getMeetingById(@PathVariable Long id) {
-        Meeting meeting = meetingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Meeting not found"));
-        return meetingMapper.meetingToMeetingDTO(meeting);
-    }
-
-    @PostMapping
-    public MeetingDTO createMeeting(@RequestBody MeetingDTO meetingDTO) {
-        Meeting meeting = meetingMapper.meetingDTOToMeeting(meetingDTO);
-        Meeting savedMeeting = meetingRepository.save(meeting);
-        return meetingMapper.meetingToMeetingDTO(savedMeeting);
-    }
-
-    @PutMapping("/{id}")
-    public MeetingDTO updateMeeting(@PathVariable Long id, @RequestBody MeetingDTO meetingDTO) {
-        Meeting existing = meetingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Meeting not found"));
-
-        existing.setTitle(meetingDTO.getTitle());
-        existing.setDescription(meetingDTO.getDescription());
-        existing.setMeetingDate(meetingDTO.getMeetingDate());
-        existing.setCreatedAt(meetingDTO.getCreatedAt());
-        existing.setMeetingLocation(meetingDTO.getMeetingLocation());
-        existing.setStatus(meetingDTO.getStatus());
-
-        Meeting updated = meetingRepository.save(existing);
-        return meetingMapper.meetingToMeetingDTO(updated);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteMeeting(@PathVariable Long id) {
-        meetingRepository.deleteById(id);
-    }
-
-    @GetMapping("/byProject/{projectId}")
-    public List<MeetingDTO> getMeetingsByProject(@PathVariable Long projectId) {
+    @GetMapping("/project/{projectId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<MeetingDTO> getByProject(@PathVariable Long projectId) {
         return meetingRepository.findByProject_ProjectId(projectId)
-                .stream()
-                .map(meetingMapper::meetingToMeetingDTO)
-                .collect(Collectors.toList());
-    }
-
-    // ✔ פגישות לעובד מחובר
-    @GetMapping("/byEmployee")
-    @PreAuthorize("hasRole('EMPLOYEE')")
-    public List<MeetingDTO> getMeetingsForLoggedEmployee(Authentication authentication) {
-        String email = authentication.getName();
-        return meetingRepository.findByProject_ProjectEmployeeProjects_User_Email(email)
-                .stream()
-                .map(meetingMapper::meetingToMeetingDTO)
-                .collect(Collectors.toList());
+                .stream().map(meetingMapper::toDTO).toList();
     }
 }

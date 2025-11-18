@@ -18,6 +18,12 @@ public class TeamMapper {
         this.usersMapper = usersMapper;
     }
 
+    // ⭐ פונקציה נוחה שמאפשרת שימוש ב-map()
+    public TeamDTO toDTO(Team team) {
+        return toDTO(team, team.getMembers());
+    }
+
+    // ⭐ הפונקציה המקורית שלך – נשארת בדיוק כמו שהיא רק תקינה
     public TeamDTO toDTO(Team team, List<TeamMember> members) {
         TeamDTO dto = new TeamDTO();
 
@@ -27,7 +33,6 @@ public class TeamMapper {
         dto.setLeaderEmail(team.getLeader().getEmail());
         dto.setLeaderImage(team.getLeader().getImagePath());
 
-        // ❗ משתמש ב־UsersMapper — לא יוצרים UsersDTO לבד
         List<UsersDTO> memberList = members.stream()
                 .map(tm -> usersMapper.userToUsersDTO(tm.getUser()))
                 .collect(Collectors.toList());

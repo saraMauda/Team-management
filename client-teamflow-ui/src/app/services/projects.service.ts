@@ -42,7 +42,10 @@ export class ProjectsService {
   }
 
   /** 🔹 פרויקטים של ראש צוות */
-  getByLeader(leaderId: number): Observable<ProjectDTO[]> {
-    return this.http.get<ProjectDTO[]>(`${this.API}/byLeader/${leaderId}`);
-  }
+  getByLeader(id: number) {
+  return this.http.get<ProjectDTO[]>(`${this.API}/byLeader/${id}`, {
+    withCredentials: true
+  });
+}
+
 }
