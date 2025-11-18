@@ -16,13 +16,14 @@ import { HttpClient } from '@angular/common/http';
 })
 export class TeamReportsComponent implements OnInit {
 
-  leaderId: number = 0;
+  leaderId!: number;
   teamReports: any[] = [];
 
   selectedReport: any = null;
   comments: any[] = [];
-  newComment: string = '';
-  panelOpen: boolean = false;
+  commentsLoading = false;
+  newComment = '';
+  panelOpen = false;
 
   constructor(
     private reportsService: ReportsService,
@@ -31,74 +32,81 @@ export class TeamReportsComponent implements OnInit {
     private http: HttpClient
   ) {}
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.loadLeaderId();
   }
 
-  /** ✨ שליפת ה־leaderId מהעוגייה באמצעות אימייל */
   loadLeaderId() {
     const email = this.auth.getCurrentUserEmail();
-    if (!email) {
-      console.error('❌ No email in cookie');
-      return;
-    }
+    if (!email) return;
 
-    this.usersService.getByEmail(email).subscribe({
-      next: user => {
-        this.leaderId = user.id;
-        this.loadReports();
-      },
-      error: err => console.error(err)
+    this.usersService.getByEmail(email).subscribe(user => {
+      this.leaderId = user.id;
+      this.loadReports();
     });
   }
 
-  /** 🔥 שליפת כל הדוחות של הצוות */
   loadReports() {
     this.http.get<any[]>(`${API_BASE_URL}/reports/byLeader/${this.leaderId}`, {
       withCredentials: true
     }).subscribe({
       next: reps => {
-        this.teamReports = reps;
-      },
-      error: err => console.error(err)
+        this.teamReports = reps.sort(
+          (a, b) => new Date(b.reportDate).getTime() - new Date(a.reportDate).getTime()
+        );
+      }
     });
   }
 
-  /** 🔥 פתיחת חלון תגובות + טעינת תגובות */
   openPanel(report: any) {
     this.selectedReport = report;
     this.panelOpen = true;
+    this.commentsLoading = true;
 
     this.http.get<any[]>(`${API_BASE_URL}/report-comments/${report.id}`, {
       withCredentials: true
     }).subscribe({
-      next: comments => this.comments = comments,
-      error: err => console.error(err)
+      next: comments => {
+        this.comments = comments;
+        this.commentsLoading = false;
+      },
+      error: () => this.commentsLoading = false
     });
   }
 
   closePanel() {
     this.panelOpen = false;
     this.selectedReport = null;
-    this.newComment = '';
     this.comments = [];
+    this.newComment = '';
   }
 
-  /** ✨ הוספת תגובה */
   submitComment() {
     if (!this.newComment.trim()) return;
 
-    const body = { text: this.newComment };
+    const body = {
+      text: this.newComment,
+      userId: this.leaderId
+    };
 
-    this.http.post(`${API_BASE_URL}/report-comments/add/${this.selectedReport.id}`,
+    this.http.post(
+      `${API_BASE_URL}/report-comments/add/${this.selectedReport.id}`,
       body,
       { withCredentials: true }
     ).subscribe({
-      next: () => {
+      next: (createdComment: any) => {
+        this.comments.push(createdComment);
         this.newComment = '';
-        this.openPanel(this.selectedReport); // Reload panel
-      },
-      error: err => console.error('❌ Error adding comment:', err)
+      }
     });
+  }
+
+  getStatusColor(status: string) {
+    switch (status) {
+      case 'APPROVED': return '#4caf50';
+      case 'REJECTED': return '#f44336';
+      case 'IN_REVIEW': return '#ff9800';
+      default: return '#d4dbe4';
+    }
   }
 }

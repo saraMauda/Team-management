@@ -1,10 +1,11 @@
-// src/app/models/report-dto.model.ts
 export interface ReportDTO {
-  reportId: number;
-  employeeProjectId: number;   // קישור ל-EmployeeInProject
-  reportTitle: string;
-  reportDescription?: string;
-  reportStatus?: string;
-  reportDate?: string;         // yyyy-MM-dd
-  lastEdited?: string;         // yyyy-MM-dd
+  id: number;
+  employeeProjectId: number;
+  
+  title: string;
+  description?: string;
+  status?: string;
+  
+  date?: string;
+  lastEdited?: string;
 }

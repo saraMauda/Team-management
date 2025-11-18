@@ -44,7 +44,6 @@ public class ReportController {
 
     @PostMapping
     public ReportDTO createReport(@RequestBody ReportDTO dto) {
-
         if (dto.getProjectId() == null || dto.getUserId() == null)
             throw new RuntimeException("projectId and userId are required");
 
@@ -137,7 +136,6 @@ public class ReportController {
                 .flatMap(member -> reportRepository.findByReportEmployeeInProject_EmployeeProjectId(member.getEmployeeProjectId())
                         .stream())
                 .collect(Collectors.toList());
-
         // 3. ממפים ל-DTO
         return reports.stream()
                 .map(reportMapper::reportToReportDTO)

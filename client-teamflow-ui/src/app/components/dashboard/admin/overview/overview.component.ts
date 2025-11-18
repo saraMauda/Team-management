@@ -51,6 +51,7 @@ export class OverviewComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
+    // חזרנו ל-4 קריאות: Users, Projects, Reports, Meetings
     let pending = 4;
     const done = () => {
       pending--;
@@ -59,7 +60,7 @@ export class OverviewComponent implements OnInit {
       }
     };
 
-    // Users
+    // 1. Users
     this.usersService.getAllUsers().subscribe({
       next: (users: UsersDTO[]) => {
         this.totalUsers = users.length;
@@ -73,7 +74,7 @@ export class OverviewComponent implements OnInit {
       }
     });
 
-    // Projects
+    // 2. Projects
     this.projectsService.getAll().subscribe({
       next: (projects: ProjectDTO[]) => {
         this.totalProjects = projects.length;
@@ -81,7 +82,7 @@ export class OverviewComponent implements OnInit {
           p => (p.status ?? '').toLowerCase() === 'active'
         ).length;
 
-        // recent projects (נניח לפי תאריך התחלה / עדכון – אם אין, ניקח פשוט ראשונים)
+        // recent projects
         this.recentProjects = [...projects]
           .sort((a, b) => (b.startDate ?? '').localeCompare(a.endDate ?? ''))
           .slice(0, 5);
@@ -95,10 +96,26 @@ export class OverviewComponent implements OnInit {
       }
     });
 
-    // Reports
-const safeReports: any[] = [];
+    // 3. Reports (קריאה מתוקנת)
+    this.reportsService.getAll().subscribe({
+      next: (reports: ReportDTO[]) => {
+        this.totalReports = reports.length;
+        
+        // נשתמש בדוחות האחרונים רק אם נרצה להציג אותם שוב ב-HTML
+        this.recentReports = [...reports]
+          .sort((a, b) => (b.date ?? b.lastEdited ?? '').localeCompare(a.date ?? a.lastEdited ?? ''))
+          .slice(0, 5);
 
-    // Meetings
+        done();
+      },
+      error: err => {
+        console.error('Error loading reports', err);
+        this.error = this.error ?? 'Failed to load some data from server.';
+        done();
+      }
+    });
+
+    // 4. Meetings
     this.meetingsService.getAll().subscribe({
       next: (meetings: MeetingDTO[]) => {
         this.totalMeetings = meetings.length;

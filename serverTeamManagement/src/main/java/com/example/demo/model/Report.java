@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ public class Report {
     @JoinColumn(name = "employeeProjectId")
     private EmployeeInProject reportEmployeeInProject;
     @OneToMany(mappedBy = "report")
+    @JsonIgnore
     private List<ReportComment> reportComments;
 
     public Report() {

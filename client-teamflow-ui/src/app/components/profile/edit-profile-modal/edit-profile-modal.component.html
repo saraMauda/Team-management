@@ -1,0 +1,21 @@
+<div class="modal-backdrop" (click)="cancel()"></div>
+
+<div class="modal">
+  <h2>Edit Profile</h2>
+
+  <div class="image-section">
+    <img *ngIf="imagePreview" [src]="imagePreview" class="profile-img" />
+    <input type="file" (change)="onFileSelected($event)">
+  </div>
+
+  <label>Name</label>
+  <input type="text" [(ngModel)]="name">
+
+  <label>Email</label>
+  <input type="email" [(ngModel)]="email">
+
+  <div class="actions">
+    <button class="cancel" (click)="cancel()">Cancel</button>
+    <button class="save" (click)="save()">Save</button>
+  </div>
+</div>

@@ -8,7 +8,6 @@
 
     <div class="meeting-card" *ngFor="let m of meetings">
 
-      <!-- HEADER -->
       <div class="card-header">
         <h3>{{ m.title }}</h3>
 
@@ -28,7 +27,8 @@
         <div><b>Date:</b> {{ formatDate(m.meetingDate) }}</div>
         <div><b>Location:</b> {{ m.meetingLocation || '-' }}</div>
         <div><b>Status:</b> {{ m.status || '-' }}</div>
-        <div><b>Project ID:</b> {{ m.projectId }}</div>
+        
+        <div><b>Project:</b> {{ getProjectName(m.projectId) }}</div>
       </div>
 
       <div class="actions">

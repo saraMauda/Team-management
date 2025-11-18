@@ -9,7 +9,6 @@
     </div>
   </div>
 
-  <!-- הודעה בזמן טעינה / שגיאה -->
   <div *ngIf="loading" class="status-box loading">
     Loading data from server...
   </div>
@@ -17,7 +16,6 @@
     {{ error }}
   </div>
 
-  <!-- Cards row -->
   <div class="cards-row">
     <div class="card">
       <div class="card-title">Users</div>
@@ -52,9 +50,7 @@
     </div>
   </div>
 
-  <!-- Activity / Stats row -->
   <div class="bottom-row">
-    <!-- Left: Activity (פאנל גרפי) -->
     <div class="panel">
       <div class="panel-header">
         <h2>System Activity</h2>
@@ -88,7 +84,6 @@
       </div>
     </div>
 
-    <!-- Right: Recent items -->
     <div class="panel">
       <div class="panel-header">
         <h2>Recent Activity</h2>
@@ -96,7 +91,6 @@
       </div>
 
       <div class="recent-columns">
-        <!-- Recent projects -->
         <div class="recent-column">
           <h3>Projects</h3>
           <ul>
@@ -112,7 +106,6 @@
           </ul>
         </div>
 
-        <!-- Recent meetings -->
         <div class="recent-column">
           <h3>Meetings</h3>
           <ul>

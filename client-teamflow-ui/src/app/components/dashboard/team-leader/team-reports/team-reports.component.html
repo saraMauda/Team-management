@@ -1,65 +1,86 @@
 <div class="reports-page">
+    
+    <div class="inbox" [ngClass]="{'full-width': !panelOpen}">
+        <h2 class="title">Team Reports</h2>
 
-  <!-- LEFT LIST (Inbox style) -->
-  <div class="inbox">
-
-    <h2 class="title">Team Reports</h2>
-
-    <div class="report-item"
-         *ngFor="let report of teamReports"
-         (click)="openPanel(report)"
-         [class.active]="selectedReport?.reportId === report.reportId">
-
-      <div class="item-header">
-        <h3>{{ report.title || 'Untitled Report' }}</h3>
-        <span class="date">{{ report.reportDate | date:'dd/MM/yyyy' }}</span>
-      </div>
-
-      <p class="preview">{{ report.description }}</p>
-
-      <div class="meta">
-        <span class="employee">👤 {{ report.employeeName }}</span>
-      </div>
-
-    </div>
-
-  </div>
-
-  <!-- RIGHT PANEL (like Gmail email view) -->
-  <div class="details-panel" *ngIf="selectedReport">
-
-    <div class="panel-header">
-      <button class="close-btn" (click)="closePanel()">✖</button>
-      <h2>Report Details</h2>
-    </div>
-
-    <div class="report-info">
-      <p><strong>ID:</strong> {{ selectedReport.reportId }}</p>
-      <p><strong>Date:</strong> {{ selectedReport.reportDate }}</p>
-
-      <strong>Description:</strong>
-      <div class="report-box">
-        {{ selectedReport.description }}
-      </div>
-    </div>
-
-    <h3 class="comments-title">Comments</h3>
-
-    <div class="comments-list">
-      <div class="comment-item" *ngFor="let c of comments">
-        <div class="bubble">
-          <p>{{ c.text }}</p>
-          <small>{{ c.commentDate | date:'dd/MM HH:mm' }}</small>
+        <div *ngIf="teamReports.length === 0" class="no-reports">
+            No reports available.
         </div>
-      </div>
+
+        <div class="reports-grid">
+            <div 
+                *ngFor="let report of teamReports" 
+                class="report-item" 
+                [ngClass]="{'active': selectedReport?.id === report.id}"
+                (click)="openPanel(report)">
+                
+                <div class="item-header">
+                    <h3>{{ report.title || 'No Title' }}</h3>
+                    <div class="meta-right">
+                        <span class="status" [style.color]="getStatusColor(report.status)">
+                            {{ report.status }}
+                        </span>
+                    </div>
+                </div>
+                
+                <p class="preview">{{ report.description }}</p>
+                
+                <div class="meta">
+                    <span><strong>Employee:</strong> {{ report.employeeName }}</span>
+                    <span><strong>Date:</strong> {{ report.reportDate | date:'mediumDate' }}</span>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Add Comment -->
-    <div class="add-comment-box">
-      <textarea [(ngModel)]="newComment" placeholder="Write a comment..."></textarea>
-      <button class="send-btn" (click)="submitComment()">Send</button>
-    </div>
+    <div *ngIf="panelOpen" class="details-panel">
+        
+        <div class="panel-header">
+            <h2>Report Details</h2>
+            <button class="close-btn" (click)="closePanel()">✖</button>
+        </div>
 
-  </div>
+        <div class="report-info">
+            <h3>{{ selectedReport.title || 'No Title' }}</h3>
+            <div class="report-box">
+                {{ selectedReport.description }}
+            </div>
+            <div class="meta">
+                <span>Status: <strong [style.color]="getStatusColor(selectedReport.status)">{{ selectedReport.status }}</strong></span>
+                <span>Date: <strong>{{ selectedReport.reportDate | date: 'mediumDate' }}</strong></span>
+            </div>
+        </div>
+        
+        <h3 class="comments-title">Comments</h3>
+
+        <div class="comments-list">
+            <div *ngIf="commentsLoading" class="loading-comments">
+                Loading comments...
+            </div>
+
+            <div 
+                *ngFor="let c of comments" 
+                class="comment-item"
+                [ngClass]="{
+                    'my-message': c.userId === leaderId,
+                    'other-message': c.userId !== leaderId
+                }"> 
+                
+                <div class="bubble">
+                    <p>{{ c.text }}</p>
+                    <small>
+                        {{ c.userId === leaderId ? 'Me' : c.authorRole }}
+                        | {{ c.commentDate | date:'shortTime' }}
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <div class="add-comment-box">
+            <textarea [(ngModel)]="newComment" placeholder="Write a comment..." rows="3"></textarea>
+            <button class="send-btn" (click)="submitComment()" [disabled]="!newComment.trim()">Send</button>
+        </div>
+
+    </div>
 
 </div>

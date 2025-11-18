@@ -13,6 +13,7 @@ isLoggedIn$ = this._isLoggedIn.asObservable();
   constructor(private http: HttpClient, private router: Router) {
     this.checkInitialAuthState(); // בדיקה ראשונית אם יש עוגייה תקפה
   }
+  
 
   /** התחברות למערכת */
 /** התחברות למערכת */
@@ -51,6 +52,7 @@ getUserByEmail(email: string) {
     { withCredentials: true }
   );
 }
+
   /** קריאת המשתמש מה־localStorage */
   getCurrentUser(): any | null {
     const raw = localStorage.getItem('user');
@@ -71,21 +73,23 @@ getUserByEmail(email: string) {
 
 
   /** התנתקות */
-  signOut(): void {
-    this.http.post(`${API_BASE_URL}/users/signout`, {}, { withCredentials: true,responseType: 'text' })
-      .subscribe({
-        next: () => {
-          console.log('✅ Signed out');
-          this._isLoggedIn.next(false);
-          this.router.navigate(['/login']);
-        },
-        error: (err: any) => {
-          console.error('❌ Error during sign-out:', err);
-          this._isLoggedIn.next(false);
-          this.router.navigate(['/login']);
-        }
-      });
-  }
+signOut(): void {
+  localStorage.removeItem('user');
+  this._isLoggedIn.next(false);
+
+  this.http.post(`${API_BASE_URL}/users/signout`, {}, {
+      withCredentials: true,
+      responseType: 'text'
+  }).subscribe({
+    next: () => {
+      this.router.navigate(['/login']);
+    },
+    error: () => {
+      this.router.navigate(['/login']); // fallback
+    }
+  });
+}
+
 
   /** בדיקה אם המשתמש מחובר (נשלחת לשרת פעם אחת בהפעלה) */
 checkInitialAuthState() {
@@ -94,6 +98,9 @@ checkInitialAuthState() {
       next: () => this._isLoggedIn.next(true),
       error: () => this._isLoggedIn.next(false)
     });
+}
+navigateToLogin() {
+  this.router.navigate(['/login']);
 }
 
 }

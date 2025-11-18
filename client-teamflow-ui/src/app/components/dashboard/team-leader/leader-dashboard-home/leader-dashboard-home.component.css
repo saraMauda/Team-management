@@ -1,56 +1,254 @@
+/* ===== FONT IMPORT ===== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ===== BASE PAGE ===== */
 .leader-home {
   padding: 30px;
-  color: #fff;
+  background: #0e1822;
+  font-family: 'Inter', sans-serif !important;
+  color: #f5f7fa;
 }
 
-.leader-home-title {
-  font-size: 26px;
-  font-weight: 700;
-  color: #ff7f32;
-  margin-bottom: 25px;
-  text-align: left;
-}
-
-/* Cards grid */
-.leader-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 25px;
-}
-
-/* Each stat card */
-.leader-card {
-  background-color: #0f2234;
-  border: 1px solid rgba(255, 127, 50, 0.25);
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  text-align: center;
-}
-
-.leader-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 16px rgba(255, 127, 50, 0.3);
-}
-
-.leader-card h3 {
-  font-size: 18px;
-  color: #cfd9e4;
-  margin-bottom: 10px;
-}
-
-.leader-card p {
-  font-size: 34px;
-  font-weight: bold;
-  color: #ff7f32;
+/* ===== GLOBAL HEADINGS ===== */
+h1, h2, h3, h4 {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 600;
+  color: #e3eeff;
+  letter-spacing: 0.4px;
   margin: 0;
 }
 
-/* Loading state */
-.leader-loading {
-  color: #ff7f32;
+p, span, li, label {
+  font-size: 15px;
+  font-weight: 400;
+  color: #c3d4e8;
+}
+
+/* ===== WELCOME CARD (TOP HEADER) ===== */
+.welcome-card {
+  background: #182b3d;
+  padding: 26px 30px;
+  border-radius: 14px;
+  box-shadow: 0 12px 25px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.04);
+  margin-bottom: 25px;
+}
+
+.welcome-title {
+  font-size: 34px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.welcome-subtitle {
   font-size: 18px;
+  color: #9fb3c8;
+  margin: 0;
+}
+
+/* ===== MAIN GRID LAYOUT ===== */
+.dashboard-content-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+}
+
+/* ===== PANEL TEMPLATE (all cards use this style) ===== */
+.stats-panel,
+.projects-panel,
+.recent-reports-panel,
+.team-list-panel {
+  background: #182b3d;
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stats-panel h2,
+.projects-panel h2,
+.recent-reports-panel h3,
+.team-list-panel h3 {
+  font-size: 22px;
+  font-weight: 600;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(255,255,255,0.08);
+}
+
+/* ===== STAT CARDS ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 16px;
+}
+
+.stat-card {
+  padding: 18px;
+  background: linear-gradient(145deg, #122030, #0c1723);
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.35);
   text-align: center;
-  padding: 50px 0;
+}
+
+.stat-card i {
+  font-size: 30px;
+  margin-bottom: 6px;
+  color: #4facff;
+}
+
+.stat-card h3 {
+  font-size: 17px;
+  margin-bottom: 6px;
+  color: #c0d0e0;
+}
+
+.stat-card p {
+  font-size: 34px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* ===== PROJECT CARDS ===== */
+.project-item-card {
+  background: rgba(10, 21, 32, 0.85);
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+  margin-bottom: 15px;
+  transition: 0.25s;
+}
+
+.project-item-card:hover {
+  background: #182b3d;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+}
+
+.project-info h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #e3eeff;
+}
+
+.project-status-chip {
+  padding: 4px 12px;
+  font-size: 13px;
+  border-radius: 10px;
+  background: rgba(255,127,50,0.18);
+  color: #ff9a57;
+  font-weight: 600;
+}
+
+.project-status-chip.active {
+  background: #ff7f32;
+  color: #ffffff;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  background: #0e1822;
+  height: 10px;
+  border-radius: 999px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1fc8ff, #4facff);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.progress-bar-text {
+  display: flex;
+  justify-content: space-between;
+  color: #c3d4e8;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+/* ===== REPORTS + TEAM GRID ===== */
+.reports-team-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* ===== REPORT ITEMS ===== */
+.report-item {
+  background: rgba(10,21,32,0.85);
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+  margin-bottom: 14px;
+}
+
+.report-item h4 {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #e3eeff;
+}
+
+.status-submitted {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ff9a57;
+}
+
+/* ===== TEAM MEMBERS ===== */
+.member-item {
+  background: rgba(10,21,32,0.85);
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.member-item i {
+  font-size: 22px;
+  color: #4facff;
+}
+
+/* ===== EMPTY STATE ===== */
+.no-data,
+.no-data-projects {
+  text-align: center;
+  padding: 20px;
+  color: #9fb3c8;
+  font-size: 15px;
+}
+
+/* ===== LOADING ===== */
+.leader-loading {
+  padding: 40px;
+  text-align: center;
+  color: #4facff;
+  font-size: 20px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1100px) {
+  .dashboard-content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reports-team-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .welcome-title {
+    font-size: 28px;
+  }
 }

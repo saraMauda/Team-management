@@ -26,8 +26,6 @@ public interface ProjectMapper {
         dto.setStatus(project.getProjectStatus());
         dto.setProgress(project.getProgressPercentage());
         dto.setLocation(project.getProjectLocation());
-        dto.setCategoryId(project.getProjectCategory() != null ? project.getProjectCategory().getCategoryId() : null);
-        dto.setCategoryName(project.getProjectCategory() != null ? project.getProjectCategory().getCategoryName() : null);
 
         if (project.getProjectLeader() != null) {
             dto.setLeaderId(project.getProjectLeader().getId());

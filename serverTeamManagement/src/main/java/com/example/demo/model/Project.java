@@ -20,10 +20,6 @@ public class Project {
     private String projectLocation;
 
     @ManyToOne
-    @JoinColumn(name = "categoryId")
-    private Category projectCategory;
-
-    @ManyToOne
     @JoinColumn(name = "userId")
     private Users projectLeader;
 
@@ -60,9 +56,6 @@ public class Project {
 
     public String getProjectLocation() { return projectLocation; }
     public void setProjectLocation(String projectLocation) { this.projectLocation = projectLocation; }
-
-    public Category getProjectCategory() { return projectCategory; }
-    public void setProjectCategory(Category projectCategory) { this.projectCategory = projectCategory; }
 
     public Users getProjectLeader() { return projectLeader; }
     public void setProjectLeader(Users projectLeader) { this.projectLeader = projectLeader; }

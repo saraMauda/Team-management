@@ -246,3 +246,50 @@
     gap: 8px;
   }
 }
+/* ... כל ה-CSS הקודם נשאר זהה עד ה-Recent columns ... */
+
+/* Recent columns */
+.recent-columns {
+  /* שינוי חשוב: חזרה ל-2 עמודות, כפי שהיה ב-HTML המקורי */
+  display: grid;
+  grid-template-columns: 1fr 1fr; 
+  gap: 12px;
+}
+
+.recent-column h3 {
+/* ... נשאר זהה ... */
+}
+/* ... שאר ה-CSS נשאר זהה עד המדיה קווריז ... */
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .cards-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .bottom-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* ב-1024px, זה נשאר 2 עמודות (הן יהפכו קטנות יותר) */
+  .recent-columns { 
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .cards-row {
+    grid-template-columns: 1fr;
+  }
+
+  .overview-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* במכשירי מובייל, זה עובר לעמודה אחת */
+  .recent-columns {
+    grid-template-columns: 1fr;
+  }
+}

@@ -29,7 +29,6 @@
         <input type="email" [(ngModel)]="newUser.email" placeholder="Email address" />
       </div>
 
-<<<<<<< HEAD
       <div class="form-col">
         <label>Password</label>
         <input type="password" [(ngModel)]="newUser.password" placeholder="Initial password" />
@@ -40,18 +39,9 @@
         <select [(ngModel)]="newUser.role">
           <option value="ROLE_EMPLOYEE">Employee</option>
           <option value="ROLE_TEAMLEADER">Team Leader</option>
-          <option value="ROLE_ADMIN">Admin</option>
         </select>
       </div>
-=======
-    <div class="form-row">
-      <label>Role</label>
-      <select [(ngModel)]="newUser.roleString">
-        <option value="ROLE_EMPLOYEE">Employee</option>
-        <option value="ROLE_TEAMLEADER">Team Leader</option>
-        <!-- <option value="ROLE_ADMIN">Admin</option> -->
-      </select>
->>>>>>> 8cd71f472d523a4cb5d3f2764af649f182028179
+
     </div>
 
     <div class="form-actions">
@@ -128,24 +118,14 @@
           <label>Email</label>
           <input type="text" [(ngModel)]="editingUser.email" />
         </div>
-
-<<<<<<< HEAD
         <div class="field">
           <label>Role</label>
           <select [(ngModel)]="editingUser.role">
             <option value="ROLE_EMPLOYEE">Employee</option>
             <option value="ROLE_TEAMLEADER">Team Leader</option>
-            <option value="ROLE_ADMIN">Admin</option>
           </select>
         </div>
-=======
-        <label>Role</label>
-        <select [(ngModel)]="editingUser.roleString">
-          <option value="ROLE_EMPLOYEE">Employee</option>
-          <option value="ROLE_TEAMLEADER">Team Leader</option>
-          <!-- <option value="ROLE_ADMIN">Admin</option> -->
-        </select>
->>>>>>> 8cd71f472d523a4cb5d3f2764af649f182028179
+
 
         <div class="field">
           <label>Status</label>

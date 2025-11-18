@@ -1,8 +1,53 @@
-<header class="header">
-  <div class="header-left">
+<!-- פרופיל -->
+<div class="profile-wrapper" (click)="toggleMenu()">
+
+  <img
+    *ngIf="userImage; else noImg"
+    [src]="userImage"
+    class="profile-img"
+  />
+
+  <ng-template #noImg>
+    <div class="profile-placeholder">{{ userInitial }}</div>
+  </ng-template>
+
+</div>
+
+<!-- Dropdown Menu -->
+<div class="profile-menu" *ngIf="menuOpen">
+
+  <div class="profile-top">
+    <div class="user-name">{{ currentUser?.name }}</div>
+    <div class="user-email">{{ currentUser?.email }}</div>
   </div>
-  <div class="header-actions">
-<!-- header.component.html -->
-<button class="logout-btn" (click)="onLogout()">Logout</button>
+
+  <div class="menu-item" (click)="openProfile(); $event.stopPropagation();">
+    <i class="fa fa-user"></i>
+    Edit Profile
   </div>
-</header>
+
+  <div class="menu-item" (click)="openChangePassword(); $event.stopPropagation();">
+    <i class="fa fa-lock"></i>
+    Change Password
+  </div>
+
+  <div class="menu-item logout" (click)="onLogout(); $event.stopPropagation();">
+    <i class="fa fa-sign-out"></i>
+    Logout
+  </div>
+
+</div>
+
+<!-- מודל עריכת פרופיל -->
+<app-edit-profile-modal 
+  *ngIf="showEditProfile && currentUser"
+  [user]="currentUser"
+  (close)="closeModals()"
+></app-edit-profile-modal>
+
+
+<!-- מודל שינוי סיסמה -->
+<app-change-password-modal
+  *ngIf="showChangePassword"
+  (close)="closeModals()"
+></app-change-password-modal>

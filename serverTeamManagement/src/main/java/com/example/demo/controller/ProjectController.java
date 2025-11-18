@@ -116,7 +116,6 @@ public class ProjectController {
         project.setProjectEndDate(dto.getEndDate());
         project.setProjectStatus(dto.getStatus());
         project.setProgressPercentage(dto.getProgress());
-
         // 🔹 שינוי מנהל פרויקט
         if (dto.getLeaderId() != null) {
             Users leader = usersRepository.findById(dto.getLeaderId())
@@ -177,11 +176,11 @@ public class ProjectController {
     @PreAuthorize("hasAnyRole('ADMIN','TEAMLEADER')")
     public List<ProjectDTO> getProjectsByLeader(@PathVariable Long leaderId) {
 
-        List<EmployeeInProject> links =
-                employeeInProjectRepository.findByUser_IdAndRoleDescription(leaderId, "Team Leader");
+        // 🔥 תיקון: מחפש ישירות בטבלת Project לפי שדה ProjectLeader
+        List<Project> projects = projectRepository.findByProjectLeader_Id(leaderId);
 
-        return links.stream()
-                .map(link -> projectMapper.projectToProjectDTO(link.getProject()))
+        return projects.stream()
+                .map(projectMapper::projectToProjectDTO)
                 .collect(Collectors.toList());
     }
 

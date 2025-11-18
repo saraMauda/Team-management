@@ -77,15 +77,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/users/authenticated").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/error").permitAll()
-
-<<<<<<< HEAD
-=======
-                        // 🟡 הרשאות לפי תפקידים:
-                        // ADMIN
-                        .requestMatchers("/api/users/**").hasAnyRole("ADMIN","TEAMLEADER")
-
->>>>>>> 8cd71f472d523a4cb5d3f2764af649f182028179
-
+                                .requestMatchers("/register").permitAll()
+                                .requestMatchers("/api/users/**").permitAll()
 
                         // TEAMLEADER + EMPLOYEE
                         .requestMatchers("/api/reports/**").permitAll()

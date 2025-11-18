@@ -317,3 +317,21 @@
     align-self: flex-end;
   }
 }
+.my-message {
+  justify-content: flex-end;
+}
+
+
+.my-message .bubble {
+    background-color: #ff7f32;
+    color: #0f2234;
+    border-radius: 18px 18px 4px 18px;
+    font-weight: 500;
+}
+
+.other-message .bubble {
+    background-color: #1a2a43;
+    color: #cfd9e4;
+    border-radius: 18px 18px 18px 4px;
+}
+

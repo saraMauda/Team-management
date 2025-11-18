@@ -19,7 +19,6 @@ public class ProjectDTO {
     private Long leaderId;
     private String leaderName;
 
-    private Long categoryId;
     private String categoryName;
 
     private List<Long> employeeIds;
@@ -57,8 +56,6 @@ public class ProjectDTO {
     public String getLeaderName() { return leaderName; }
     public void setLeaderName(String leaderName) { this.leaderName = leaderName; }
 
-    public Long getCategoryId() { return categoryId; }
-    public void setCategoryId(Long categoryId) { this.categoryId = categoryId; }
 
     public List<Long> getEmployeeIds() { return employeeIds; }
     public void setEmployeeIds(List<Long> employeeIds) { this.employeeIds = employeeIds; }

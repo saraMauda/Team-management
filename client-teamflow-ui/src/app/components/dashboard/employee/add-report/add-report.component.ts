@@ -77,7 +77,8 @@ export class AddReportComponent implements OnInit {
       date: today,                     // ⬅ חובה לשרת
       hours: this.hours,               // ⬅ חובה
       status: this.status,
-      description: this.description    // ⬅ בשרת זה "description" ולא "title"
+      description: this.description,  // ⬅ בשרת זה "description" ולא "title"
+      title: this.title
     };
 
     this.loading = true;

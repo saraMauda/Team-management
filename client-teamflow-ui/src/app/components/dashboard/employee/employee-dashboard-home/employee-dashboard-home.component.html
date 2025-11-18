@@ -1,23 +1,93 @@
 <div class="employee-home" *ngIf="!loading; else loadingTpl">
-  <h2 class="employee-home-title">Welcome Back 👋</h2>
-  <p class="employee-subtitle">Here’s a quick look at your work summary</p>
 
-  <div class="employee-stats-grid">
-    <div class="stat-card">
-      <h3>Active Projects</h3>
-      <p>{{ activeProjects }}</p>
+  <div class="welcome-card">
+    <h1 class="welcome-title">Welcome Back, {{ currentUserName }}! 👋</h1>
+    <p class="welcome-subtitle">
+      Here is your updated project status summary. Time to get to work!
+    </p>
+  </div>
+
+  <div class="dashboard-content-grid">
+
+    <div class="stats-reports-column">
+      
+      <div class="stats-grid">
+        
+        <div class="stat-card orange-bg">
+          <i class="icon fas fa-project-diagram"></i>
+          <h3>Active Projects</h3>
+          <p>{{ activeProjectsCount }}</p>
+        </div>
+        
+        <div class="stat-card blue-bg">
+          <i class="icon fas fa-file-alt"></i>
+          <h3>Reports Submitted</h3>
+          <p>{{ submittedReportsCount }}</p>
+        </div>
+        
+        <div class="stat-card purple-bg">
+          <i class="icon fas fa-clock"></i>
+          <h3>Upcoming Meetings</h3>
+          <p>{{ upcomingMeetingsCount }}</p>
+        </div>
+        
+        <div class="stat-card green-bg">
+          <i class="icon fas fa-tasks"></i>
+          <h3>Reports Awaiting Review</h3> 
+          <p>{{ getReportsAwaitingReviewCount() }}</p>
+        </div>
+      </div>
+
+      <div class="recent-reports-panel">
+        <h2>My Recent Reports</h2>
+        <ul class="reports-list">
+          <li *ngIf="myRecentReports.length === 0" class="no-data">
+            No reports have been submitted yet.
+          </li>
+          <li *ngFor="let report of myRecentReports" class="report-item">
+            <div class="report-meta">
+              <h4>{{ report.reportTitle }}</h4>
+              <span [ngClass]="{
+                'status-submitted': report.reportStatus === 'SUBMITTED' || report.reportStatus === 'IN_REVIEW',
+                'status-open': report.reportStatus === 'OPEN',
+                'status-approved': report.reportStatus === 'APPROVED' 
+              }">
+                {{ report.reportStatus || 'Draft' }}
+              </span>
+            </div>
+            <p>{{ report.reportDate | date: 'mediumDate' }}</p>
+          </li>
+        </ul>
+      </div>
+
     </div>
-    <div class="stat-card">
-      <h3>Reports Submitted</h3>
-      <p>{{ submittedReports }}</p>
-    </div>
-    <div class="stat-card">
-      <h3>Upcoming Meetings</h3>
-      <p>{{ upcomingMeetings }}</p>
-    </div>
-    <div class="stat-card">
-      <h3>Tasks In Progress</h3>
-      <p>{{ tasksInProgress }}</p>
+
+    <div class="active-projects-column">
+      <h2>My Active Projects</h2>
+      <div class="projects-list-container">
+        
+        <div *ngIf="myActiveProjects.length === 0" class="no-data-projects">
+          You are not currently assigned to any active projects.
+        </div>
+        
+        <div *ngFor="let project of myActiveProjects" class="project-item-card">
+          <div class="project-info">
+            <h3>{{ project.name }}</h3>
+            <span class="project-status-chip">{{ project.status }}</span>
+          </div>
+          <p class="project-leader">Leader: {{ project.leaderName || 'Not specified' }}</p>
+          
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar-text">
+              <span class="progress-label">Progress:</span>
+              <span class="progress-percent">{{ project.progress || 0 }}%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="project.progress || 0"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

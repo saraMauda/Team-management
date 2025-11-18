@@ -184,6 +184,38 @@ public ResponseEntity<UsersDTO> signUp(@RequestBody Users user) {
         Users user = usersRepository.findByEmail(email);
         return usersMapper.userToUsersDTO(user);
     }
+    @PutMapping("/change-password/{id}")
+    public ResponseEntity<?> changePassword(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body
+    ) {
+        Optional<Users> opt = usersRepository.findById(id);
+        if (opt.isEmpty())
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+
+        Users user = opt.get();
+
+        String oldPass = body.get("oldPassword");
+        String newPass = body.get("newPassword");
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        if (!encoder.matches(oldPass, user.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Old password is incorrect");
+        }
+
+        user.setPassword(encoder.encode(newPass));
+        usersRepository.save(user);
+
+        // 🔥 מחיקת העוגייה של JWT כדי לא לגרום ל-401 אחרי זה
+        ResponseCookie cleared = jwtUtils.getCleanJwtCookie();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cleared.toString())
+                .body("Password updated successfully");
+    }
+
 
 
 

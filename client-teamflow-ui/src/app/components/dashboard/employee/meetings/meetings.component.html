@@ -5,6 +5,7 @@
 
   <div class="meetings-grid" *ngIf="meetings.length > 0; else noMeetingsTpl">
     <div class="meeting-card" *ngFor="let m of meetings">
+
       <div class="meeting-header">
         <h3>{{ m.title }}</h3>
 
@@ -15,6 +16,12 @@
         </span>
       </div>
 
+      <!-- NEW — Project Name -->
+      <div class="project-line">
+        <i class="fa fa-folder"></i>
+        <span>{{ m.projectName || 'No project' }}</span>
+      </div>
+
       <p class="desc">{{ m.description || 'No details provided.' }}</p>
 
       <div class="meta">
@@ -22,6 +29,7 @@
         <span><strong>Location:</strong> {{ m.meetingLocation || 'TBD' }}</span>
         <span><strong>Status:</strong> {{ m.status || '-' }}</span>
       </div>
+
     </div>
   </div>
 </div>

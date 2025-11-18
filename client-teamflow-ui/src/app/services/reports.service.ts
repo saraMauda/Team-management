@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { API_BASE_URL } from '../app.config';
 import { Observable } from 'rxjs';
+import { ReportDTO } from '../models/report-dto.model';
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +35,11 @@ getReportsByLeader(leaderId: number) {
     { withCredentials: true }
   );
 }
-
+getAll(): Observable<ReportDTO[]> {
+    return this.http.get<ReportDTO[]>(`${this.baseUrl}`, { 
+      withCredentials: true 
+    });
+  }
 getComments(reportId: number) {
   return this.http.get<any[]>(
     `${API_BASE_URL}/report-comments/${reportId}`,
@@ -42,12 +47,15 @@ getComments(reportId: number) {
   );
 }
 
-addComment(reportId: number, body: { text: string }) {
-  return this.http.post<any>(
-    `${API_BASE_URL}/report-comments/add/${reportId}`,
-    body,
-    { withCredentials: true }
-  );
+// src/app/services/reports.service.ts
+// ... (שאר הקוד) ...
+
+addComment(reportId: number, body: { text: string, userId: string | number }) { // ⭐ הוספת userId לטיפוס ⭐
+  return this.http.post<any>(
+    `${API_BASE_URL}/report-comments/add/${reportId}`,
+    body, // עכשיו body מכיל { text: string, userId: string|number }
+    { withCredentials: true }
+  );
 }
 
 }
