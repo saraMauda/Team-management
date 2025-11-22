@@ -87,7 +87,7 @@ public class WebSecurityConfig {
 //                        .requestMatchers("/api/meetings/**").authenticated()
                         .requestMatchers("/api/meetings/**").permitAll()
                         .requestMatchers("/api/teams/**").permitAll()
-
+                                .requestMatchers("api/chatAI").permitAll()
                         // כל השאר - דורש התחברות
                         .anyRequest().authenticated()
                 );
