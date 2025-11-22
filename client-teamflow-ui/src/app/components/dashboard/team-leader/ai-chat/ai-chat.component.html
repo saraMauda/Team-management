@@ -1,0 +1,27 @@
+<div class="chat-container">
+
+  <div class="chat-header">
+    <h2>TeamFlow AI Assistant</h2>
+  </div>
+
+  <div class="chat-messages" id="chatBox">
+    <div *ngFor="let msg of messages" [ngClass]="msg.sender === 'user' ? 'msg-user' : 'msg-bot'">
+      <div class="message">{{msg.text}}</div>
+    </div>
+
+    <div *ngIf="loading" class="loading">
+      <div class="loader"></div>
+    </div>
+  </div>
+
+  <div class="chat-input">
+    <input 
+      [(ngModel)]="userInput" 
+      type="text" 
+      placeholder="הקלד/י שאלה עבור העוזר..."
+      (keyup.enter)="sendMessage()"
+    />
+    <button (click)="sendMessage()">Send</button>
+  </div>
+
+</div>

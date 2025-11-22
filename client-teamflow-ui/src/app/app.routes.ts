@@ -15,11 +15,10 @@ import { ManageUsersComponent } from './components/dashboard/admin/users/manage-
 // Team Leader
 import { LeaderDashboardComponent } from './components/dashboard/team-leader/leader-dashboard/leader-dashboard.component';
 import { LeaderDashboardHomeComponent } from './components/dashboard/team-leader/leader-dashboard-home/leader-dashboard-home.component';
-import { FeedbackComponent } from './components/dashboard/team-leader/feedback/feedback.component';
 import { TeamProjectsComponent } from './components/dashboard/team-leader/team-projects/team-projects.component';
 import { TeamMeetingsComponent } from './components/dashboard/team-leader/team-meetings/team-meetings.component';
 import { TeamReportsComponent } from './components/dashboard/team-leader/team-reports/team-reports.component';
-
+import { AiChatComponent } from './components/dashboard/team-leader/ai-chat/ai-chat.component';
 // Employee
 import { EmployeeDashboardComponent } from './components/dashboard/employee/employee-dashboard/employee-dashboard.component';
 import { MyProjectsComponent } from './components/dashboard/employee/my-projects/my-projects.component';
@@ -55,7 +54,8 @@ export const routes: Routes = [
     { path: 'team-projects', component: TeamProjectsComponent },
     { path: 'team-meetings', component: TeamMeetingsComponent },
     { path: 'team-reports', component: TeamReportsComponent },
-    { path: 'feedback', component: FeedbackComponent },
+    { path: 'ai', component: AiChatComponent }
+
   ],
 },
 
