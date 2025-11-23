@@ -106,10 +106,6 @@ public class UsersController {
 
         return ResponseEntity.ok("Image uploaded successfully");
     }
-
-
-
-
     @GetMapping
     public List<UsersDTO> getAllUsers() {
         return usersRepository.findAll()
