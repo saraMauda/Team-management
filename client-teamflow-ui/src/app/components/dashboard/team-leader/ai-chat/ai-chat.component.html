@@ -1,26 +1,26 @@
-<div class="chat-container">
+<div class="chat-full-container">
 
   <div class="chat-header">
-    <h2>TeamFlow AI Assistant</h2>
+    TeamFlow AI Assistant
   </div>
 
-  <div class="chat-messages" id="chatBox">
-    <div *ngFor="let msg of messages" [ngClass]="msg.sender === 'user' ? 'msg-user' : 'msg-bot'">
-      <div class="message">{{msg.text}}</div>
+  <div class="chat-window" id="chatBox">
+    <div *ngFor="let msg of messages"
+         [ngClass]="msg.sender === 'user' ? 'user-msg' : 'bot-msg'">
+      <div class="bubble">{{ msg.text }}</div>
     </div>
 
-    <div *ngIf="loading" class="loading">
-      <div class="loader"></div>
+    <div *ngIf="loading" class="loading-indicator">
+      Thinking...
     </div>
   </div>
 
-  <div class="chat-input">
-    <input 
-      [(ngModel)]="userInput" 
-      type="text" 
-      placeholder="הקלד/י שאלה עבור העוזר..."
-      (keyup.enter)="sendMessage()"
-    />
+  <div class="chat-input-area">
+    <input type="text"
+           [(ngModel)]="userInput"
+           placeholder="כתוב/כתבי הודעה כאן..."
+           (keyup.enter)="sendMessage()" />
+
     <button (click)="sendMessage()">Send</button>
   </div>
 

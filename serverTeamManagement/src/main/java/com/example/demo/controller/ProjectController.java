@@ -4,10 +4,13 @@ import com.example.demo.dto.ProjectDTO;
 import com.example.demo.model.Project;
 import com.example.demo.model.Users;
 import com.example.demo.model.EmployeeInProject;
-import com.example.demo.service.ProjectMapper;
-import com.example.demo.service.ProjectRepository;
-import com.example.demo.service.UsersRepository;
-import com.example.demo.service.EmployeeInProjectRepository;
+import com.example.demo.service.*;
+import com.example.demo.model.Meeting;
+import com.example.demo.model.Approval;
+import com.example.demo.model.Report;
+import com.example.demo.service.MeetingRepository;
+import com.example.demo.service.ApprovalRepository;
+import com.example.demo.service.ReportRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,6 +36,15 @@ public class ProjectController {
 
     @Autowired
     private ProjectMapper projectMapper;
+
+    @Autowired
+    private ApprovalRepository approvalRepository;
+
+    @Autowired
+    private MeetingRepository meetingRepository;
+
+    @Autowired
+    private ReportRepository reportRepository;
 
     // ---------------------------------------
     // 🔹 1. שליפת כל הפרויקטים (ADMIN בלבד)
@@ -116,6 +128,7 @@ public class ProjectController {
         project.setProjectEndDate(dto.getEndDate());
         project.setProjectStatus(dto.getStatus());
         project.setProgressPercentage(dto.getProgress());
+
         // 🔹 שינוי מנהל פרויקט
         if (dto.getLeaderId() != null) {
             Users leader = usersRepository.findById(dto.getLeaderId())
@@ -124,19 +137,25 @@ public class ProjectController {
         }
 
         // ----------------------------------------------------------
-        // 🔥 תיקון מרכזי: אם לא נשלחו workers → לא מוחקים כלום!
+        // 🔥 טיפול בעובדים בפרויקט
         // ----------------------------------------------------------
         if (dto.getEmployeeIds() != null) {
 
-            // מוחקים רק אם employeeIds != null
+            // כל העובדים הקיימים בפרויקט
             List<EmployeeInProject> existingLinks =
                     employeeInProjectRepository.findByProject_ProjectId(id);
 
+            // 🔥 קודם מוחקים את כל ה-Approvals של כל עובד בפרויקט
             for (EmployeeInProject link : existingLinks) {
-                employeeInProjectRepository.delete(link);
+                approvalRepository.deleteByApprovalEmployeeInProject_EmployeeProjectId(
+                        link.getEmployeeProjectId()
+                );
             }
 
-            // מוסיפים את החדשים מתוך employeeIds
+            // עכשיו מחיקת ה־EmployeeInProject
+            employeeInProjectRepository.deleteAll(existingLinks);
+
+            // הוספת העובדים החדשים בלבד
             for (Long empId : dto.getEmployeeIds()) {
                 Users user = usersRepository.findById(empId)
                         .orElseThrow(() -> new RuntimeException("Employee not found"));
@@ -150,9 +169,8 @@ public class ProjectController {
                 employeeInProjectRepository.save(link);
             }
         }
-        // ----------------------------------------------------------
-        // 🔥 אם employeeIds == null → לא נוגעים בקשרים!
-        // ----------------------------------------------------------
+
+        // ❗ אם employeeIds == null → לא נוגעים בעובדים בכלל
 
         Project updated = projectRepository.save(project);
         return projectMapper.projectToProjectDTO(updated);
@@ -166,24 +184,46 @@ public class ProjectController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteProject(@PathVariable Long id) {
+
+        // ========== שלב 1: מחיקת פגישות ==========
+        List<Meeting> meetings = meetingRepository.findByProject_ProjectId(id);
+
+        // לכל פגישה יש approvals — צריכים למחוק קודם
+        for (Meeting meeting : meetings) {
+            for (Approval approval : meeting.getApprovals()) {
+                approvalRepository.deleteById(approval.getApprovalId());
+            }
+        }
+
+        meetingRepository.deleteAll(meetings);
+
+
+        // ========== שלב 2: מחיקת עובדים בפרויקט ==========
+        List<EmployeeInProject> employees =
+                employeeInProjectRepository.findByProject_ProjectId(id);
+
+        for (EmployeeInProject eip : employees) {
+
+            // קודם מחיקת הדוחות של העובד
+            List<Report> reports =
+                    reportRepository.findByReportEmployeeInProject_EmployeeProjectId(
+                            eip.getEmployeeProjectId()
+                    );
+            reportRepository.deleteAll(reports);
+
+            // מחיקת ה-Approvals של העובד
+            for (Approval approval : eip.getApprovals()) {
+                approvalRepository.deleteById(approval.getApprovalId());
+            }
+        }
+
+        // עכשיו מחיקת הרשומות EmployeeInProject
+        employeeInProjectRepository.deleteAll(employees);
+
+
+        // ========== שלב 3: מחיקת הפרויקט ==========
         projectRepository.deleteById(id);
     }
-
-    // ---------------------------------------
-    // 🔹 6. פרויקטים של מנהל צוות
-    // ---------------------------------------
-    @GetMapping("/byLeader/{leaderId}")
-    @PreAuthorize("hasAnyRole('ADMIN','TEAMLEADER')")
-    public List<ProjectDTO> getProjectsByLeader(@PathVariable Long leaderId) {
-
-        // 🔥 תיקון: מחפש ישירות בטבלת Project לפי שדה ProjectLeader
-        List<Project> projects = projectRepository.findByProjectLeader_Id(leaderId);
-
-        return projects.stream()
-                .map(projectMapper::projectToProjectDTO)
-                .collect(Collectors.toList());
-    }
-
 
     // ---------------------------------------
     // 🔹 7. פרויקטים של עובד מחובר

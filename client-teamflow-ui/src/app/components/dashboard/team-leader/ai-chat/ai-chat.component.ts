@@ -51,10 +51,16 @@ export class AiChatComponent {
     });
   }
 
-  private scrollToBottom() {
+private scrollToBottom(): void {
+  setTimeout(() => {
     const box = document.getElementById('chatBox');
     if (box) {
-      box.scrollTop = box.scrollHeight;
+      box.scrollTo({
+        top: box.scrollHeight,
+        behavior: 'smooth'
+      });
     }
-  }
+  }, 70);
+}
+
 }

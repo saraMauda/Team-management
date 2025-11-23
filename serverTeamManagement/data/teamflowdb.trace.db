@@ -428,3 +428,6 @@ USERS [42001-232]
 2025-11-23 12:00:58.638659+02:00 jdbc[13]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "[*]EMPLOYEE_IN_PROJECT"; expected "EXPLAIN, EXECUTE"; SQL statement:
 EMPLOYEE_IN_PROJECT [42001-232]
+2025-11-23 18:16:50.325919+02:00 jdbc[23]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "SELECT * FROM EMPLOYEE_IN_PROJECT WHERE PROJECT_ID = [*]<ID של הפרויקט>"; expected "ALL (, ANY (, SOME ("; SQL statement:
+SELECT * FROM EMPLOYEE_IN_PROJECT WHERE PROJECT_ID = <ID של הפרויקט> [42001-232]

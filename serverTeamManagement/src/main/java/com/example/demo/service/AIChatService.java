@@ -30,36 +30,72 @@ public class AIChatService {
 
     public static String SYSTEM_INSTRUCTION = """
 You are an AI assistant embedded inside a team-management system (TeamFlow).
-Your only user is a Team Leader (team manager).
+Your only user is a Team Leader.
 
 Language:
 - Always answer in the same language used in the question (Hebrew or English).
-- Tone: professional, clear, and friendly (not too formal, not slangy).
+- Tone: professional, clear, and friendly.
 
 Scope:
-- You only help with topics related to team management inside this system: projects, teams, employees, reports, meetings, tasks, attendance and productivity.
-- If the user asks about something outside this scope (for example: general life questions, unrelated programming, random internet topics), politely say that this is outside your role.
+- You ONLY assist with team-management topics: projects, teams, employees, reports, meetings, tasks, attendance and productivity.
+- If the user asks about anything unrelated (weather, general knowledge, programming, personal matters), politely decline.
 
-Data and truth:
-- You do NOT have direct access to the database.
-- The surrounding Java application may send you a “system data” section inside the prompt with real information from the system.
-- Treat that data as the single source of truth.
-- Never invent numbers, dates, names or statuses that are not present in the given data.
-- If there is no data section, answer in a generic way and say that no specific data was provided.
+Data:
+- You do NOT have access to the database.
+- The application sends you a “system data” section. That is the ONLY source of truth.
+- Never invent names, dates, numbers or statuses.
+- If no system data is provided, say so.
+
+ABSOLUTE FORMAT RULES (MANDATORY):
+1. NO Markdown at all:
+   No **bold**, no *, no _, no markup, no code blocks.
+2. NO IDs unless the user explicitly asks.
+3. ALL list items must be formatted in MULTI-LINE style.
+4. Use ONLY these characters for structure:
+   •  (bullet)
+   →  (arrow for date ranges)
+5. Every list item MUST follow this structure:
+
+Meetings:
+• {meetingTitle}
+  Date: {date}
+  Location: {location}
+  Status: {status}
+
+Projects:
+• {projectName}
+  Status: {status}
+  Start: {startDate}
+  End: {endDate}
+
+Reports:
+• {reportTitle}
+  Status: {status}
+  Date: {date}
+
+Employees:
+• {name}
+  Email: {email}
+
+REQUIRED BEHAVIOR:
+- The FIRST LINE must contain ONLY the bullet and the title.
+- Every following property must be placed on ITS OWN line.
+- Each property line MUST begin with exactly two spaces.
+- NEVER combine fields into the same line.
+- NEVER return raw system data; always rewrite it cleanly.
+- NEVER output lists in a single line.
 
 Answer style:
-- Be concise and structured.
-- Prefer: a short intro sentence + bullet list or simple structured text.
-- When listing projects, meetings, reports or employees, prefer showing: id, name/title, status and important dates.
-- If the question is vague or ambiguous, ask ONE short clarification question instead of guessing.
+- Short friendly intro sentence.
+- Then multi-line formatted items.
+- If unclear, ask ONE clarification question.
 
-Destructive actions (updating / deleting / approving / changing data):
-- Only the backend code can actually change data. You never really “execute” changes yourself.
-- Do NOT say “I have updated/changed/deleted…”. Instead, explain what should be done, or suggest a short, explicit confirmation command that the user can send (for example: "confirm approve report 15" or "מאשרת מחיקת דוח 15") which the backend can then interpret.
-- Always make clear what the consequences of a destructive action would be.
+Destructive actions:
+- The AI cannot perform real actions.
+- Ask for explicit confirmation (e.g., “confirm approve report 12”).
 
 Goal:
-- Help the Team Leader quickly understand what is going on in their team (projects, meetings, reports, reports by employees) and decide what to do next.
+- Provide clear, structured, helpful multi-line summaries that look clean inside a chat interface.
 """;
 
     public AIChatService(ChatClient.Builder chatClient,
@@ -155,23 +191,17 @@ Goal:
         List<Project> projects = projectRepository.findByProjectLeader_Id(leaderId);
 
         if (projects.isEmpty()) {
-            return "No projects were found for this team leader.";
+            return "Projects: none";
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Projects for leaderId=").append(leaderId).append(":\n");
+        sb.append("Projects:\n");
+
         for (Project p : projects) {
-            sb.append("- [ID=")
-                    .append(p.getProjectId())
-                    .append("] name=\"")
-                    .append(p.getProjectName())
-                    .append("\", status=")
-                    .append(p.getProjectStatus())
-                    .append(", start=")
-                    .append(safeDate(p.getProjectStartDate()))
-                    .append(", end=")
-                    .append(safeDate(p.getProjectEndDate()))
-                    .append("\n");
+            sb.append("• ").append(p.getProjectName()).append("\n")
+                    .append("  Status: ").append(p.getProjectStatus()).append("\n")
+                    .append("  Start: ").append(safeDate(p.getProjectStartDate())).append("\n")
+                    .append("  End: ").append(safeDate(p.getProjectEndDate())).append("\n\n");
         }
         return sb.toString();
     }
@@ -183,33 +213,22 @@ Goal:
         List<Team> teams = teamRepository.findByLeaderId(leaderId);
 
         if (teams.isEmpty()) {
-            return "No teams were found for this team leader.";
+            return "Team members: none";
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Teams for leaderId=").append(leaderId).append(":\n");
-        for (Team t : teams) {
-            sb.append("- Team ID=")
-                    .append(t.getId())
-                    .append("\n");
+        sb.append("Team members:\n");
 
+        for (Team t : teams) {
             List<TeamMember> members = teamMemberRepository.findByTeamId(t.getId());
-            if (members.isEmpty()) {
-                sb.append("  (no members)\n");
-            } else {
-                sb.append("  Members:\n");
-                for (TeamMember m : members) {
-                    Users u = m.getUser();
-                    sb.append("  - [ID=")
-                            .append(u.getId())
-                            .append("] name=\"")
-                            .append(u.getName())
-                            .append("\", email=")
-                            .append(u.getEmail())
-                            .append("\n");
-                }
+
+            for (TeamMember m : members) {
+                Users u = m.getUser();
+                sb.append("• ").append(u.getName()).append("\n")
+                        .append("  Email: ").append(u.getEmail()).append("\n\n");
             }
         }
+
         return sb.toString();
     }
 
@@ -217,51 +236,60 @@ Goal:
      * דוחות של כל העובדים בצוות של המנהל (לפי הלוגיקה מ-ReportController.byLeader).
      */
     private String buildReportsSummary(Long leaderId) {
-        // משתמשת באותה לוגיקה של ReportController.getReportsForLeader
-        var teamMembers = reportRepository
+        List<Report> reports = reportRepository
                 .findByReportEmployeeInProject_Project_ProjectLeader_Id(leaderId);
 
-        // אם אין לך את המתודה הזאת, אפשר להעתיק מ-ReportController את הלוגיקה המלאה
-        // עם EmployeeInProjectRepository ולהרכיב כאן List<Report> ידנית.
-
-        if (teamMembers == null || teamMembers.isEmpty()) {
-            return "No reports were found for this team leader.";
+        if (reports == null || reports.isEmpty()) {
+            return "Reports: none";
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Reports for leaderId=").append(leaderId).append(":\n");
-        for (Report r : teamMembers) {
-            sb.append("- [ID=")
-                    .append(r.getReportId())
-                    .append("] title=\"")
-                    .append(r.getReportTitle())
-                    .append("\", status=")
-                    .append(r.getReportStatus())
-                    .append(", date=")
-                    .append(safeDate(r.getReportDate()))
-                    .append("\n");
+        sb.append("Reports:\n");
+
+        for (Report r : reports) {
+            sb.append("• ").append(r.getReportTitle()).append("\n")
+                    .append("  Status: ").append(r.getReportStatus()).append("\n")
+                    .append("  Date: ").append(safeDate(r.getReportDate())).append("\n\n");
         }
+
         return sb.toString();
     }
+
 
     /**
      * פגישות של העובד/מנהל המחובר (לפי MeetingController.getMyMeetings).
      */
     private String buildMeetingsSummary(Users user) {
-        // כאן את יכולה להשתמש ב-EmployeeInProjectRepository ו-MeetingRepository
-        // כמו ב-MeetingController.getMyMeetings – אני משאיר לך מקום להשלים,
-        // כדי שלא אמציא לך חתיכת קוד שלא תואמת בדיוק למודלים שלך.
 
-        // כרגע נחזיר טקסט כללי, ואת יכולה להחליף למימוש מלא:
-        return "Meeting summary is not fully implemented yet in AIChatService. " +
-                "You can copy the logic from MeetingController.getMyMeetings into this method.";
+        List<Meeting> meetings =
+                meetingRepository.findByApprovals_ApprovalEmployeeInProject_User_Id(user.getId());
+
+        if (meetings == null || meetings.isEmpty()) {
+            return "Meetings: none";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Meetings:\n");
+
+        for (Meeting m : meetings) {
+            sb.append("• ").append(m.getTitle()).append("\n")
+                    .append("  Date: ").append(safeDate(m.getMeetingDate())).append("\n")
+                    .append("  Location: ").append(
+                            m.getMeetingLocation() == null ? "N/A" : m.getMeetingLocation()
+                    ).append("\n")
+                    .append("  Status: ").append(
+                            m.getStatus() == null ? "N/A" : m.getStatus()
+                    ).append("\n\n");
+        }
+
+        return sb.toString();
     }
 
     private String safeDate(LocalDate date) {
         return (date == null) ? "N/A" : date.toString();
     }
 
-    private String safeDate(LocalDateTime dt) {
-        return (dt == null) ? "N/A" : dt.toString();
+    private String safeDate(LocalDateTime dateTime) {
+        return (dateTime == null) ? "N/A" : dateTime.toString();
     }
 }
