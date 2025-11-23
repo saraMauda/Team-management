@@ -1,11 +1,19 @@
 <div class="employee-home" *ngIf="!loading; else loadingTpl">
 
-  <div class="welcome-card">
-    <h1 class="welcome-title">Welcome Back, {{ currentUserName }}! 👋</h1>
+<div class="employee-header-row">
+  <div class="left">
+    <h1 class="welcome-title">Welcome Back, Employee</h1>
+  </div>
+
+  <div class="right">
     <p class="welcome-subtitle">
       Here is your updated project status summary. Time to get to work!
     </p>
   </div>
+</div>
+
+
+
 
   <div class="dashboard-content-grid">
 

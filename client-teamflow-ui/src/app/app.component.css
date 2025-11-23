@@ -10,3 +10,9 @@
 app-footer {
   margin-top: auto;
 }
+.header-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  height: 100% !important;
+}

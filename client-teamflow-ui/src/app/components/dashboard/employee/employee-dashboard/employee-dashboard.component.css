@@ -113,3 +113,16 @@ html, body, app-root {
 *, *::before, *::after {
   box-sizing: border-box;
 }
+/* ===== FIX HEADER FOR EMPLOYEE (MATCH TEAM-LEADER) ===== */
+
+app-header {
+  margin: 0 !important;
+  height: 65px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  background-color: #0f2234 !important;
+  border-bottom: 1px solid rgba(255,127,50,0.25) !important;
+  padding: 25px;
+}
+

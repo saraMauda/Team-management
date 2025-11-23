@@ -1,43 +1,99 @@
-/* ------- GLOBAL WRAPPER ------- */
+/* ===========================
+   GLOBAL FONT – EXACTLY LIKE TEAM-LEADER
+   =========================== */
+.employee-home,
+.employee-home * {
+  line-height: 1.35;
+  font-weight: 500;
+  color: #f5f7fa;
+}
+
+/* ===========================
+   PAGE LAYOUT
+   =========================== */
 .employee-home {
   display: flex;
   flex-direction: column;
   gap: 25px;
   padding: 25px;
-  color: #f5f7fa;
-  font-family: 'Segoe UI', Arial, sans-serif;
 }
 
-/* ------- WELCOME SECTION ------- */
-.welcome-card {
-  background: linear-gradient(145deg, #182b3d, #122030);
-  padding: 25px 30px;
-  border-radius: 14px;
-  box-shadow: 0 12px 25px rgba(0,0,0,0.35);
-  border: 1px solid rgba(255,255,255,0.04);
+/* ===========================
+   HEADER (MATCH TEAM-LEADER)
+   =========================== */
+/* ===========================
+   UNIFIED HEADER (ADMIN / TL / EMPLOYEE)
+   =========================== */
+
+/* ===========================
+   UNIFIED HEADER (MATCH TEAM-LEADER)
+   =========================== */
+/* ===== Header row layout (exact match TL) ===== */
+.employee-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 20px;
+  padding: 0;
+}
+
+/* Left side (title) */
+.employee-header-row .left {
+  display: flex;
+  flex-direction: column;
 }
 
 .welcome-title {
   margin: 0;
-  font-size: 34px;
-  font-weight: 600;
-  color: #ff7f32;
+  font-size: clamp(26px, 2.6vw, 34px);
+  font-weight: 700;
+  color: #f5f7fa;
+}
+
+/* Right side (subtitle) */
+.employee-header-row .right {
+  text-align: right;
 }
 
 .welcome-subtitle {
-  margin: 6px 0 0;
-  color: #9fb3c8;
-  font-size: 17px;
+  margin: 0;
+  font-size: clamp(14px, 1.4vw, 18px);
+  font-weight: 500;
+  color: #b6c6d6;
 }
 
-/* ------- GRID LAYOUT ------- */
+/* Mobile – כמו TL */
+@media (max-width: 700px) {
+  .employee-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .employee-header-row .right {
+    text-align: left;
+  }
+}
+
+
+/* ===========================
+   GRID
+   =========================== */
 .dashboard-content-grid {
   display: grid;
   grid-template-columns: 1.3fr 1fr;
   gap: 22px;
 }
 
-/* ------- STATS CARDS ------- */
+/* ===========================
+   STAT CARDS (TEAM-LEADER STYLE)
+   =========================== */
+.stats-reports-column {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -50,6 +106,7 @@
   padding: 18px 20px;
   box-shadow: 0 12px 25px rgba(0,0,0,0.35);
   border: 1px solid rgba(255,255,255,0.04);
+  text-align: center;
   transition: 0.2s ease;
 }
 
@@ -58,36 +115,40 @@
 }
 
 .stat-card .icon {
-  font-size: 28px;
+  font-size: 26px;
   color: #ff7f32;
   margin-bottom: 8px;
 }
 
 .stat-card h3 {
   margin: 0;
-  font-size: 17px;
+  font-size: clamp(14px, 1.4vw, 18px);
   color: #9fb3c8;
+  font-weight: 600;
 }
 
 .stat-card p {
   margin: 4px 0 0;
-  font-size: 34px;
-  font-weight: 600;
+  font-size: clamp(20px, 2vw, 28px);
+  font-weight: 700;
   color: #ffffff;
 }
 
-/* ------- RECENT REPORTS ------- */
+/* ===========================
+   RECENT REPORTS PANEL
+   =========================== */
 .recent-reports-panel {
   background: #182b3d;
   padding: 20px;
   border-radius: 14px;
-  box-shadow: 0 12px 25px rgba(0,0,0,0.30);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.3);
   border: 1px solid rgba(255,255,255,0.04);
 }
 
 .recent-reports-panel h2 {
   margin: 0 0 12px;
-  font-size: 22px;
+  font-size: clamp(18px, 1.8vw, 22px);
+  font-weight: 700;
 }
 
 .reports-list {
@@ -101,10 +162,6 @@
   border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
-.report-item:last-child {
-  border-bottom: none;
-}
-
 .report-meta {
   display: flex;
   justify-content: space-between;
@@ -113,48 +170,55 @@
 
 .report-meta h4 {
   margin: 0;
-  font-size: 17px;
+  font-size: clamp(14px, 1.4vw, 18px);
+  font-weight: 600;
+}
+
+.status-submitted,
+.status-open,
+.status-approved {
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: clamp(11px, 1vw, 13px);
+  font-weight: 600;
 }
 
 .status-submitted {
   background-color: rgba(255,127,50,0.15);
   color: #ffa266;
-  padding: 4px 10px;
-  border-radius: 8px;
 }
 
 .status-open {
-  background-color: rgba(255,255,255,0.10);
-  padding: 4px 10px;
-  border-radius: 8px;
+  background-color: rgba(255,255,255,0.12);
   color: #d7e0ea;
 }
 
 .status-approved {
   background-color: rgba(76,175,80,0.2);
-  padding: 4px 10px;
-  border-radius: 8px;
   color: #b3efb5;
 }
 
 .report-item p {
   margin: 6px 0 0;
   color: #9bb3c8;
-  font-size: 15px;
+  font-size: clamp(12px, 1.1vw, 15px);
 }
 
-/* ------- ACTIVE PROJECTS SECTION ------- */
+/* ===========================
+   ACTIVE PROJECTS
+   =========================== */
 .active-projects-column {
   background: #182b3d;
   padding: 20px;
   border-radius: 14px;
-  box-shadow: 0 12px 25px rgba(0,0,0,0.30);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.3);
   border: 1px solid rgba(255,255,255,0.04);
 }
 
 .active-projects-column h2 {
   margin: 0 0 14px;
-  font-size: 22px;
+  font-size: clamp(18px, 1.8vw, 22px);
+  font-weight: 700;
 }
 
 .project-item-card {
@@ -174,7 +238,8 @@
 
 .project-info h3 {
   margin: 0;
-  font-size: 18px;
+  font-size: clamp(15px, 1.4vw, 18px);
+  font-weight: 600;
 }
 
 .project-status-chip {
@@ -182,16 +247,19 @@
   color: #ff9a57;
   padding: 3px 8px;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: clamp(11px, 1vw, 14px);
+  font-weight: 600;
 }
 
 .project-leader {
   color: #9fb3c8;
   margin: 8px 0;
-  font-size: 15px;
+  font-size: clamp(12px, 1.1vw, 15px);
 }
 
-/* ------- PROGRESS BAR ------- */
+/* ===========================
+   PROGRESS BAR
+   =========================== */
 .progress-bar-wrapper {
   margin-top: 10px;
 }
@@ -199,12 +267,12 @@
 .progress-bar-text {
   display: flex;
   justify-content: space-between;
-  font-size: 15px;
+  font-size: clamp(12px, 1.1vw, 15px);
 }
 
 .progress-percent {
   color: #4fc3f7;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .progress-bar {
@@ -222,15 +290,20 @@
   transition: width 0.3s ease;
 }
 
-/* ------- NO DATA ------- */
+/* ===========================
+   EMPTY STATE
+   =========================== */
 .no-data,
 .no-data-projects {
   text-align: center;
   color: #7f8fa3;
   font-style: italic;
+  font-size: clamp(12px, 1vw, 14px);
 }
 
-/* ------- RESPONSIVE ------- */
+/* ===========================
+   RESPONSIVE
+   =========================== */
 @media (max-width: 1024px) {
   .dashboard-content-grid {
     grid-template-columns: 1fr;
@@ -246,8 +319,6 @@
     grid-template-columns: 1fr;
   }
 }
-.stats-reports-column {
-  display: flex;
-  flex-direction: column;
-  gap: 26px; /* מרווח בין הסטט-קארד ל-pannel */
+.employee-home {
+  padding-top: 20px !important; /* כמו Team-Leader */
 }

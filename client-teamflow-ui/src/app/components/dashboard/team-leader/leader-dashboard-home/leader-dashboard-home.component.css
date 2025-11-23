@@ -1,94 +1,80 @@
-/* ===== FONT IMPORT ===== */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-/* ===== BASE PAGE ===== */
+/* ===== BASE LAYOUT – כמו overview-wrapper ===== */
 .leader-home {
-  padding: 30px;
-  background: #0e1822;
-  font-family: 'Inter', sans-serif !important;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   color: #f5f7fa;
 }
 
-/* ===== GLOBAL HEADINGS ===== */
-h1, h2, h3, h4 {
-  font-family: 'Inter', sans-serif !important;
-  font-weight: 600;
-  color: #e3eeff;
-  letter-spacing: 0.4px;
-  margin: 0;
-}
-
-p, span, li, label {
-  font-size: 15px;
-  font-weight: 400;
-  color: #c3d4e8;
-}
-
-/* ===== WELCOME CARD (TOP HEADER) ===== */
+/* ===== HEADER – כמו overview-header ===== */
 .welcome-card {
-  background: #182b3d;
-  padding: 26px 30px;
-  border-radius: 14px;
-  box-shadow: 0 12px 25px rgba(0,0,0,0.35);
-  border: 1px solid rgba(255,255,255,0.04);
-  margin-bottom: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  background: none;
+  padding: 0;
+  border: none;
+  box-shadow: none;
 }
 
 .welcome-title {
-  font-size: 34px;
+  margin: 0;
+  font-size: clamp(22px, 2.2vw, 30px);
   font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 4px;
 }
 
 .welcome-subtitle {
-  font-size: 18px;
+  margin: 4px 0 0;
   color: #9fb3c8;
-  margin: 0;
+  font-size: clamp(14px, 1.4vw, 18px);
+  font-weight: 500;
 }
 
-/* ===== MAIN GRID LAYOUT ===== */
+/* ===== GRID עיקרי – כמו bottom-row ===== */
 .dashboard-content-grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 24px;
+  grid-template-columns: 1.2fr 1.2fr;
+  gap: 16px;
 }
 
-/* ===== PANEL TEMPLATE (all cards use this style) ===== */
+/* ===== PANEL STYLE – מועתק מ-.panel של האדמין ===== */
 .stats-panel,
 .projects-panel,
 .recent-reports-panel,
 .team-list-panel {
   background: #182b3d;
   border-radius: 14px;
-  padding: 22px;
+  padding: 16px 18px;
   box-shadow: 0 12px 25px rgba(0,0,0,0.3);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .stats-panel h2,
 .projects-panel h2,
 .recent-reports-panel h3,
 .team-list-panel h3 {
-  font-size: 22px;
-  font-weight: 600;
-  padding-bottom: 8px;
-  border-bottom: 2px solid rgba(255,255,255,0.08);
+  margin: 0;
+  font-size: clamp(18px, 1.7vw, 22px);
+  font-weight: 700;
 }
 
-/* ===== STAT CARDS ===== */
+/* ===== TOP STATS – כמו cards-row + card ===== */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(2,1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
 }
 
 .stat-card {
-  padding: 18px;
-  background: linear-gradient(145deg, #122030, #0c1723);
+  background: linear-gradient(145deg, #182b3d, #122030);
   border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.04);
+  padding: 16px 18px;
   box-shadow: 0 12px 25px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255, 255, 255, 0.04);
   text-align: center;
 }
 
@@ -99,156 +85,215 @@ p, span, li, label {
 }
 
 .stat-card h3 {
-  font-size: 17px;
+  font-size: clamp(15px, 1.4vw, 20px);
+  color: #9fb3c8;
   margin-bottom: 6px;
-  color: #c0d0e0;
+  font-weight: 600;
 }
 
 .stat-card p {
-  font-size: 34px;
+  font-size: clamp(22px, 2vw, 28px);
   font-weight: 700;
-  color: #ffffff;
+  margin: 0;
 }
 
-/* ===== PROJECT CARDS ===== */
+/* ===== PROJECTS PANEL ===== */
+.projects-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
 .project-item-card {
-  background: rgba(10, 21, 32, 0.85);
-  padding: 18px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.05);
-  margin-bottom: 15px;
-  transition: 0.25s;
+  padding: 12px 10px;
+  border-radius: 8px;
+  font-size: clamp(14px, 1.3vw, 17px);
+  background-color: rgba(10, 21, 32, 0.8);
+  margin-bottom: 4px;
 }
 
-.project-item-card:hover {
-  background: #182b3d;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+.project-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
 }
 
 .project-info h3 {
-  font-size: 18px;
+  margin: 0;
+  font-size: clamp(15px, 1.3vw, 18px);
   font-weight: 600;
-  color: #e3eeff;
 }
 
 .project-status-chip {
-  padding: 4px 12px;
-  font-size: 13px;
-  border-radius: 10px;
-  background: rgba(255,127,50,0.18);
+  font-size: clamp(11px, 1vw, 14px);
+  padding: 3px 8px;
+  border-radius: 999px;
+  background-color: rgba(255, 127, 50, 0.18);
   color: #ff9a57;
   font-weight: 600;
 }
 
 .project-status-chip.active {
-  background: #ff7f32;
-  color: #ffffff;
+  background-color: #ff7f32;
+  color: #fff;
 }
 
-/* ===== PROGRESS BAR ===== */
-.progress-bar {
-  background: #0e1822;
-  height: 10px;
-  border-radius: 999px;
-  margin-top: 10px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #1fc8ff, #4facff);
-  border-radius: 999px;
-  transition: width 0.4s ease;
+/* Progress bar */
+.progress-bar-wrapper {
+  margin-top: 4px;
 }
 
 .progress-bar-text {
   display: flex;
   justify-content: space-between;
+  font-size: clamp(12px, 1.1vw, 14px);
   color: #c3d4e8;
-  font-size: 14px;
   margin-bottom: 4px;
 }
 
-/* ===== REPORTS + TEAM GRID ===== */
+.progress-bar {
+  width: 100%;
+  height: 9px;
+  border-radius: 999px;
+  background-color: #0e1822;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+  background: linear-gradient(90deg, #1fc8ff, #4facff);
+}
+
+/* ===== BOTTOM PANELS – Reports + Team ===== */
 .reports-team-panel {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 16px;
 }
 
-/* ===== REPORT ITEMS ===== */
+.reports-list,
+.team-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
 .report-item {
-  background: rgba(10,21,32,0.85);
-  padding: 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.05);
-  margin-bottom: 14px;
+  padding: 8px 6px;
+  border-radius: 8px;
+  font-size: clamp(14px, 1.3vw, 17px);
+  margin-bottom: 4px;
+  background-color: rgba(10, 21, 32, 0.8);
+}
+
+.report-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .report-item h4 {
-  font-size: 17px;
+  margin: 0 0 2px;
   font-weight: 600;
-  margin-bottom: 4px;
-  color: #e3eeff;
+  font-size: clamp(15px, 1.3vw, 18px);
 }
 
 .status-submitted {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: clamp(11px, 1vw, 14px);
+  padding: 2px 8px;
+  border-radius: 999px;
+  background-color: rgba(255, 127, 50, 0.16);
   color: #ff9a57;
+  font-weight: 600;
+}
+
+.report-item p {
+  margin: 0;
+  color: #9fb3c8;
+  font-size: clamp(12px, 1.1vw, 15px);
 }
 
 /* ===== TEAM MEMBERS ===== */
 .member-item {
-  background: rgba(10,21,32,0.85);
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.05);
+  padding: 8px 6px;
+  border-radius: 8px;
+  font-size: clamp(14px, 1.3vw, 17px);
+  margin-bottom: 4px;
+  background-color: rgba(10, 21, 32, 0.8);
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 8px;
 }
 
 .member-item i {
-  font-size: 22px;
+  font-size: 20px;
   color: #4facff;
 }
 
-/* ===== EMPTY STATE ===== */
+/* ===== EMPTY ===== */
 .no-data,
 .no-data-projects {
   text-align: center;
-  padding: 20px;
-  color: #9fb3c8;
-  font-size: 15px;
+  color: #7f8fa3;
+  font-style: italic;
+  font-size: clamp(12px, 1vw, 14px);
+  padding: 8px 0;
+}
+
+/* ===== SCROLLBAR ===== */
+.reports-list::-webkit-scrollbar,
+.team-list::-webkit-scrollbar,
+.projects-list-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.reports-list::-webkit-scrollbar-thumb,
+.team-list::-webkit-scrollbar-thumb,
+.projects-list-container::-webkit-scrollbar-thumb {
+  background-color: #ff7f32;
+  border-radius: 4px;
 }
 
 /* ===== LOADING ===== */
 .leader-loading {
-  padding: 40px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: clamp(16px, 1.6vw, 20px);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #cbd5f5;
   text-align: center;
-  color: #4facff;
-  font-size: 20px;
 }
 
 /* ===== RESPONSIVE ===== */
-@media (max-width: 1100px) {
-  .dashboard-content-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 700px) {
+@media (max-width: 1024px) {
   .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-content-grid {
     grid-template-columns: 1fr;
   }
 
   .reports-team-panel {
     grid-template-columns: 1fr;
   }
+}
 
-  .welcome-title {
-    font-size: 28px;
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .welcome-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
 }
