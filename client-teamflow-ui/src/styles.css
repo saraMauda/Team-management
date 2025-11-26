@@ -18,14 +18,18 @@
   background: #ffa45c;
 }
 
-/* גלילה רק לאזור התוכן (לא לניווט) */
 .main-content {
-  height: 100vh;
-  overflow-y: auto;
-  padding-right: 10px;
+  overflow: hidden;
+  height: 100%;
 }
 
 /* מבטיח שלא ייחתך */
 body {
   overflow: hidden;
 }
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+

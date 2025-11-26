@@ -2,6 +2,7 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,7 +25,7 @@ public class Project {
     private Users projectLeader;
 
     @OneToMany(mappedBy = "project")
-    private List<EmployeeInProject> projectEmployeeProjects;
+    private List<EmployeeInProject> projectEmployeeProjects= new ArrayList<>();
 
     @OneToMany(mappedBy = "project")
     private List<Meeting> projectMeetings;

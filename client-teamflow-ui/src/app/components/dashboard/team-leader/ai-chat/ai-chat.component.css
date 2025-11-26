@@ -1,32 +1,37 @@
-/* ===== MAIN CHAT CONTAINER ===== */
-.chat-full-container {
-  flex: 1;
+:host {
   display: flex;
   flex-direction: column;
-  background: #0f223b; /* רקע כהה תואם sidebar */
-  height: calc(100vh - 60px);
-  overflow: hidden;
+  height: 100%;
+}
+
+/* ===== MAIN CHAT CONTAINER ===== */
+.chat-full-container {
+  height: 100vh;        /* גובה מלא */
+  display: flex;
+  flex-direction: column;
+  background: #0f223b;
+  overflow: hidden;      /* חוסם גלילה כללית */
 }
 
 /* ===== HEADER ===== */
 .chat-header {
-  background: #1a324d; /* כחול כהה TeamFlow */
-  color: #f57c00;      /* כתום מותג */
+  background: #1a324d;
+  color: #f57c00;
   padding: 16px;
   text-align: center;
   font-size: 22px;
   font-weight: 700;
   border-bottom: 2px solid #285b8f;
+  flex-shrink: 0;        /* חשוב – מונע מהכותרת להצטמצם */
 }
 
 /* ===== CHAT WINDOW (SCROLL AREA) ===== */
 .chat-window {
-  flex: 1;
-  overflow-y: auto;
+  flex: 1;               /* החלק האמצעי נמתח */
+  overflow-y: auto;      /* רק פה גלילה */
   padding: 20px 40px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
 }
 
 /* ===== USER MESSAGE ===== */
@@ -70,8 +75,9 @@
 .chat-input-area {
   display: flex;
   padding: 16px;
-  background: #0f2a47; /* כהה תואם הכותרת */
+  background: #0f2a47;
   border-top: 2px solid #285b8f;
+  flex-shrink: 0;        /* חשוב – מונע הצטמצמות */
 }
 
 .chat-input-area input {
