@@ -1,6 +1,5 @@
 <div class="leader-home" *ngIf="!loading; else loadingTpl">
 
-  <!-- HEADER -->
   <div class="welcome-card">
     <h1 class="welcome-title">Welcome, {{ currentLeaderName }}</h1>
     <p class="welcome-subtitle">
@@ -8,10 +7,8 @@
     </p>
   </div>
 
-  <!-- MAIN GRID (2×2) -->
   <div class="dashboard-content-grid">
 
-    <!-- ============= 1) STATS PANEL ============= -->
     <div class="stats-panel">
       <h2>Team Overview</h2>
       <div class="stats-grid">
@@ -43,7 +40,6 @@
       </div>
     </div>
 
-    <!-- ============= 2) PROJECTS PANEL ============= -->
     <div class="projects-panel">
       <h2>My Managed Projects</h2>
 
@@ -79,32 +75,37 @@
       </div>
     </div>
 
-    <!-- ============= 3) REPORTS PANEL (נפרד) ============= -->
     <div class="recent-reports-panel">
       <h3>Reports Needing Attention ({{ reportsAwaitingReviewCount }})</h3>
 
       <ul class="reports-list">
+
         <li *ngIf="reportsAwaitingReview.length === 0" class="no-data">
           All reports reviewed. Great job!
         </li>
 
-        <li *ngFor="let report of reportsAwaitingReview.slice(0, 5)" class="report-item">
+        <li *ngFor="let report of reportsAwaitingReview.slice(0, 5)" 
+            class="report-item">
+
           <div class="report-meta">
             <h4>{{ report.title }}</h4>
+
+            <!-- ⭐ FIX — הצגת סטטוס מנורמל -->
             <span class="status-submitted">
-              {{ report.status || 'SUBMITTED' }}
+              {{ normalizeStatus(report.status) }}
             </span>
           </div>
 
           <p>
-            From: {{ report.employeeName || 'Unknown' }} |
+            From: {{ report.employeeName || 'Unknown' }} | 
             {{ report.date | date: 'shortDate' }}
           </p>
+
         </li>
+
       </ul>
     </div>
 
-    <!-- ============= 4) TEAM MEMBERS PANEL (נפרד) ============= -->
     <div class="team-list-panel">
       <h3>My Team ({{ teamCount }})</h3>
 
@@ -125,7 +126,6 @@
   </div>
 </div>
 
-<!-- LOADING TEMPLATE -->
 <ng-template #loadingTpl>
   <div class="leader-loading">Loading leadership dashboard...</div>
 </ng-template>

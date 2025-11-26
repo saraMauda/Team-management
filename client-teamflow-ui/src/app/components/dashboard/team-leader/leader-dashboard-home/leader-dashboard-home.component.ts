@@ -33,7 +33,6 @@ export class LeaderDashboardHomeComponent implements OnInit {
 
   myManagedProjects: ProjectDTO[] = [];
   teamMembers: any[] = [];
-
   reportsAwaitingReview: EnrichedReportDTO[] = [];
 
   loading = true;
@@ -52,9 +51,18 @@ export class LeaderDashboardHomeComponent implements OnInit {
     this.loadLeaderInfo();
   }
 
-  // ---------------------------
-  // STEP 1: Load logged-in leader
-  // ---------------------------
+  // ⭐ Normalize statuses so SUBMITTED / OPEN → IN_REVIEW
+  normalizeStatus(status: string | null | undefined): string {
+    if (!status) return 'IN_REVIEW';
+    status = status.toUpperCase();
+
+    if (status === 'SUBMITTED' || status === 'OPEN') {
+      return 'IN_REVIEW';
+    }
+
+    return status;
+  }
+
   loadLeaderInfo(): void {
     const stored = localStorage.getItem('user');
     if (!stored) {
@@ -78,9 +86,6 @@ export class LeaderDashboardHomeComponent implements OnInit {
     });
   }
 
-  // ---------------------------
-  // STEP 2: Load project + team
-  // ---------------------------
   loadDashboard(): void {
     if (!this.currentLeaderId) return;
 
@@ -116,9 +121,6 @@ export class LeaderDashboardHomeComponent implements OnInit {
     });
   }
 
-  // ---------------------------
-  // STEP 3: Load reports + meetings
-  // ---------------------------
   loadReportsAndMeetings(members: any[], projectIds: number[]): void {
 
     const memberNameMap = new Map<number, string>();
@@ -143,11 +145,13 @@ export class LeaderDashboardHomeComponent implements OnInit {
 
         const enrichedReports: EnrichedReportDTO[] = mergedReports.map(report => ({
           ...report,
+          status: this.normalizeStatus(report.status),   // ⭐ FIX
           employeeName: memberNameMap.get(report.employeeProjectId!) || 'Unknown'
         }));
 
+        // ⭐ ONLY IN_REVIEW reports
         this.reportsAwaitingReview = enrichedReports.filter(
-          r => r.status === 'SUBMITTED' || r.status === 'IN_REVIEW'
+          r => r.status === 'IN_REVIEW'
         );
 
         this.reportsAwaitingReviewCount = this.reportsAwaitingReview.length;
@@ -170,4 +174,3 @@ export class LeaderDashboardHomeComponent implements OnInit {
     });
   }
 }
-

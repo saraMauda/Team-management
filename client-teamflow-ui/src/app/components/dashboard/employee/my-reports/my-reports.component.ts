@@ -10,12 +10,12 @@ import { switchMap, map } from 'rxjs/operators';
 @Component({
   selector: 'app-my-reports',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe], 
-  templateUrl: './my-reports.component.html', 
+  imports: [CommonModule, FormsModule, DatePipe],
+  templateUrl: './my-reports.component.html',
   styleUrls: ['./my-reports.component.css']
 })
 export class MyReportsComponent implements OnInit {
-  
+
   reports: any[] = [];
   loading = true;
   error: string | null = null;
@@ -35,6 +35,17 @@ export class MyReportsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUserInfo();
+  }
+
+  // ⭐ Normalize report status (DB → UI)
+  normalizeStatus(s: string | null | undefined): string {
+    if (!s) return 'IN_REVIEW';
+
+    s = s.toUpperCase();
+
+    if (s === 'SUBMITTED' || s === 'OPEN') return 'IN_REVIEW';
+
+    return s;
   }
 
   loadUserInfo() {
@@ -66,6 +77,7 @@ export class MyReportsComponent implements OnInit {
           this.reportsService.getComments(report.id).pipe(
             map(comments => ({
               ...report,
+              status: this.normalizeStatus(report.status),   // ⭐ FIX
               commentCount: comments.length
             }))
           )
@@ -93,7 +105,11 @@ export class MyReportsComponent implements OnInit {
       return;
     }
 
-    this.selectedReport = report;
+    this.selectedReport = {
+      ...report,
+      status: this.normalizeStatus(report.status)  // ⭐ FIX
+    };
+
     this.panelOpen = true;
     this.commentsLoading = true;
 
@@ -128,13 +144,14 @@ export class MyReportsComponent implements OnInit {
 
         const report = this.reports.find(r => r.id === this.selectedReport.id);
         if (report) report.commentCount++;
-
       },
       error: err => console.error(err)
     });
   }
 
   getStatusColor(status: string): string {
+    status = this.normalizeStatus(status); // ⭐ FIX
+
     switch (status) {
       case 'APPROVED': return '#4caf50';
       case 'REJECTED': return '#f44336';

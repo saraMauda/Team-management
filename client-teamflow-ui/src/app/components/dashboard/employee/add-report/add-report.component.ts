@@ -18,13 +18,16 @@ export class AddReportComponent implements OnInit {
   selectedProjectId: number | null = null;
   title: string = '';
   description: string = '';
-  status: string = 'OPEN';
-  hours: number = 8;            // ⬅ הוספתי ברירת מחדל
+
+  status: string = 'IN_REVIEW'; // ✔ במקום OPEN
+
+  hours: number = 8;
+
   successMessage = '';
   errorMessage = '';
   loading = false;
 
-  currentUserId: number | null = null;   // ⬅ חובה לשרת
+  currentUserId: number | null = null;
 
   constructor(
     private reportsService: ReportsService,
@@ -69,15 +72,15 @@ export class AddReportComponent implements OnInit {
       return;
     }
 
-    const today = new Date().toISOString().split('T')[0]; // yyyy-MM-dd
+    const today = new Date().toISOString().split('T')[0];
 
     const reportData = {
       projectId: this.selectedProjectId,
-      userId: this.currentUserId,      // ⬅ חובה
-      date: today,                     // ⬅ חובה לשרת
-      hours: this.hours,               // ⬅ חובה
-      status: this.status,
-      description: this.description,  // ⬅ בשרת זה "description" ולא "title"
+      userId: this.currentUserId,
+      date: today,
+      hours: this.hours,
+      status: this.status,       // ✔ מעודכן
+      description: this.description,
       title: this.title
     };
 
@@ -103,7 +106,7 @@ export class AddReportComponent implements OnInit {
     this.selectedProjectId = null;
     this.title = '';
     this.description = '';
-    this.status = 'OPEN';
+    this.status = 'IN_REVIEW';  // ✔ במקום OPEN
     this.hours = 8;
   }
 }

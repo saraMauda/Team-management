@@ -24,8 +24,11 @@
                             <i class="fa fa-comment"></i> 
                             {{ report.commentCount || 0 }} Comments
                         </span>
-                        <span class="status" [style.color]="getStatusColor(report.status)">
-                            {{ report.status }}
+
+                        <!-- ⭐ NORMALIZED STATUS ⭐ -->
+                        <span class="status" 
+                              [style.color]="getStatusColor(report.status)">
+                            {{ normalizeStatus(report.status) }}
                         </span>
                     </div>
                 </div>
@@ -56,7 +59,7 @@
             <div class="meta">
                 <span>Status: 
                     <strong [style.color]="getStatusColor(selectedReport.status)">
-                        {{ selectedReport.status }}
+                        {{ normalizeStatus(selectedReport.status) }}
                     </strong>
                 </span>
                 <span>Date: <strong>{{ selectedReport.reportDate | date: 'mediumDate' }}</strong></span>
@@ -83,7 +86,7 @@
                     <p>{{ comment.text }}</p>
                     <small>
                         {{ comment.userId === currentUserId ? 'Me' 
-                           : (comment.authorRole === 'TEAMLEADER' ? 'Team Lead' : 'Employee') }}
+                          : (comment.authorRole === 'TEAMLEADER' ? 'Team Lead' : 'Employee') }}
                         | {{ comment.commentDate | date: 'shortTime' }}
                     </small>
                 </div>
@@ -95,7 +98,9 @@
                 [(ngModel)]="newComment" 
                 placeholder="Write a comment..."
                 rows="3"></textarea>
-            <button class="send-btn" (click)="submitComment()" [disabled]="!newComment.trim()">
+            <button class="send-btn" 
+                    (click)="submitComment()" 
+                    [disabled]="!newComment.trim()">
                 Send Comment
             </button>
         </div>

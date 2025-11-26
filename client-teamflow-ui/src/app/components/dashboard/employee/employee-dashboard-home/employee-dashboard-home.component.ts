@@ -5,11 +5,12 @@ import { ProjectsService } from '../../../../services/projects.service';
 import { ReportsService } from '../../../../services/reports.service';
 import { AuthService } from '../../../../services/auth.service';
 import { MeetingsService } from '../../../../services/meetings.service';
+
 import { ProjectDTO } from '../../../../models/project-dto.model';
 import { ReportDTO } from '../../../../models/report-dto.model';
 import { MeetingDTO } from '../../../../models/meeting-dto.model';
 
-import { forkJoin } from 'rxjs'; 
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-employee-dashboard-home',
@@ -20,18 +21,16 @@ import { forkJoin } from 'rxjs';
 })
 export class EmployeeDashboardHomeComponent implements OnInit {
 
-  // Basic user details
   currentUserName: string = 'Employee';
   currentUserId: number | null = null;
 
-  // Statistical counters
   activeProjectsCount = 0;
   submittedReportsCount = 0;
   upcomingMeetingsCount = 0;
 
-  // Lists for UI
   myActiveProjects: ProjectDTO[] = [];
-  myRecentReports: any[] = []; // NOTE: mapped reports
+  myRecentReports: any[] = [];
+
   loading = true;
 
   constructor(
@@ -45,7 +44,17 @@ export class EmployeeDashboardHomeComponent implements OnInit {
     this.loadEmployeeData();
   }
 
-  // STEP 1 — Get the logged-in user's info
+  // Normalize all report statuses in one place
+  normalizeStatus(s: string | null | undefined): string {
+    if (!s) return 'IN_REVIEW';
+    s = s.toUpperCase();
+
+    if (s === 'SUBMITTED') return 'IN_REVIEW';
+    if (s === 'OPEN') return 'IN_REVIEW';
+
+    return s;
+  }
+
   loadEmployeeData(): void {
     const saved = localStorage.getItem('user');
     if (!saved) {
@@ -68,7 +77,6 @@ export class EmployeeDashboardHomeComponent implements OnInit {
     });
   }
 
-  // STEP 2 — Load all dashboard data (parallel)
   loadDashboard(): void {
     if (!this.currentUserId) return;
 
@@ -96,11 +104,11 @@ export class EmployeeDashboardHomeComponent implements OnInit {
         // ---- LIST DATA ----
         this.myActiveProjects = activeProjects;
 
-        // 👇 THIS IS THE IMPORTANT FIX — MAP SERVER FIELDS
+        // Normalize mapped reports
         this.myRecentReports = safeReports
           .map(r => ({
             reportTitle: r.title ?? 'Untitled Report',
-            reportStatus: r.status ?? 'OPEN',
+            reportStatus: this.normalizeStatus(r.status),
             reportDate: r.date ?? null
           }))
           .sort((a, b) => (b.reportDate ?? '').localeCompare(a.reportDate ?? ''))
@@ -115,12 +123,10 @@ export class EmployeeDashboardHomeComponent implements OnInit {
     });
   }
 
-  // Reports awaiting review
   getReportsAwaitingReviewCount(): number {
     if (!this.myRecentReports) return 0;
-
     return this.myRecentReports.filter(
-      r => r.reportStatus === 'SUBMITTED' || r.reportStatus === 'IN_REVIEW'
+      r => this.normalizeStatus(r.reportStatus) === 'IN_REVIEW'
     ).length;
   }
 }
