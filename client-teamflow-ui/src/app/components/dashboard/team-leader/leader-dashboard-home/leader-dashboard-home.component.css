@@ -170,10 +170,11 @@
 }
 
 /* ===== BOTTOM PANELS – Reports + Team ===== */
-.reports-team-panel {
+.dashboard-content-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
+  align-items: stretch;
 }
 
 .reports-list,

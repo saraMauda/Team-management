@@ -4,14 +4,13 @@ import { CommonModule } from '@angular/common';
 import { MeetingsService } from '../../../../../services/meetings.service';
 import { ProjectsService } from '../../../../../services/projects.service'; // ייבוא חדש
 import { MeetingDTO } from '../../../../../models/meeting-dto.model';
-import { ProjectDTO } from '../../../../../models/project-dto.model'; // ייבוא חדש
-
+import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs'; // ייבוא חדש לביצוע קריאות מקבילות
 
 @Component({
   selector: 'app-manage-meetings',
   standalone: true,
-  imports: [CommonModule],
+imports: [CommonModule, FormsModule],
   templateUrl: './manage-meetings.component.html',
   styleUrls: ['./manage-meetings.component.css']
 })
@@ -20,6 +19,8 @@ export class ManageMeetingsComponent implements OnInit {
   meetings: MeetingDTO[] = [];
   loading = true;
   error: string | null = null;
+  editMode = false;
+
   
   // מפה חדשה לאחסון שמות הפרויקטים לפי ID
   projectNamesMap: Map<number, string> = new Map(); 

@@ -8,20 +8,13 @@ import { UsersService } from '../../../../services/users.service';
 import { TeamService } from '../../../../services/team.service';
 import { MeetingsService } from '../../../../services/meetings.service';
 
-// ----------------------------------------------
-// --- מודלים דמיוניים (יש להניח שהם קיימים) ---
-// ----------------------------------------------
-// יש להחליף בייבוא המודלים האמיתיים שלך אם הם קיימים בנתיב אחר
-interface ProjectDTO { id?: number; name?: string; status?: string; progress?: number; }
-interface ReportDTO { id?: number; employeeId?: number; reportTitle?: string; reportStatus?: string; reportDate?: string; }
-interface MeetingDTO { id?: number; meetingDate?: string; }
+import { ProjectDTO } from '../../../../models/project-dto.model';
+import { ReportDTO } from '../../../../models/report-dto.model';
+import { MeetingDTO } from '../../../../models/meeting-dto.model';
 
-// ממשק מורחב לדוחות המוצגים בדאשבורד, כולל שם העובד
 interface EnrichedReportDTO extends ReportDTO {
   employeeName: string;
 }
-// ----------------------------------------------
-
 
 @Component({
   selector: 'app-leader-dashboard-home',
@@ -31,19 +24,18 @@ interface EnrichedReportDTO extends ReportDTO {
   styleUrls: ['./leader-dashboard-home.component.css']
 })
 export class LeaderDashboardHomeComponent implements OnInit {
-  
-  // Data for KPIs
+
   currentLeaderName: string = 'Team Leader';
   teamCount = 0;
   activeProjectsCount = 0;
   reportsAwaitingReviewCount = 0;
   upcomingMeetingsCount = 0;
 
-  // Data for lists
   myManagedProjects: ProjectDTO[] = [];
-  teamMembers: any[] = []; // List of team members
+  teamMembers: any[] = [];
+
   reportsAwaitingReview: EnrichedReportDTO[] = [];
-  
+
   loading = true;
   error = '';
   currentLeaderId: number | null = null;
@@ -60,7 +52,9 @@ export class LeaderDashboardHomeComponent implements OnInit {
     this.loadLeaderInfo();
   }
 
-  // Step 1: Load Leader Info
+  // ---------------------------
+  // STEP 1: Load logged-in leader
+  // ---------------------------
   loadLeaderInfo(): void {
     const stored = localStorage.getItem('user');
     if (!stored) {
@@ -74,7 +68,7 @@ export class LeaderDashboardHomeComponent implements OnInit {
     this.usersService.getByEmail(email).subscribe({
       next: (leader: any) => {
         this.currentLeaderId = leader.id;
-        this.currentLeaderName = leader.firstName || 'Team Leader'; 
+        this.currentLeaderName = leader.name || 'Team Leader';
         this.loadDashboard();
       },
       error: () => {
@@ -84,88 +78,86 @@ export class LeaderDashboardHomeComponent implements OnInit {
     });
   }
 
-  // Step 2: Load Dashboard Data (Unified Call)
+  // ---------------------------
+  // STEP 2: Load project + team
+  // ---------------------------
   loadDashboard(): void {
     if (!this.currentLeaderId) return;
 
-    // 1. Get projects managed by this leader
     const projectsCall = this.projectsService.getByLeader(this.currentLeaderId);
-    
-    // 2. Get the teams (to find the members)
     const teamsCall = this.teamService.getTeamsByLeader(this.currentLeaderId);
-    
+
     forkJoin({
       projects: projectsCall,
       teams: teamsCall
     }).subscribe({
       next: ({ projects, teams }) => {
-        this.myManagedProjects = projects as ProjectDTO[];
-        this.activeProjectsCount = this.myManagedProjects.filter(p => (p.status ?? '').toUpperCase() === 'ACTIVE').length;
+
+        this.myManagedProjects = projects;
+        this.activeProjectsCount = this.myManagedProjects
+          .filter(p => (p.status || '').toUpperCase() === 'ACTIVE')
+          .length;
 
         const team = teams?.[0];
-        this.teamMembers = team?.members ?? []; 
+        this.teamMembers = team?.members ?? [];
         this.teamCount = this.teamMembers.length;
 
-        const managedProjectIds = this.myManagedProjects.map(p => p.id!).filter(id => id != null) as number[];
+        const projectIds = this.myManagedProjects
+          .map(p => p.id!)
+          .filter(id => id != null);
 
-        // Continue to load reports and meetings
-        this.loadReportsAndMeetings(this.teamMembers, managedProjectIds);
+        this.loadReportsAndMeetings(this.teamMembers, projectIds);
       },
       error: (err) => {
-        console.error('Failed to load core data (Projects/Team):', err);
+        console.error('Failed to load core data:', err);
         this.error = 'Failed to load core data.';
         this.loading = false;
       }
     });
   }
 
-  // Step 3: Load Reports and Meetings
+  // ---------------------------
+  // STEP 3: Load reports + meetings
+  // ---------------------------
   loadReportsAndMeetings(members: any[], projectIds: number[]): void {
-    
-    // יצירת מפה לשליפה מהירה של שם העובד לפי ה-ID שלו
+
     const memberNameMap = new Map<number, string>();
-    members.forEach(m => memberNameMap.set(m.id, m.name || m.email || `User #${m.id}`));
-    
-    // A. טעינת כל הדוחות של כל חברי הצוות
+    members.forEach(m => memberNameMap.set(m.id, m.name));
+
     const reportCalls = members.map(m =>
       this.reportsService.getByEmployee(m.id)
     );
-    
-    // B. טעינת כל הפגישות עבור כל הפרויקטים שהמנהל מנהל
-    // משתמשים בשירות getTeamMeetings
-    const meetingCalls = projectIds.map(id => this.meetingsService.getTeamMeetings(id));
-    
-    // איחוד כל הקריאות ל-forkJoin
+
+    const meetingCalls = projectIds.map(id =>
+      this.meetingsService.getTeamMeetings(id)
+    );
+
     const allCalls = [...reportCalls, ...meetingCalls];
 
     forkJoin(allCalls).subscribe({
       next: (results: any[]) => {
-        
-        // הפרדת התוצאות
+
+        // ---- REPORTS ----
         const reportsResults = results.slice(0, reportCalls.length);
-        const meetingsResults = results.slice(reportCalls.length);
-        
-        // 1. עיבוד דוחות
-        const mergedReports: ReportDTO[] = reportsResults.flat().filter(r => r); 
-        
-        // העשרת הדוחות עם שם העובד והכנתם לתצוגה
+        const mergedReports: ReportDTO[] = reportsResults.flat().filter(r => r);
+
         const enrichedReports: EnrichedReportDTO[] = mergedReports.map(report => ({
-            ...report,
-            employeeName: memberNameMap.get(report.employeeId!) || 'Unknown' 
+          ...report,
+          employeeName: memberNameMap.get(report.employeeProjectId!) || 'Unknown'
         }));
-        
-        // סינון דוחות הדורשים בדיקה
+
         this.reportsAwaitingReview = enrichedReports.filter(
-          (r: EnrichedReportDTO) => r.reportStatus === 'SUBMITTED' || r.reportStatus === 'IN_REVIEW'
+          r => r.status === 'SUBMITTED' || r.status === 'IN_REVIEW'
         );
+
         this.reportsAwaitingReviewCount = this.reportsAwaitingReview.length;
 
-        // 2. עיבוד פגישות
+        // ---- MEETINGS ----
+        const meetingsResults = results.slice(reportCalls.length);
         const mergedMeetings: MeetingDTO[] = meetingsResults.flat().filter(m => m);
-        
-        // ספירת פגישות עתידיות
+
         this.upcomingMeetingsCount = mergedMeetings.filter(
-          (m: MeetingDTO) => new Date(m.meetingDate!).getTime() > Date.now()
+          m => new Date(m.meetingDate!).getTime() > Date.now()
         ).length;
 
         this.loading = false;
@@ -178,3 +170,4 @@ export class LeaderDashboardHomeComponent implements OnInit {
     });
   }
 }
+

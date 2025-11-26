@@ -141,5 +141,23 @@ public class ReportController {
                 .map(reportMapper::reportToReportDTO)
                 .collect(Collectors.toList());
     }
+    @PutMapping("/update-status/{reportId}")
+    public ReportDTO updateReportStatus(
+            @PathVariable Long reportId,
+            @RequestBody ReportDTO dto
+    ) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new RuntimeException("Report not found"));
+
+        if (dto.getStatus() == null)
+            throw new RuntimeException("Status is required");
+
+        report.setReportStatus(dto.getStatus());
+        report.setLastEdited(LocalDate.now());
+
+        Report updated = reportRepository.save(report);
+
+        return reportMapper.reportToReportDTO(updated);
+    }
 
 }

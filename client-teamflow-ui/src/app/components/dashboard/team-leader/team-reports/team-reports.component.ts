@@ -25,6 +25,10 @@ export class TeamReportsComponent implements OnInit {
   newComment = '';
   panelOpen = false;
 
+  // ⭐ שדות חדשים למנגנון עדכון הסטטוס ⭐
+  updatedStatus: string = '';
+  savingStatus = false;
+
   constructor(
     private reportsService: ReportsService,
     private usersService: UsersService,
@@ -60,6 +64,7 @@ export class TeamReportsComponent implements OnInit {
 
   openPanel(report: any) {
     this.selectedReport = report;
+    this.updatedStatus = report.status; // ⭐ סטטוס התחלתי ⭐
     this.panelOpen = true;
     this.commentsLoading = true;
 
@@ -99,6 +104,32 @@ export class TeamReportsComponent implements OnInit {
         this.newComment = '';
       }
     });
+  }
+
+  // ⭐ פונקציה לעדכון סטטוס ⭐
+  updateStatus() {
+    if (!this.selectedReport) return;
+
+    this.savingStatus = true;
+
+    const body = { status: this.updatedStatus };
+
+this.reportsService.updateStatus(this.selectedReport.id, this.updatedStatus)
+  .subscribe({
+    next: (updated) => {
+      this.selectedReport.status = updated.status;
+
+      this.teamReports = this.teamReports.map(r =>
+        r.id === updated.id ? updated : r
+      );
+
+      this.savingStatus = false;
+    },
+    error: () => {
+      alert('Failed to update status');
+      this.savingStatus = false;
+    }
+  });
   }
 
   getStatusColor(status: string) {

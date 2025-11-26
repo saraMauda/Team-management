@@ -535,3 +535,23 @@ input:-webkit-autofill {
     width: 100%;
   }
 }
+/* FIX – Make add-member-row always visible and prevent overflow */
+.add-member-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;        /* מאפשר שבירה שורה ולא דחיפה החוצה */
+}
+
+.add-member-row select {
+  min-width: 180px;
+}
+
+.add-member-row button.assign-btn {
+  flex-shrink: 0;         /* מונע מהכפתור להתכווץ / להיעלם */
+}
+
+/* כדי למנוע מהכרטיס לדחוף החוצה דברים */
+.team-card {
+  overflow: visible;       /* היה כנראה hidden במצב אחר */
+}

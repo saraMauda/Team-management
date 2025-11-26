@@ -5,17 +5,10 @@ import com.example.demo.model.EmployeeInProject;
 import com.example.demo.model.Project;
 import org.mapstruct.Mapper;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Mapper(componentModel = "spring")
 public interface ProjectMapper {
 
-    List<ProjectDTO> projectsToProjectDTOs(List<Project> projects);
-
     default ProjectDTO projectToProjectDTO(Project project) {
-        if (project == null) return null;
-
         ProjectDTO dto = new ProjectDTO();
 
         dto.setId(project.getProjectId());
@@ -27,18 +20,20 @@ public interface ProjectMapper {
         dto.setProgress(project.getProgressPercentage());
         dto.setLocation(project.getProjectLocation());
 
+        // ⭐ מנהל פרויקט
         if (project.getProjectLeader() != null) {
             dto.setLeaderId(project.getProjectLeader().getId());
             dto.setLeaderName(project.getProjectLeader().getName());
         }
 
-        if (project.getProjectEmployeeProjects() != null) {
-            List<Long> employeeIds = project.getProjectEmployeeProjects()
-                    .stream()
-                    .map(e -> e.getUser().getId())
-                    .collect(Collectors.toList());
-            dto.setEmployeeIds(employeeIds);
-        }
+        // ⭐ עובדים ACTIVE בלבד
+        dto.setEmployeeIds(
+                project.getProjectEmployeeProjects()
+                        .stream()
+                        .filter(e -> "ACTIVE".equals(e.getStatus()))
+                        .map(e -> e.getUser().getId())
+                        .toList()
+        );
 
         return dto;
     }

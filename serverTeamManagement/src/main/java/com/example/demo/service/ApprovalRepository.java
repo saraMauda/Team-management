@@ -2,9 +2,9 @@ package com.example.demo.service;
 
 import com.example.demo.model.Approval;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public interface ApprovalRepository extends JpaRepository<Approval, Long> {
-    void deleteByApprovalEmployeeInProject_EmployeeProjectId(Long employeeProjectId);
+
+    // מחיקת כל האישורִים של פגישה מסוימת
+    void deleteByMeeting_MeetingId(Long meetingId);
 }

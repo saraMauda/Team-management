@@ -14,6 +14,7 @@ import com.example.demo.service.ProjectMapper;
 import com.example.demo.service.MeetingRepository;
 import com.example.demo.service.ReportRepository;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -113,15 +114,14 @@ public class ProjectController {
 
     // ---------------------------------------
     // 🔹 4. עדכון פרויקט
-    // ---------------------------------------
-    @PreAuthorize("hasAnyRole('ADMIN','TEAMLEADER')")
+    @Transactional
     @PutMapping("/{id}")
     public ProjectDTO updateProject(@PathVariable Long id, @RequestBody ProjectDTO dto) {
 
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
-        // --- עדכון שדות בסיס ---
+        // עדכון פרויקט
         project.setProjectName(dto.getName());
         project.setProjectDescription(dto.getDescription());
         project.setProjectStartDate(dto.getStartDate());
@@ -129,32 +129,38 @@ public class ProjectController {
         project.setProjectStatus(dto.getStatus());
         project.setProgressPercentage(dto.getProgress());
 
-        // --- עדכון מנהל ---
         Users leader = usersRepository.findById(dto.getLeaderId())
                 .orElseThrow(() -> new RuntimeException("Leader not found"));
         project.setProjectLeader(leader);
 
         projectRepository.save(project);
 
-        // --- שליפת העובדים הקיימים בפרויקט ---
-        List<EmployeeInProject> oldEmployees =
-                employeeInProjectRepository.findByProject_ProjectId(id);
+        List<Long> newEmpIds = dto.getEmployeeIds() != null ? dto.getEmployeeIds() : List.of();
 
-        // --- ביטול שיוך של עובדים שלא מופיעים יותר ---
-        for (EmployeeInProject eip : oldEmployees) {
-            if (!dto.getEmployeeIds().contains(eip.getUser().getId())) {
-                eip.setStatus("INACTIVE");
-                employeeInProjectRepository.save(eip);
-            }
+        // 1️⃣ מסמנים כ-INACTIVE את כל הנוכחיים
+        List<EmployeeInProject> oldLinks = employeeInProjectRepository.findByProject_ProjectId(id);
+
+        for (EmployeeInProject eip : oldLinks) {
+            eip.setStatus("INACTIVE");
+            employeeInProjectRepository.save(eip);
         }
 
-        // --- הוספת עובדים חדשים ---
-        for (Long userId : dto.getEmployeeIds()) {
-            boolean exists = oldEmployees.stream()
-                    .anyMatch(eip -> eip.getUser().getId().equals(userId));
+        // 2️⃣ מוסיפים מחדש את כל ה-active החדשים
+        for (Long uid : newEmpIds) {
 
-            if (!exists) {
-                Users user = usersRepository.findById(userId)
+            // האם הוא קיים כבר ברשומה ישנה?
+            EmployeeInProject existing =
+                    oldLinks.stream()
+                            .filter(e -> e.getUser().getId().equals(uid))
+                            .findFirst()
+                            .orElse(null);
+
+            if (existing != null) {
+                existing.setStatus("ACTIVE");
+                employeeInProjectRepository.save(existing);
+            } else {
+                // חדש
+                Users user = usersRepository.findById(uid)
                         .orElseThrow(() -> new RuntimeException("User not found"));
 
                 EmployeeInProject newEip = new EmployeeInProject();
@@ -162,7 +168,6 @@ public class ProjectController {
                 newEip.setUser(user);
                 newEip.setAssignedDate(LocalDate.now());
                 newEip.setStatus("ACTIVE");
-                newEip.setRoleDescription("Developer"); // לשנות אם צריך
 
                 employeeInProjectRepository.save(newEip);
             }
@@ -170,6 +175,8 @@ public class ProjectController {
 
         return projectMapper.projectToProjectDTO(project);
     }
+
+
 
     // ---------------------------------------
     // 🔹 5. מחיקת פרויקט (ללא Approvals)
@@ -248,4 +255,14 @@ public class ProjectController {
 
         return "Employee added successfully";
     }
+    @GetMapping("/byLeader/{leaderId}")
+    @PreAuthorize("hasRole('TEAMLEADER')")
+    public List<ProjectDTO> getProjectsByLeader(@PathVariable Long leaderId) {
+
+        return projectRepository.findByProjectLeader_Id(leaderId)
+                .stream()
+                .map(projectMapper::projectToProjectDTO)
+                .toList();
+    }
+
 }

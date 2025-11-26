@@ -64,16 +64,30 @@ public class UsersController {
     }
     //עדכון משתמש
     @PutMapping("/{id}")
-    public ResponseEntity<UsersDTO> updateUser(@PathVariable Long id, @RequestBody UsersDTO userDTO) {
+    @PreAuthorize("hasRole('ADMIN')") // אם רק אדמין יכול לעדכן משתמשים
+    public ResponseEntity<UsersDTO> updateUser(@PathVariable Long id,
+                                               @RequestBody UsersDTO userDTO) {
         return usersRepository.findById(id)
                 .map(existing -> {
                     existing.setName(userDTO.getName());
                     existing.setEmail(userDTO.getEmail());
-//                    existing.setRole(userDTO.getRole());
                     existing.setActive(userDTO.isActive());
 
+                    // ✅ עדכון ROLE
+                    if (userDTO.getRole() != null && !userDTO.getRole().isEmpty()) {
+                        // מצפה ש־userDTO.getRole() יחזיר "ROLE_EMPLOYEE" / "ROLE_TEAMLEADER" / "ROLE_ADMIN"
+                        ERole eRole = ERole.valueOf(userDTO.getRole());
+                        Role role = roleRepository.findByName(eRole)
+                                .orElseThrow(() -> new RuntimeException("Role not found: " + userDTO.getRole()));
+
+                        existing.getRoles().clear();
+                        existing.getRoles().add(role);
+                    }
+
+                    // ✅ אם רוצים לאפשר שינוי סיסמה דרך המסך הזה – הצפנה
                     if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
-                        existing.setPassword(userDTO.getPassword());
+                        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                        existing.setPassword(encoder.encode(userDTO.getPassword()));
                     }
 
                     Users saved = usersRepository.save(existing);
@@ -82,16 +96,22 @@ public class UsersController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+
     //מחיקת משתמש (רק Admin רשאי)
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Void>deleteUser(@PathVariable Long id){
-        if(!usersRepository.existsById(id)){
-            return ResponseEntity.notFound().build();
-        }
-        usersRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        return usersRepository.findById(id)
+                .map(user -> {
+                    user.setActive(false);      // soft delete 🔥
+                    usersRepository.save(user);
+                    return ResponseEntity.noContent().<Void>build();
+                })
+                .orElse(ResponseEntity.notFound().<Void>build());
     }
+
+
+
     @PostMapping("/upload/{id}")
     public ResponseEntity<String> uploadImage(
             @PathVariable Long id,

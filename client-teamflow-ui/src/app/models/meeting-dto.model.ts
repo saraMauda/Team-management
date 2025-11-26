@@ -4,7 +4,8 @@ export interface MeetingDTO {
   meetingDate?: string;
   description?: string;
   meetingLocation?: string;
-  status?: string;
+  status?: string | null;
   createdAt?: string;
   projectId: number;
+  progress?: number | null;
 }

@@ -5,11 +5,20 @@ import com.example.demo.model.EmployeeInProject;
 import com.example.demo.model.Meeting;
 import com.example.demo.model.Project;
 import com.example.demo.model.Users;
-import com.example.demo.service.*;
+import com.example.demo.service.EmployeeInProjectRepository;
+import com.example.demo.service.MeetingMapper;
+import com.example.demo.service.MeetingRepository;
+import com.example.demo.service.ProjectRepository;
+import com.example.demo.service.UsersRepository;
+import com.example.demo.service.ApprovalRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,6 +41,9 @@ public class MeetingController {
 
     @Autowired
     private MeetingMapper meetingMapper;
+
+    @Autowired
+    private ApprovalRepository approvalRepository;
 
     // =====================================
     // 1. עובד רגיל – רואה meetings של עצמו
@@ -66,13 +78,16 @@ public class MeetingController {
         Users leader = usersRepository.findByEmail(auth.getName());
 
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Project not found"));
 
         // בדיקה נכונה — מנהל הפרויקט
         if (project.getProjectLeader() == null ||
                 !project.getProjectLeader().getId().equals(leader.getId())) {
 
-            throw new RuntimeException("You are not the team leader of this project");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "You are not the team leader of this project");
         }
 
         List<Meeting> meetings =
@@ -92,13 +107,16 @@ public class MeetingController {
         Users leader = usersRepository.findByEmail(auth.getName());
 
         Project project = projectRepository.findById(dto.getProjectId())
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Project not found"));
 
         // בדיקה נכונה — מנהל הפרויקט
         if (project.getProjectLeader() == null ||
                 !project.getProjectLeader().getId().equals(leader.getId())) {
 
-            throw new RuntimeException("You are not the team leader of this project");
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "You are not the team leader of this project");
         }
 
         Meeting meeting = meetingMapper.toEntity(dto);
@@ -125,5 +143,62 @@ public class MeetingController {
     public List<MeetingDTO> getByProject(@PathVariable Long projectId) {
         return meetingRepository.findByProject_ProjectId(projectId)
                 .stream().map(meetingMapper::toDTO).toList();
+    }
+
+    // ============================
+    // 4.1 שליפת פגישה בודדת לפי id
+    // ============================
+    @GetMapping("/{id}")
+    public MeetingDTO getMeeting(@PathVariable Long id) {
+        Meeting meeting = meetingRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Meeting not found"));
+
+        return meetingMapper.toDTO(meeting);
+    }
+
+    // ============================
+    // 5. מחיקת פגישה
+    // ============================
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('TEAMLEADER') or hasRole('ADMIN')")
+    @Transactional
+    public ResponseEntity<?> deleteMeeting(@PathVariable Long id) {
+
+        if (!meetingRepository.existsById(id)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Meeting not found");
+        }
+
+        // קודם מוחקים Approvals שקשורים לפגישה
+        approvalRepository.deleteByMeeting_MeetingId(id);
+
+        // ואז מוחקים את הפגישה עצמה
+        meetingRepository.deleteById(id);
+
+        return ResponseEntity.ok("Meeting deleted");
+    }
+
+    // ============================
+    // 6. עדכון פגישה
+    // ============================
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('TEAMLEADER') or hasRole('ADMIN')")
+    public MeetingDTO updateMeeting(@PathVariable Long id,
+                                    @RequestBody MeetingDTO dto) {
+
+        Meeting meeting = meetingRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Meeting not found"));
+
+        meeting.setTitle(dto.getTitle());
+        meeting.setMeetingDate(dto.getMeetingDate());
+        meeting.setMeetingLocation(dto.getMeetingLocation());
+        meeting.setDescription(dto.getDescription());
+        meeting.setStatus(dto.getStatus());
+
+        Meeting saved = meetingRepository.save(meeting);
+
+        return meetingMapper.toDTO(saved);
     }
 }

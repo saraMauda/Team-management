@@ -57,5 +57,12 @@ addComment(reportId: number, body: { text: string, userId: string | number }) { 
     { withCredentials: true }
   );
 }
+updateStatus(reportId: number, status: string) {
+  return this.http.put<any>(
+    `${this.baseUrl}/update-status/${reportId}`,
+    { status: status },
+    { withCredentials: true }
+  );
+}
 
 }

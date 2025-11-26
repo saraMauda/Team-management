@@ -1,5 +1,6 @@
 <div class="leader-home" *ngIf="!loading; else loadingTpl">
 
+  <!-- HEADER -->
   <div class="welcome-card">
     <h1 class="welcome-title">Welcome, {{ currentLeaderName }}</h1>
     <p class="welcome-subtitle">
@@ -7,101 +8,124 @@
     </p>
   </div>
 
+  <!-- MAIN GRID (2×2) -->
   <div class="dashboard-content-grid">
 
+    <!-- ============= 1) STATS PANEL ============= -->
     <div class="stats-panel">
       <h2>Team Overview</h2>
       <div class="stats-grid">
-        
+
         <div class="stat-card blue-bg">
           <i class="icon fas fa-users"></i>
           <h3>Team Members</h3>
           <p>{{ teamCount }}</p>
         </div>
-        
+
         <div class="stat-card orange-bg">
           <i class="icon fas fa-project-diagram"></i>
           <h3>Active Projects</h3>
           <p>{{ activeProjectsCount }}</p>
         </div>
-        
+
         <div class="stat-card red-bg">
           <i class="icon fas fa-exclamation-triangle"></i>
           <h3>Reports Awaiting Review</h3>
           <p>{{ reportsAwaitingReviewCount }}</p>
         </div>
-        
+
         <div class="stat-card purple-bg">
           <i class="icon fas fa-clock"></i>
           <h3>Upcoming Meetings</h3>
           <p>{{ upcomingMeetingsCount }}</p>
         </div>
+
       </div>
     </div>
 
+    <!-- ============= 2) PROJECTS PANEL ============= -->
     <div class="projects-panel">
       <h2>My Managed Projects</h2>
+
       <div class="projects-list-container">
-        
+
         <div *ngIf="myManagedProjects.length === 0" class="no-data-projects">
           You are not currently leading any projects.
         </div>
-        
+
         <div *ngFor="let project of myManagedProjects" class="project-item-card">
+
           <div class="project-info">
             <h3>{{ project.name }}</h3>
-            <span class="project-status-chip" [ngClass]="{'active': project.status === 'ACTIVE'}">{{ project.status }}</span>
+            <span class="project-status-chip"
+                  [ngClass]="{ 'active': project.status === 'ACTIVE' }">
+              {{ project.status }}
+            </span>
           </div>
-          
+
           <div class="progress-bar-wrapper">
             <div class="progress-bar-text">
               <span class="progress-label">Progress:</span>
               <span class="progress-percent">{{ project.progress || 0 }}%</span>
             </div>
+
             <div class="progress-bar">
               <div class="progress-fill" [style.width.%]="project.progress || 0"></div>
             </div>
           </div>
+
         </div>
+
       </div>
     </div>
 
-    <div class="reports-team-panel">
-      
-      <div class="recent-reports-panel">
-        <h3>Reports Needing Attention ({{ reportsAwaitingReviewCount }})</h3>
-        <ul class="reports-list">
-          <li *ngIf="reportsAwaitingReview.length === 0" class="no-data">
-            All reports reviewed. Great job!
-          </li>
-          <li *ngFor="let report of reportsAwaitingReview.slice(0, 5)" class="report-item">
-            <div class="report-meta">
-              <h4>{{ report.reportTitle }}</h4>
-              <span class="status-submitted">
-                {{ report.reportStatus || 'Submitted' }}
-              </span>
-            </div>
-            <p>From: {{ report.employeeName || 'Unknown' }} | {{ report.reportDate | date: 'shortDate' }}</p>
-          </li>
-        </ul>
-      </div>
+    <!-- ============= 3) REPORTS PANEL (נפרד) ============= -->
+    <div class="recent-reports-panel">
+      <h3>Reports Needing Attention ({{ reportsAwaitingReviewCount }})</h3>
 
-      <div class="team-list-panel">
-        <h3>My Team ({{ teamCount }})</h3>
-        <ul class="team-list">
-          <li *ngIf="teamMembers.length === 0" class="no-data">
-            No employees assigned to your team.
-          </li>
-          <li *ngFor="let member of teamMembers" class="member-item">
-            <i class="fas fa-user-circle"></i>
-            {{ member.name || member.email }}
-          </li>
-        </ul>
-      </div>
+      <ul class="reports-list">
+        <li *ngIf="reportsAwaitingReview.length === 0" class="no-data">
+          All reports reviewed. Great job!
+        </li>
+
+        <li *ngFor="let report of reportsAwaitingReview.slice(0, 5)" class="report-item">
+          <div class="report-meta">
+            <h4>{{ report.title }}</h4>
+            <span class="status-submitted">
+              {{ report.status || 'SUBMITTED' }}
+            </span>
+          </div>
+
+          <p>
+            From: {{ report.employeeName || 'Unknown' }} |
+            {{ report.date | date: 'shortDate' }}
+          </p>
+        </li>
+      </ul>
     </div>
+
+    <!-- ============= 4) TEAM MEMBERS PANEL (נפרד) ============= -->
+    <div class="team-list-panel">
+      <h3>My Team ({{ teamCount }})</h3>
+
+      <ul class="team-list">
+
+        <li *ngIf="teamMembers.length === 0" class="no-data">
+          No employees assigned to your team.
+        </li>
+
+        <li *ngFor="let member of teamMembers" class="member-item">
+          <i class="fas fa-user-circle"></i>
+          {{ member.name || member.email }}
+        </li>
+
+      </ul>
+    </div>
+
   </div>
 </div>
 
+<!-- LOADING TEMPLATE -->
 <ng-template #loadingTpl>
   <div class="leader-loading">Loading leadership dashboard...</div>
 </ng-template>

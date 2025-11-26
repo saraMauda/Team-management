@@ -28,7 +28,6 @@ export class TeamProjectsComponent implements OnInit {
   teams: TeamDTO[] = [];
   leaderTeamMembers: UsersDTO[] = [];
 
-  showEditForm = false;
   editingProject: ProjectDTO | null = null;
   saving = false;
 
@@ -42,6 +41,9 @@ export class TeamProjectsComponent implements OnInit {
     this.loadCurrentUser();
   }
 
+  // ----------------------------------------------------
+  // LOAD CURRENT USER
+  // ----------------------------------------------------
   loadCurrentUser(): void {
     const stored = localStorage.getItem('user');
     if (!stored) {
@@ -71,6 +73,9 @@ export class TeamProjectsComponent implements OnInit {
     });
   }
 
+  // ----------------------------------------------------
+  // LOAD TEAM + PROJECTS
+  // ----------------------------------------------------
   loadTeamsAndProjects(): void {
     this.teamService.getAllTeams().subscribe({
       next: (data: TeamDTO[]) => {
@@ -80,38 +85,38 @@ export class TeamProjectsComponent implements OnInit {
         this.loadProjectsForLeader();
       },
       error: () => {
-        console.error('Failed to load teams');
         this.leaderTeamMembers = [];
         this.loadProjectsForLeader();
       }
     });
   }
-loadProjectsForLeader(): void {
-  this.projectsService.getAll().subscribe({
-    next: (data: ProjectDTO[]) => {
-      // משתמשים באותו DTO כמו האדמין
-      const all = data || [];
 
-      // מסננים רק את הפרויקטים של ה־Leader הנוכחי
-      this.projects = all.filter(p => p.leaderId === this.currentUserId);
+  loadProjectsForLeader(): void {
+    this.projectsService.getAll().subscribe({
+      next: (data: ProjectDTO[]) => {
+        const all = data || [];
+        this.projects = all.filter(p => p.leaderId === this.currentUserId);
+        this.loading = false;
+      },
+      error: () => {
+        this.error = 'Failed to load projects';
+        this.loading = false;
+      }
+    });
+  }
 
-      this.loading = false;
-    },
-    error: () => {
-      this.error = 'Failed to load projects';
-      this.loading = false;
-    }
-  });
-}
-
-
+  // ----------------------------------------------------
+  // EDIT
+  // ----------------------------------------------------
   openEdit(project: ProjectDTO): void {
-    this.showEditForm = true;
-
     this.editingProject = {
       ...project,
-      employeeIds: [...(project.employeeIds || [])]
+      employeeIds: project.employeeIds ? [...project.employeeIds] : []
     };
+  }
+
+  cancelEdit(): void {
+    this.editingProject = null;
   }
 
   toggleEmployee(event: Event, id: number): void {
@@ -133,27 +138,35 @@ loadProjectsForLeader(): void {
     }
   }
 
+  // ----------------------------------------------------
+  // UPDATE PROJECT — ✔ תיקון מלא מתאים לשרת
+  // ----------------------------------------------------
   updateProject(): void {
     if (!this.editingProject?.id) return;
 
     this.saving = true;
 
-    const payload: Partial<ProjectDTO> = {
-      name: this.editingProject!.name,
-      description: this.editingProject!.description,
-      startDate: this.editingProject!.startDate,
-      endDate: this.editingProject!.endDate,
-      status: this.editingProject!.status,
-      progress: this.editingProject!.progress,
-      employeeIds: this.editingProject!.employeeIds
+    const payload: ProjectDTO = {
+      id: this.editingProject.id,
+      name: this.editingProject.name,
+      description: this.editingProject.description,
+      startDate: this.editingProject.startDate,
+      endDate: this.editingProject.endDate,
+      status: this.editingProject.status,
+      progress: this.editingProject.progress ?? 0,
+      employeeIds: this.editingProject.employeeIds || [],
+      leaderId: this.currentUserId!, // ✔ חובה לפי השרת
+      location: this.editingProject.location ?? null,
+      categoryName: this.editingProject.categoryName ?? null,
+      leaderName: this.editingProject.leaderName ?? null
     };
 
-    this.projectsService.update(this.editingProject!.id, payload).subscribe({
+    this.projectsService.update(this.editingProject.id, payload).subscribe({
       next: (updated) => {
         this.projects = this.projects.map(p =>
           p.id === updated.id ? updated : p
         );
-        this.cancelEdit();
+        this.editingProject = null;
         this.saving = false;
       },
       error: () => {
@@ -163,11 +176,25 @@ loadProjectsForLeader(): void {
     });
   }
 
-  cancelEdit(): void {
-    this.showEditForm = false;
-    this.editingProject = null;
+  // ----------------------------------------------------
+  // DELETE PROJECT — ✔ כמו אדמין
+  // ----------------------------------------------------
+  deleteProject(id: number): void {
+    if (!confirm('Delete project?')) return;
+
+    this.projectsService.delete(id).subscribe({
+      next: () => {
+        this.projects = this.projects.filter(p => p.id !== id);
+      },
+      error: () => {
+        alert('❌ Failed to delete project');
+      }
+    });
   }
 
+  // ----------------------------------------------------
+  // UTIL
+  // ----------------------------------------------------
   getProgressColor(progress: number | null | undefined): string {
     if (progress == null) return '#999';
     if (progress >= 80) return '#4caf50';

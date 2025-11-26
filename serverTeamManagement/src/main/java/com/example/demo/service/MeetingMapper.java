@@ -7,11 +7,12 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface MeetingMapper {
 
-    // ========= ENTITY → DTO =========
     default MeetingDTO toDTO(Meeting meeting) {
+        if (meeting == null) {
+            return null;
+        }
 
         MeetingDTO dto = new MeetingDTO();
-
         dto.setMeetingId(meeting.getMeetingId());
         dto.setTitle(meeting.getTitle());
         dto.setMeetingDate(meeting.getMeetingDate());
@@ -20,7 +21,6 @@ public interface MeetingMapper {
         dto.setStatus(meeting.getStatus());
         dto.setCreatedAt(meeting.getCreatedAt());
 
-        // ⭐ projectId
         if (meeting.getProject() != null) {
             dto.setProjectId(meeting.getProject().getProjectId());
         }
@@ -28,11 +28,12 @@ public interface MeetingMapper {
         return dto;
     }
 
-    // ========= DTO → ENTITY =========
     default Meeting toEntity(MeetingDTO dto) {
+        if (dto == null) {
+            return null;
+        }
 
         Meeting meeting = new Meeting();
-
         meeting.setMeetingId(dto.getMeetingId());
         meeting.setTitle(dto.getTitle());
         meeting.setMeetingDate(dto.getMeetingDate());
@@ -41,7 +42,7 @@ public interface MeetingMapper {
         meeting.setStatus(dto.getStatus());
         meeting.setCreatedAt(dto.getCreatedAt());
 
-        // ⭐ project יוגדר בקונטרולר
+        // project ו־approvals מנוהלים בבקר (Controller) ולא במיפוי
         return meeting;
     }
 }
