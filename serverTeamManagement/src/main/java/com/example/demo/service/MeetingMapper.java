@@ -3,30 +3,13 @@ package com.example.demo.service;
 import com.example.demo.dto.MeetingDTO;
 import com.example.demo.model.Meeting;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface MeetingMapper {
 
-    default MeetingDTO toDTO(Meeting meeting) {
-        if (meeting == null) {
-            return null;
-        }
-
-        MeetingDTO dto = new MeetingDTO();
-        dto.setMeetingId(meeting.getMeetingId());
-        dto.setTitle(meeting.getTitle());
-        dto.setMeetingDate(meeting.getMeetingDate());
-        dto.setDescription(meeting.getDescription());
-        dto.setMeetingLocation(meeting.getMeetingLocation());
-        dto.setStatus(meeting.getStatus());
-        dto.setCreatedAt(meeting.getCreatedAt());
-
-        if (meeting.getProject() != null) {
-            dto.setProjectId(meeting.getProject().getProjectId());
-        }
-
-        return dto;
-    }
+     @Mapping(target = "projectId",source = "project.projectId")
+     MeetingDTO toDTO(Meeting meeting);
 
     default Meeting toEntity(MeetingDTO dto) {
         if (dto == null) {
