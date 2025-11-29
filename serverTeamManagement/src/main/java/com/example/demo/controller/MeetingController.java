@@ -82,8 +82,8 @@ public class MeetingController {
                         HttpStatus.NOT_FOUND, "Project not found"));
 
         // בדיקה נכונה — מנהל הפרויקט
-        if (project.getProjectLeader() == null ||
-                !project.getProjectLeader().getId().equals(leader.getId())) {
+        if (project.getLeader() == null ||
+                !project.getLeader().getId().equals(leader.getId())) {
 
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
@@ -111,8 +111,8 @@ public class MeetingController {
                         HttpStatus.NOT_FOUND, "Project not found"));
 
         // בדיקה נכונה — מנהל הפרויקט
-        if (project.getProjectLeader() == null ||
-                !project.getProjectLeader().getId().equals(leader.getId())) {
+        if (project.getLeader() == null ||
+                !project.getLeader().getId().equals(leader.getId())) {
 
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,

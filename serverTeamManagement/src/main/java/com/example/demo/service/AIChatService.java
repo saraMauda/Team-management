@@ -188,7 +188,7 @@ Goal:
      * פרויקטים שמנהל ראש הצוות המחובר.
      */
     private String buildProjectsSummary(Long leaderId) {
-        List<Project> projects = projectRepository.findByProjectLeader_Id(leaderId);
+        List<Project> projects = projectRepository.findByLeader_Id(leaderId);
 
         if (projects.isEmpty()) {
             return "Projects: none";
@@ -198,10 +198,10 @@ Goal:
         sb.append("Projects:\n");
 
         for (Project p : projects) {
-            sb.append("• ").append(p.getProjectName()).append("\n")
-                    .append("  Status: ").append(p.getProjectStatus()).append("\n")
-                    .append("  Start: ").append(safeDate(p.getProjectStartDate())).append("\n")
-                    .append("  End: ").append(safeDate(p.getProjectEndDate())).append("\n\n");
+            sb.append("• ").append(p.getName()).append("\n")
+                    .append("  Status: ").append(p.getStatus()).append("\n")
+                    .append("  Start: ").append(safeDate(p.getStartDate())).append("\n")
+                    .append("  End: ").append(safeDate(p.getEndDate())).append("\n\n");
         }
         return sb.toString();
     }
@@ -237,7 +237,7 @@ Goal:
      */
     private String buildReportsSummary(Long leaderId) {
         List<Report> reports = reportRepository
-                .findByReportEmployeeInProject_Project_ProjectLeader_Id(leaderId);
+                .findByReportEmployeeInProject_Project_Leader_Id(leaderId);
 
         if (reports == null || reports.isEmpty()) {
             return "Reports: none";

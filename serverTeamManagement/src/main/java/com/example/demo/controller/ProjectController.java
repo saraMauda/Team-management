@@ -77,18 +77,18 @@ public class ProjectController {
     public ProjectDTO createProject(@RequestBody ProjectDTO dto) {
 
         Project project = new Project();
-        project.setProjectName(dto.getName());
-        project.setProjectDescription(dto.getDescription());
-        project.setProjectStartDate(dto.getStartDate());
-        project.setProjectEndDate(dto.getEndDate());
-        project.setProjectStatus(dto.getStatus());
+        project.setName(dto.getName());
+        project.setDescription(dto.getDescription());
+        project.setStartDate(dto.getStartDate());
+        project.setEndDate(dto.getEndDate());
+        project.setStatus(dto.getStatus());
         project.setProgressPercentage(dto.getProgress() != null ? dto.getProgress() : 0);
 
         // מנהל פרויקט
         if (dto.getLeaderId() != null) {
             Users leader = usersRepository.findById(dto.getLeaderId())
                     .orElseThrow(() -> new RuntimeException("Leader not found"));
-            project.setProjectLeader(leader);
+            project.setLeader(leader);
         }
 
         Project savedProject = projectRepository.save(project);
@@ -122,16 +122,16 @@ public class ProjectController {
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
         // עדכון פרויקט
-        project.setProjectName(dto.getName());
-        project.setProjectDescription(dto.getDescription());
-        project.setProjectStartDate(dto.getStartDate());
-        project.setProjectEndDate(dto.getEndDate());
-        project.setProjectStatus(dto.getStatus());
+        project.setName(dto.getName());
+        project.setDescription(dto.getDescription());
+        project.setStartDate(dto.getStartDate());
+        project.setEndDate(dto.getEndDate());
+        project.setStatus(dto.getStatus());
         project.setProgressPercentage(dto.getProgress());
 
         Users leader = usersRepository.findById(dto.getLeaderId())
                 .orElseThrow(() -> new RuntimeException("Leader not found"));
-        project.setProjectLeader(leader);
+        project.setLeader(leader);
 
         projectRepository.save(project);
 
@@ -199,7 +199,7 @@ public class ProjectController {
 
             // מחיקת הדוחות של העובד
             List<Report> reports =
-                    reportRepository.findByReportEmployeeInProject_EmployeeProjectId(
+                    reportRepository.findByReportEmployeeInProject_Project_ProjectId(
                             eip.getEmployeeProjectId()
                     );
             reportRepository.deleteAll(reports);
@@ -221,7 +221,7 @@ public class ProjectController {
 
         String email = authentication.getName();
 
-        return projectRepository.findByProjectEmployeeProjects_User_Email(email)
+        return projectRepository.findByEmployeeProjects_User_Email(email)
                 .stream()
                 .map(projectMapper::projectToProjectDTO)
                 .collect(Collectors.toList());
@@ -259,7 +259,7 @@ public class ProjectController {
     @PreAuthorize("hasRole('TEAMLEADER')")
     public List<ProjectDTO> getProjectsByLeader(@PathVariable Long leaderId) {
 
-        return projectRepository.findByProjectLeader_Id(leaderId)
+        return projectRepository.findByLeader_Id(leaderId)
                 .stream()
                 .map(projectMapper::projectToProjectDTO)
                 .toList();

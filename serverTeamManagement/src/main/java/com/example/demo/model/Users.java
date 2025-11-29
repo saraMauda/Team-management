@@ -21,7 +21,7 @@ public class Users{
     private String imagePath;
     @OneToMany(mappedBy="user")
     private List<EmployeeInProject> employeeProjects;
-    @OneToMany(mappedBy="projectLeader")
+    @OneToMany(mappedBy= "leader")
     private List<Project> leaderProjects;
 
 

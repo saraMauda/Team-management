@@ -3,43 +3,17 @@ package com.example.demo.service;
 import com.example.demo.dto.ReportDTO;
 import com.example.demo.model.Report;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ReportMapper {
 
-    default ReportDTO reportToReportDTO(Report report) {
-        ReportDTO dto = new ReportDTO();
+    @Mapping(target = "employeeName", source = "reportEmployeeInProject.user.name")
+    @Mapping(target = "projectName", source = "reportEmployeeInProject.project.name")
+    @Mapping(target = "projectId",   source = "reportEmployeeInProject.project.projectId")
+    @Mapping(target = "userId",      source = "reportEmployeeInProject.user.id")
+    @Mapping(target = "date",        source = "reportDate")
+    ReportDTO reportToReportDTO(Report report);
 
-        dto.setId(report.getReportId());
-        dto.setTitle(report.getReportTitle());
-        dto.setDescription(report.getReportDescription());
-        dto.setStatus(report.getReportStatus());
-        dto.setReportDate(report.getReportDate());
-        dto.setLastEdited(report.getLastEdited());
-
-        // ⭐ שם העובד ושם הפרויקט
-        if (report.getReportEmployeeInProject() != null) {
-
-            if (report.getReportEmployeeInProject().getUser() != null)
-                dto.setEmployeeName(report.getReportEmployeeInProject().getUser().getName());
-
-            if (report.getReportEmployeeInProject().getProject() != null) {
-                dto.setProjectName(report.getReportEmployeeInProject().getProject().getProjectName());
-
-                // ⭐ projectId
-                dto.setProjectId(report.getReportEmployeeInProject().getProject().getProjectId());
-            }
-
-            // ⭐ userId
-            dto.setUserId(report.getReportEmployeeInProject().getUser().getId());
-        }
-
-        // ⭐ שעות ודייט חדשים
-        dto.setDate(report.getReportDate());
-
-        return dto;
-    }
-
-     Report reportDTOToReport(ReportDTO dto);
-
+    Report reportDTOToReport(ReportDTO dto);
 }

@@ -1,44 +1,12 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.TeamDTO;
-import com.example.demo.dto.UsersDTO;
 import com.example.demo.model.Team;
-import com.example.demo.model.TeamMember;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 
-import java.util.List;
-import java.util.stream.Collectors;
+@Mapper(componentModel = "spring", uses = { UsersMapper.class })
+public interface TeamMapper {
 
-@Component
-public class TeamMapper {
+    TeamDTO toDTO(Team team);
 
-    private final UsersMapper usersMapper;
-
-    public TeamMapper(UsersMapper usersMapper) {
-        this.usersMapper = usersMapper;
-    }
-
-    // ⭐ פונקציה נוחה שמאפשרת שימוש ב-map()
-    public TeamDTO toDTO(Team team) {
-        return toDTO(team, team.getMembers());
-    }
-
-    // ⭐ הפונקציה המקורית שלך – נשארת בדיוק כמו שהיא רק תקינה
-    public TeamDTO toDTO(Team team, List<TeamMember> members) {
-        TeamDTO dto = new TeamDTO();
-
-        dto.setId(team.getId());
-        dto.setLeaderId(team.getLeader().getId());
-        dto.setLeaderName(team.getLeader().getName());
-        dto.setLeaderEmail(team.getLeader().getEmail());
-        dto.setLeaderImage(team.getLeader().getImagePath());
-
-        List<UsersDTO> memberList = members.stream()
-                .map(tm -> usersMapper.userToUsersDTO(tm.getUser()))
-                .collect(Collectors.toList());
-
-        dto.setMembers(memberList);
-
-        return dto;
-    }
 }

@@ -1,40 +1,31 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.ProjectDTO;
-import com.example.demo.model.EmployeeInProject;
 import com.example.demo.model.Project;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ProjectMapper {
 
-    default ProjectDTO projectToProjectDTO(Project project) {
-        ProjectDTO dto = new ProjectDTO();
+    @Mapping(target = "id", source = "projectId")
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "description", source = "description")
+    @Mapping(target = "startDate", source = "startDate")
+    @Mapping(target = "endDate", source = "endDate")
+    @Mapping(target = "status", source = "status")
+    @Mapping(target = "progress", source = "progressPercentage")
+    @Mapping(target = "location", source = "location")
 
-        dto.setId(project.getProjectId());
-        dto.setName(project.getProjectName());
-        dto.setDescription(project.getProjectDescription());
-        dto.setStartDate(project.getProjectStartDate());
-        dto.setEndDate(project.getProjectEndDate());
-        dto.setStatus(project.getProjectStatus());
-        dto.setProgress(project.getProgressPercentage());
-        dto.setLocation(project.getProjectLocation());
+    @Mapping(target = "leaderId", source = "leader.id")
+    @Mapping(target = "leaderName", source = "leader.name")
 
-        // ⭐ מנהל פרויקט
-        if (project.getProjectLeader() != null) {
-            dto.setLeaderId(project.getProjectLeader().getId());
-            dto.setLeaderName(project.getProjectLeader().getName());
-        }
-
-        // ⭐ עובדים ACTIVE בלבד
-        dto.setEmployeeIds(
-                project.getProjectEmployeeProjects()
-                        .stream()
-                        .filter(e -> "ACTIVE".equals(e.getStatus()))
-                        .map(e -> e.getUser().getId())
-                        .toList()
-        );
-
-        return dto;
-    }
+    @Mapping(
+            target = "employeeIds",
+            expression = "java(project.getEmployeeProjects().stream()" +
+                    ".filter(e -> \"ACTIVE\".equals(e.getStatus()))" +
+                    ".map(e -> e.getUser().getId())" +
+                    ".toList())"
+    )
+    ProjectDTO projectToProjectDTO(Project project);
 }

@@ -129,11 +129,11 @@ public class ReportController {
 
         // 1. מוצאים את כל העובדים בצוות של המנהל
         List<EmployeeInProject> teamMembers =
-                employeeInProjectRepository.findByProject_ProjectLeader_Id(leaderId);
+                employeeInProjectRepository.findByProject_Leader_Id(leaderId);
 
         // 2. מוצאים עבור כל אחד את כל הדוחות
         List<Report> reports = teamMembers.stream()
-                .flatMap(member -> reportRepository.findByReportEmployeeInProject_EmployeeProjectId(member.getEmployeeProjectId())
+                .flatMap(member -> reportRepository.findByReportEmployeeInProject_Project_ProjectId(member.getEmployeeProjectId())
                         .stream())
                 .collect(Collectors.toList());
         // 3. ממפים ל-DTO

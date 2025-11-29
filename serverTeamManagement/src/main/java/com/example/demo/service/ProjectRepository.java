@@ -9,9 +9,10 @@ import java.util.List;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
-    List<Project> findByProjectLeader_Id(Long leaderId);
+    // ❗ שם השדה הנכון הוא leader ולא projectLeader
+    List<Project> findByLeader_Id(Long leaderId);
 
-    List<Project> findByProjectEmployeeProjects_User_Email(String email);
+    List<Project> findByEmployeeProjects_User_Email(String email);
 
-    List<Project> findByProjectEmployeeProjects_User_Id(Long userId);
+    List<Project> findByEmployeeProjects_User_Id(Long userId);
 }

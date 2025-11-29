@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.TeamDTO;
-import com.example.demo.dto.UsersDTO;
 import com.example.demo.model.Team;
 import com.example.demo.model.TeamMember;
 import com.example.demo.model.Users;
@@ -61,7 +60,7 @@ public class TeamController {
 
         // מחזירים DTO
         List<TeamMember> members = teamMemberRepository.findByTeamId(team.getId());
-        return new ResponseEntity<>(teamMapper.toDTO(team, members), HttpStatus.CREATED);
+        return new ResponseEntity<>(teamMapper.toDTO(team), HttpStatus.CREATED);
     }
     @GetMapping("/byLeader/{leaderId}")
     public List<TeamDTO> getTeamsByLeader(@PathVariable Long leaderId) {
@@ -82,7 +81,7 @@ public class TeamController {
 
         for (Team t : teamRepository.findAll()) {
             List<TeamMember> members = teamMemberRepository.findByTeamId(t.getId());
-            dtos.add(teamMapper.toDTO(t, members));
+            dtos.add(teamMapper.toDTO(t));
         }
 
         return dtos;
@@ -94,7 +93,7 @@ public class TeamController {
         return teamRepository.findById(id)
                 .map(team -> {
                     List<TeamMember> members = teamMemberRepository.findByTeamId(id);
-                    return ResponseEntity.ok(teamMapper.toDTO(team, members));
+                    return ResponseEntity.ok(teamMapper.toDTO(team));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -117,7 +116,7 @@ public class TeamController {
         teamMemberRepository.save(member);
 
         List<TeamMember> members = teamMemberRepository.findByTeamId(teamId);
-        return ResponseEntity.ok(teamMapper.toDTO(team, members));
+        return ResponseEntity.ok(teamMapper.toDTO(team));
     }
 
     // 🔹 מחיקת עובד מהצוות
@@ -136,7 +135,7 @@ public class TeamController {
 
         List<TeamMember> members = teamMemberRepository.findByTeamId(teamId);
 
-        return ResponseEntity.ok(teamMapper.toDTO(team, members));
+        return ResponseEntity.ok(teamMapper.toDTO(team));
     }
 
 }

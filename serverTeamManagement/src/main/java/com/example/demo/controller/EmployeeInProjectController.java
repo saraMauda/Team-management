@@ -49,7 +49,7 @@ public class EmployeeInProjectController {
     @GetMapping("/leader/{leaderId}/employees")
     public List<Users> getEmployeesForLeader(@PathVariable Long leaderId) {
 
-        return employeeInProjectRepository.findByProject_ProjectLeader_Id(leaderId)
+        return employeeInProjectRepository.findByProject_Leader_Id(leaderId)
                 .stream()
                 .map(EmployeeInProject::getUser)
                 .distinct()

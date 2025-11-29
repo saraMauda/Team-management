@@ -8,13 +8,11 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface MeetingMapper {
 
-     @Mapping(target = "projectId",source = "project.projectId")
-     MeetingDTO toDTO(Meeting meeting);
+    @Mapping(target = "projectId", source = "project.projectId")
+    MeetingDTO toDTO(Meeting meeting);
 
     default Meeting toEntity(MeetingDTO dto) {
-        if (dto == null) {
-            return null;
-        }
+        if (dto == null) return null;
 
         Meeting meeting = new Meeting();
         meeting.setMeetingId(dto.getMeetingId());
@@ -25,7 +23,6 @@ public interface MeetingMapper {
         meeting.setStatus(dto.getStatus());
         meeting.setCreatedAt(dto.getCreatedAt());
 
-        // project ו־approvals מנוהלים בבקר (Controller) ולא במיפוי
         return meeting;
     }
 }

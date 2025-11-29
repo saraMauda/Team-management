@@ -14,12 +14,10 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // ראש צוות
     @ManyToOne
     @JoinColumn(name = "leader_id")
     private Users leader;
 
-    // חברי צוות – לא נטען אוטומטית
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
     private List<TeamMember> members;
 }
