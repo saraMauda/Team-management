@@ -7,6 +7,7 @@ import com.example.demo.model.Team;
 import com.example.demo.model.TeamMember;
 import com.example.demo.model.Users;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
@@ -15,7 +16,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class AIChatService {
@@ -27,6 +31,8 @@ public class AIChatService {
     private final MeetingRepository meetingRepository;
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
+    private final Map<String, List<Message>> conversations = new ConcurrentHashMap<>();
+
 
     public static String SYSTEM_INSTRUCTION = """
 You are an AI assistant embedded inside a team-management system (TeamFlow).
@@ -120,52 +126,34 @@ Goal:
      * Uses Authentication (JWT) to understand who is asking,
      * pulls relevant data from the DB, and lets the model phrase the answer.
      */
-    public String getResponse(String prompt, Authentication authentication) {
+    public String getResponse(String prompt, String conversationId, Authentication authentication) {
 
-        // 1. מי המשתמש המחובר?
-        Users currentUser = usersRepository.findByEmail(authentication.getName());
-        Long leaderId = currentUser.getId();
+        // 1. שליפת היסטוריה קיימת
+        List<Message> history = conversations.computeIfAbsent(conversationId, k -> new ArrayList<>());
 
-        String normalized = prompt.toLowerCase();
-        String systemData = null;
+        // 2. יצירת SystemMessage (כמו שיש לך)
+        SystemMessage system = new SystemMessage(SYSTEM_INSTRUCTION);
 
-        // 2. Intent מאוד פשוט לפי מילות מפתח (עברית + אנגלית)
-        if (containsAny(normalized, "project", "projects", "פרויק")) {
-            systemData = buildProjectsSummary(leaderId);
-        } else if (containsAny(normalized, "team", "צוות")) {
-            systemData = buildTeamSummary(leaderId);
-        } else if (containsAny(normalized, "report", "reports", "דוח", "דוחות")) {
-            systemData = buildReportsSummary(leaderId);
-        } else if (containsAny(normalized, "meeting", "meetings", "פגיש")) {
-            systemData = buildMeetingsSummary(currentUser);
-        }
+        // 3. בניית systemData והוספת UserMessage
+        UserMessage userMessage = buildUserMessageWithSystemData(prompt, authentication);
 
-        // 3. בונים את ההודעה למודל
-        SystemMessage systemMessage = new SystemMessage(SYSTEM_INSTRUCTION);
-        UserMessage userMessage;
+        // 4. הוספת הודעת המשתמש להיסטוריה
+        history.add(userMessage);
 
-        if (systemData != null) {
-            // מעבירים למודל גם את השאלה וגם את הדאטה מהמערכת
-            String combined = """
-                    User query:
-                    %s
+        // 5. בניית רשימת הודעות מלאה (system + history)
+        List<Message> fullConversation = new ArrayList<>();
+        fullConversation.add(system);
+        fullConversation.addAll(history);
 
-                    System data (from the database, already filtered for this Team Leader):
-                    %s
+        // 6. קריאה ל־ChatClient
+        String response = chatClient.prompt().messages(fullConversation).call().content();
 
-                    Please answer the user in the same language as the query (Hebrew or English),
-                    in a professional and friendly tone.
-                    """.formatted(prompt, systemData);
+        // 7. שמירת תגובת ה-AI בהיסטוריה
+        history.add(new AssistantMessage(response));
 
-            userMessage = new UserMessage(combined);
-        } else {
-            // לא זיהינו intent → נותנים למודל לענות רק לפי השאלה
-            userMessage = new UserMessage(prompt);
-        }
-
-        List<Message> messageList = List.of(systemMessage, userMessage);
-        return chatClient.prompt().messages(messageList).call().content();
+        return response;
     }
+
 
     // ===========================
     //  Helpers – intent detection
@@ -292,4 +280,43 @@ Goal:
     private String safeDate(LocalDateTime dateTime) {
         return (dateTime == null) ? "N/A" : dateTime.toString();
     }
+    private UserMessage buildUserMessageWithSystemData(String prompt, Authentication authentication) {
+
+        // 1. מי המשתמש המחובר?
+        Users currentUser = usersRepository.findByEmail(authentication.getName());
+        Long leaderId = currentUser.getId();
+
+        String normalized = prompt.toLowerCase();
+        String systemData = null;
+
+        // 2. Intent detection בדיוק כמו בקוד שלך
+        if (containsAny(normalized, "project", "projects", "פרויק")) {
+            systemData = buildProjectsSummary(leaderId);
+        } else if (containsAny(normalized, "team", "צוות")) {
+            systemData = buildTeamSummary(leaderId);
+        } else if (containsAny(normalized, "report", "reports", "דוח", "דוחות")) {
+            systemData = buildReportsSummary(leaderId);
+        } else if (containsAny(normalized, "meeting", "meetings", "פגיש")) {
+            systemData = buildMeetingsSummary(currentUser);
+        }
+
+        // 3. החזרת הודעה מתאימה
+        if (systemData != null) {
+            String combined = """
+                User query:
+                %s
+                
+                System data (from the database, already filtered for this Team Leader):
+                %s
+                
+                Please answer the user in the same language as the query (Hebrew or English),
+                in a professional and friendly tone.
+                """.formatted(prompt, systemData);
+
+            return new UserMessage(combined);
+        }
+
+        return new UserMessage(prompt);
+    }
+
 }

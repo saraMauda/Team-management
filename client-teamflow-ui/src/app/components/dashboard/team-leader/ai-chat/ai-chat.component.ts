@@ -20,36 +20,39 @@ export class AiChatComponent {
   userInput = '';
   messages: ChatMessage[] = [];
   loading = false;
+  conversationId = crypto.randomUUID();
 
   constructor(private aiService: AiChatService) {}
 
-  sendMessage() {
-    if (!this.userInput.trim()) return;
+ sendMessage() {
+  if (!this.userInput.trim()) return;
 
-    this.messages.push({
-      sender: 'user',
-      text: this.userInput
-    });
+  this.messages.push({
+    sender: 'user',
+    text: this.userInput
+  });
 
-    const prompt = this.userInput;
-    this.userInput = '';
-    this.loading = true;
+  const prompt = this.userInput;
+  this.userInput = '';
+  this.loading = true;
 
-    this.aiService.sendMessage(prompt).subscribe({
-      next: (response) => {
-        this.messages.push({ sender: 'bot', text: response });
-        this.loading = false;
-        setTimeout(() => this.scrollToBottom(), 50);
-      },
-      error: () => {
-        this.messages.push({
-          sender: 'bot',
-          text: 'An error occurred. Please try again.'
-        });
-        this.loading = false;
-      }
-    });
-  }
+  // ✔ שולחים גם conversationId
+  this.aiService.sendMessage(prompt, this.conversationId).subscribe({
+    next: (response) => {
+      this.messages.push({ sender: 'bot', text: response });
+      this.loading = false;
+      setTimeout(() => this.scrollToBottom(), 50);
+    },
+    error: () => {
+      this.messages.push({
+        sender: 'bot',
+        text: 'An error occurred. Please try again.'
+      });
+      this.loading = false;
+    }
+  });
+}
+
 
 private scrollToBottom(): void {
   setTimeout(() => {
