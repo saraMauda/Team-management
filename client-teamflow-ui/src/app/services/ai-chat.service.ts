@@ -13,13 +13,12 @@ export class AiChatService {
   constructor(private http: HttpClient) {}
 
   /** ✔ שולח שאלה ל-AI ומחזיר טקסט */
-  sendMessage(prompt: string): Observable<string> {
-    const params = new HttpParams().set('prompt', prompt);
+sendMessage(message: string, conversationId: string): Observable<string> {
+  const body = { message, conversationId };
+  return this.http.post(this.baseUrl, body, {
+    responseType: 'text',
+    withCredentials: true
+  });
+}
 
-    return this.http.get(this.baseUrl, {
-      params,
-      responseType: 'text',
-      withCredentials: true
-    });
-  }
 }
