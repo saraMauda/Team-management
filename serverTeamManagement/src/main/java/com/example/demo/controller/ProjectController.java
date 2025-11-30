@@ -46,10 +46,6 @@ public class ProjectController {
     @Autowired
     private ReportRepository reportRepository;
 
-
-    // ---------------------------------------
-    // 🔹 1. שליפת כל הפרויקטים
-    // ---------------------------------------
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN','TEAMLEADER')")
     public List<ProjectDTO> getAllProjects() {
@@ -59,9 +55,6 @@ public class ProjectController {
                 .collect(Collectors.toList());
     }
 
-    // ---------------------------------------
-    // 🔹 2. שליפה לפי מזהה
-    // ---------------------------------------
     @GetMapping("/{id}")
     public ProjectDTO getProject(@PathVariable Long id) {
         Project project = projectRepository.findById(id)
@@ -159,7 +152,6 @@ public class ProjectController {
                 existing.setStatus("ACTIVE");
                 employeeInProjectRepository.save(existing);
             } else {
-                // חדש
                 Users user = usersRepository.findById(uid)
                         .orElseThrow(() -> new RuntimeException("User not found"));
 

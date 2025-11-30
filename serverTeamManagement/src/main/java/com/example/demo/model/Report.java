@@ -2,13 +2,18 @@ package com.example.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
 public class Report {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long reportId;
@@ -36,69 +41,5 @@ public class Report {
         this.lastEdited = lastEdited;
         this.reportEmployeeInProject = reportEmployeeInProject;
         this.reportComments = reportComments;
-    }
-
-    public long getReportId() {
-        return reportId;
-    }
-
-    public void setReportId(long reportId) {
-        this.reportId = reportId;
-    }
-
-    public String getReportTitle() {
-        return reportTitle;
-    }
-
-    public void setReportTitle(String reportTitle) {
-        this.reportTitle = reportTitle;
-    }
-
-    public String getReportDescription() {
-        return reportDescription;
-    }
-
-    public void setReportDescription(String reportDescription) {
-        this.reportDescription = reportDescription;
-    }
-
-    public LocalDate getReportDate() {
-        return reportDate;
-    }
-
-    public void setReportDate(LocalDate reportDate) {
-        this.reportDate = reportDate;
-    }
-
-    public EmployeeInProject getReportEmployeeInProject() {
-        return reportEmployeeInProject;
-    }
-
-    public void setReportEmployeeInProject(EmployeeInProject reportEmployeeInProject) {
-        this.reportEmployeeInProject = reportEmployeeInProject;
-    }
-
-    public List<ReportComment> getReportComments() {
-        return reportComments;
-    }
-
-    public void setReportComments(List<ReportComment> reportComments) {
-        this.reportComments = reportComments;
-    }
-
-    public String getReportStatus() {
-        return reportStatus;
-    }
-
-    public void setReportStatus(String reportStatus) {
-        this.reportStatus = reportStatus;
-    }
-
-    public LocalDate getLastEdited() {
-        return lastEdited;
-    }
-
-    public void setLastEdited(LocalDate lastEdited) {
-        this.lastEdited = lastEdited;
     }
 }

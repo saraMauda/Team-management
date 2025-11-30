@@ -24,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUserEmail(String email) throws UsernameNotFoundException {
         //לאמת את המשתמש עם המשתמש שנמצא ב-DB
         Users user=userRepository.findByEmail(email);
         if (user==null)

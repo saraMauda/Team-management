@@ -21,12 +21,11 @@ public class ReportCommentController {
 
     private final ReportRepository reportRepository;
     private final ReportCommentRepository reportCommentRepository;
-    private final UsersRepository usersRepository; // ⭐ הזרקת UsersRepository ⭐
-
+    private final UsersRepository usersRepository;
     @Autowired
     public ReportCommentController(ReportRepository reportRepository,
                                    ReportCommentRepository reportCommentRepository,
-                                   UsersRepository usersRepository) { // ⭐ הוספת UsersRepository לבנאי
+                                   UsersRepository usersRepository) {
         this.reportRepository = reportRepository;
         this.reportCommentRepository = reportCommentRepository;
         this.usersRepository = usersRepository;
@@ -69,7 +68,6 @@ public class ReportCommentController {
     @GetMapping("/{reportId}")
     public List<ReportComment> getComments(@PathVariable Long reportId) {
 
-        // ⭐ שימוש במתודה שמוודאת טעינת משתמשים (JOIN FETCH) ⭐
         List<ReportComment> list = reportCommentRepository.findByReportIdWithUser(reportId);
         return list;
     }

@@ -45,9 +45,6 @@ public class MeetingController {
     @Autowired
     private ApprovalRepository approvalRepository;
 
-    // =====================================
-    // 1. עובד רגיל – רואה meetings של עצמו
-    // =====================================
     @GetMapping("/my")
     @PreAuthorize("hasRole('EMPLOYEE') or hasRole('TEAMLEADER')")
     public List<MeetingDTO> getMyMeetings(Authentication auth) {
@@ -67,9 +64,6 @@ public class MeetingController {
         return meetings.stream().map(meetingMapper::toDTO).toList();
     }
 
-    // ==========================================
-    // 2. ראש צוות – רואה פגישות של פרויקט שלו
-    // ==========================================
     @GetMapping("/team/{projectId}")
     @PreAuthorize("hasRole('TEAMLEADER')")
     public List<MeetingDTO> getTeamMeetings(@PathVariable Long projectId,

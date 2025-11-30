@@ -58,7 +58,6 @@ public class TeamController {
             teamMemberRepository.save(tm);
         }
 
-        // מחזירים DTO
         List<TeamMember> members = teamMemberRepository.findByTeamId(team.getId());
         return new ResponseEntity<>(teamMapper.toDTO(team), HttpStatus.CREATED);
     }

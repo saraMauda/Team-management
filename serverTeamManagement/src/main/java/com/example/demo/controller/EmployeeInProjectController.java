@@ -26,7 +26,6 @@ public class EmployeeInProjectController {
     @Autowired
     private ProjectRepository projectRepository;
 
-    // ✔ שיוך עובד לפרויקט
     @PostMapping("/assign")
     public String assignEmployeeToProject(@RequestParam Long userId,
                                           @RequestParam Long projectId) {
@@ -45,7 +44,6 @@ public class EmployeeInProjectController {
         return "Employee assigned successfully";
     }
 
-    // ✔ כל העובדים של ראש צוות
     @GetMapping("/leader/{leaderId}/employees")
     public List<Users> getEmployeesForLeader(@PathVariable Long leaderId) {
 

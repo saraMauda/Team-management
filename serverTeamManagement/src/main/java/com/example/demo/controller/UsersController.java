@@ -84,7 +84,6 @@ public class UsersController {
                         existing.getRoles().add(role);
                     }
 
-                    // ✅ אם רוצים לאפשר שינוי סיסמה דרך המסך הזה – הצפנה
                     if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
                         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
                         existing.setPassword(encoder.encode(userDTO.getPassword()));
@@ -103,7 +102,7 @@ public class UsersController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         return usersRepository.findById(id)
                 .map(user -> {
-                    user.setActive(false);      // soft delete 🔥
+                    user.setActive(false);      // soft delete
                     usersRepository.save(user);
                     return ResponseEntity.noContent().<Void>build();
                 })
@@ -120,8 +119,8 @@ public class UsersController {
         Users user = usersRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        ImageUtils.uploadImage(file); // שומר את התמונה
-        user.setImagePath(file.getOriginalFilename()); // רק שם הקובץ
+        ImageUtils.uploadImage(file);
+        user.setImagePath(file.getOriginalFilename());
         usersRepository.save(user);
 
         return ResponseEntity.ok("Image uploaded successfully");
@@ -172,11 +171,8 @@ public ResponseEntity<UsersDTO> signUp(@RequestBody Users user) {
         Authentication authentication=authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(u.getEmail(),u.getPassword()));
 
-        //שומר את האימות
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        //CustomUserDetails לוקח את פרטי המשתמש ומכניס אותם
         CustomUserDetails userDetails=(CustomUserDetails)authentication.getPrincipal();
-
         ResponseCookie jwtCookie=jwtUtils.generateJwtCookie(userDetails);
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("email", userDetails.getUsername());
@@ -192,7 +188,6 @@ public ResponseEntity<UsersDTO> signUp(@RequestBody Users user) {
     }
     @GetMapping("/authenticated")
     public ResponseEntity<?> isAuthenticated() {
-        // אם הגענו לכאן – המשמעות היא שה־Cookie תקף
         return ResponseEntity.ok(true);
     }
     @GetMapping("/by-email/{email}")
@@ -224,7 +219,6 @@ public ResponseEntity<UsersDTO> signUp(@RequestBody Users user) {
         user.setPassword(encoder.encode(newPass));
         usersRepository.save(user);
 
-        // 🔥 מחיקת העוגייה של JWT כדי לא לגרום ל-401 אחרי זה
         ResponseCookie cleared = jwtUtils.getCleanJwtCookie();
 
         return ResponseEntity.ok()
