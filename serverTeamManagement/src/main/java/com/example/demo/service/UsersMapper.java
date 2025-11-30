@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 public interface UsersMapper {
 
     @Mapping(target = "role", expression = "java(user.getRoleString())")
-    @Mapping(target = "image", source = "imagePath")
+    @Mapping(target = "image",
+            expression = "java(ImageUtils.wrapBase64(user.getImagePath()))")
     UsersDTO toDTO(Users user);
 }
