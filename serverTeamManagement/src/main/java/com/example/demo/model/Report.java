@@ -10,27 +10,26 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
 public class Report {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long reportId;
+
     private String reportTitle;
     private String reportDescription;
     private LocalDate reportDate;
     private String reportStatus;
     private LocalDate lastEdited;
+
     @ManyToOne
     @JoinColumn(name = "employeeProjectId")
+    @JsonIgnore
     private EmployeeInProject reportEmployeeInProject;
+
     @OneToMany(mappedBy = "report")
     @JsonIgnore
     private List<ReportComment> reportComments;
-
-    public Report() {
-    }
 
     public Report(long reportId, String reportTitle, String reportDescription, LocalDate reportDate, String reportStatus, LocalDate lastEdited, EmployeeInProject reportEmployeeInProject, List<ReportComment> reportComments) {
         this.reportId = reportId;
@@ -40,6 +39,73 @@ public class Report {
         this.reportStatus = reportStatus;
         this.lastEdited = lastEdited;
         this.reportEmployeeInProject = reportEmployeeInProject;
+        this.reportComments = reportComments;
+    }
+
+    public Report() {
+    }
+
+    public long getReportId() {
+        return reportId;
+    }
+
+    public void setReportId(long reportId) {
+        this.reportId = reportId;
+    }
+
+    public String getReportTitle() {
+        return reportTitle;
+    }
+
+    public void setReportTitle(String reportTitle) {
+        this.reportTitle = reportTitle;
+    }
+
+    public String getReportDescription() {
+        return reportDescription;
+    }
+
+    public void setReportDescription(String reportDescription) {
+        this.reportDescription = reportDescription;
+    }
+
+    public LocalDate getReportDate() {
+        return reportDate;
+    }
+
+    public void setReportDate(LocalDate reportDate) {
+        this.reportDate = reportDate;
+    }
+
+    public String getReportStatus() {
+        return reportStatus;
+    }
+
+    public void setReportStatus(String reportStatus) {
+        this.reportStatus = reportStatus;
+    }
+
+    public LocalDate getLastEdited() {
+        return lastEdited;
+    }
+
+    public void setLastEdited(LocalDate lastEdited) {
+        this.lastEdited = lastEdited;
+    }
+
+    public EmployeeInProject getReportEmployeeInProject() {
+        return reportEmployeeInProject;
+    }
+
+    public void setReportEmployeeInProject(EmployeeInProject reportEmployeeInProject) {
+        this.reportEmployeeInProject = reportEmployeeInProject;
+    }
+
+    public List<ReportComment> getReportComments() {
+        return reportComments;
+    }
+
+    public void setReportComments(List<ReportComment> reportComments) {
         this.reportComments = reportComments;
     }
 }

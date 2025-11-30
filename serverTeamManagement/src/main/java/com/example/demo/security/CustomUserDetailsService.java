@@ -17,24 +17,25 @@ import java.util.List;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
+
     @Autowired
-    UsersRepository userRepository;
-
-
+    private UsersRepository userRepository;
 
     @Override
     @Transactional
-    public UserDetails loadUserByUserEmail(String email) throws UsernameNotFoundException {
-        //לאמת את המשתמש עם המשתמש שנמצא ב-DB
-        Users user=userRepository.findByEmail(email);
-        if (user==null)
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+
+        Users user = userRepository.findByEmail(email);
+
+        if (user == null) {
             throw new UsernameNotFoundException("user not found");
-        //רשימה של הרשאות
-        List<GrantedAuthority> grantedAuthorities=new ArrayList<>();
-        for(Role role:user.getRoles())
-        {
+        }
+
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+        for (Role role : user.getRoles()) {
             grantedAuthorities.add(new SimpleGrantedAuthority(role.getName().name()));
         }
-        return new CustomUserDetails(email,user.getPassword(),grantedAuthorities);//יוצר משתמש עבור האבטחה
+
+        return new CustomUserDetails(email, user.getPassword(), grantedAuthorities);
     }
 }

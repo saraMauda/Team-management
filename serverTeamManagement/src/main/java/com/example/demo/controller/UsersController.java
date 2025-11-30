@@ -10,6 +10,7 @@ import com.example.demo.service.ImageUtils;
 import com.example.demo.service.RoleRepository;
 import com.example.demo.service.UsersMapper;
 import com.example.demo.service.UsersRepository;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,17 +22,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -39,43 +31,38 @@ public class UsersController {
 
     @Autowired
     private UsersRepository usersRepository;
+
+    @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
     private JwtUtils jwtUtils;
 
     @Autowired
     private UsersMapper usersMapper;
 
-    public UsersController(UsersRepository usersRepository, RoleRepository roleRepository,AuthenticationManager authenticationManager,JwtUtils jwtUtils) {
-        this.usersRepository = usersRepository;
-        this.roleRepository = roleRepository;
-        this.authenticationManager = authenticationManager;
-        this.jwtUtils = jwtUtils;
+    @GetMapping("get/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UsersDTO> getUsers(@PathVariable("id") long id) {
+        return usersRepository.findById(id)
+                .map(user -> new ResponseEntity<>(usersMapper.toDTO(user), HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("get/{id}")
-    public ResponseEntity<UsersDTO> getUsers(@PathVariable("id") long id) {
-        Users user = usersRepository.findById(id).get();
-        if(user != null) {
-            return new ResponseEntity<>(usersMapper.userToUsersDTO(user), HttpStatus.OK);
-        }
-        else
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-    //עדכון משתמש
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')") // אם רק אדמין יכול לעדכן משתמשים
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UsersDTO> updateUser(@PathVariable Long id,
-                                               @RequestBody UsersDTO userDTO) {
+                                               @Valid @RequestBody UsersDTO userDTO) {
         return usersRepository.findById(id)
                 .map(existing -> {
                     existing.setName(userDTO.getName());
                     existing.setEmail(userDTO.getEmail());
                     existing.setActive(userDTO.isActive());
 
-                    // ✅ עדכון ROLE
                     if (userDTO.getRole() != null && !userDTO.getRole().isEmpty()) {
-                        // מצפה ש־userDTO.getRole() יחזיר "ROLE_EMPLOYEE" / "ROLE_TEAMLEADER" / "ROLE_ADMIN"
                         ERole eRole = ERole.valueOf(userDTO.getRole());
                         Role role = roleRepository.findByName(eRole)
                                 .orElseThrow(() -> new RuntimeException("Role not found: " + userDTO.getRole()));
@@ -90,34 +77,38 @@ public class UsersController {
                     }
 
                     Users saved = usersRepository.save(existing);
-                    return ResponseEntity.ok(usersMapper.userToUsersDTO(saved));
+                    return ResponseEntity.ok(usersMapper.toDTO(saved));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
 
-
-    //מחיקת משתמש (רק Admin רשאי)
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         return usersRepository.findById(id)
                 .map(user -> {
-                    user.setActive(false);      // soft delete
+                    user.setActive(false);
                     usersRepository.save(user);
                     return ResponseEntity.noContent().<Void>build();
                 })
                 .orElse(ResponseEntity.notFound().<Void>build());
     }
 
-
-
     @PostMapping("/upload/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> uploadImage(
             @PathVariable Long id,
-            @RequestParam("image") MultipartFile file) throws IOException {
+            @RequestParam("image") MultipartFile file,
+            Authentication authentication) throws IOException {
 
         Users user = usersRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!authentication.getName().equals(user.getEmail()) &&
+                !authentication.getAuthorities().stream()
+                        .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not allowed to upload image for this user");
+        }
 
         ImageUtils.uploadImage(file);
         user.setImagePath(file.getOriginalFilename());
@@ -125,50 +116,49 @@ public class UsersController {
 
         return ResponseEntity.ok("Image uploaded successfully");
     }
+
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UsersDTO> getAllUsers() {
         return usersRepository.findAll()
                 .stream()
-                .map(usersMapper::userToUsersDTO)
-                .collect(Collectors.toList());
-    }
-@PostMapping("/signup")
-public ResponseEntity<UsersDTO> signUp(@RequestBody Users user) {
-    if (usersRepository.findByEmail(user.getEmail()) != null)
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-    user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-
-    Role role;
-
-    // 🟢 אם נשלח role פשוט ב־JSON (כמו "ROLE_TEAMLEADER")
-    if (user.getRoleString() != null && !user.getRoleString().isEmpty()) {
-        role = roleRepository.findByName(ERole.valueOf(user.getRoleString()))
-                .orElseThrow(() -> new RuntimeException("Role not found"));
-    }
-    // 🔵 אם נשלח roles כ־List (כמו [{"name": "ROLE_TEAMLEADER"}])
-    else if (user.getRoles() != null && !user.getRoles().isEmpty()) {
-        String roleName = user.getRoles().iterator().next().getName().name();
-        role = roleRepository.findByName(ERole.valueOf(roleName))
-                .orElseThrow(() -> new RuntimeException("Role not found"));
-    }
-    // ⚪ אחרת — ברירת מחדל
-    else {
-        role = roleRepository.findByName(ERole.ROLE_EMPLOYEE)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
+                .map(usersMapper::toDTO)
+                .toList();
     }
 
-    user.getRoles().clear();
-    user.getRoles().add(role);
+    @PostMapping("/signup")
+    public ResponseEntity<UsersDTO> signUp(@Valid @RequestBody Users user) {
+        if (usersRepository.findByEmail(user.getEmail()) != null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
-    Users saved = usersRepository.save(user);
-    UsersDTO dto = usersMapper.userToUsersDTO(saved);
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
 
-    return new ResponseEntity<>(dto, HttpStatus.CREATED);
-}
+        Role role;
+
+        if (user.getRoleString() != null && !user.getRoleString().isEmpty()) {
+            role = roleRepository.findByName(ERole.valueOf(user.getRoleString()))
+                    .orElseThrow(() -> new RuntimeException("Role not found"));
+        } else if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+            String roleName = user.getRoles().iterator().next().getName().name();
+            role = roleRepository.findByName(ERole.valueOf(roleName))
+                    .orElseThrow(() -> new RuntimeException("Role not found"));
+        } else {
+            role = roleRepository.findByName(ERole.ROLE_EMPLOYEE)
+                    .orElseThrow(() -> new RuntimeException("Role not found"));
+        }
+
+        user.getRoles().clear();
+        user.getRoles().add(role);
+
+        Users saved = usersRepository.save(user);
+        UsersDTO dto = usersMapper.toDTO(saved);
+
+        return new ResponseEntity<>(dto, HttpStatus.CREATED);
+    }
+
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody Users u){
-        Authentication authentication=authenticationManager
+        Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(u.getEmail(),u.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -180,31 +170,42 @@ public ResponseEntity<UsersDTO> signUp(@RequestBody Users user) {
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,jwtCookie.toString())
                 .body(responseBody);
     }
+
     @PostMapping("/signout")
     public ResponseEntity<?> signOut(){
         ResponseCookie cookie=jwtUtils.getCleanJwtCookie();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,cookie.toString())
                 .body("you've been signed out!");
     }
+
     @GetMapping("/authenticated")
     public ResponseEntity<?> isAuthenticated() {
         return ResponseEntity.ok(true);
     }
+
     @GetMapping("/by-email/{email}")
+    @PreAuthorize("isAuthenticated()")
     public UsersDTO getUserByEmail(@PathVariable String email) {
         Users user = usersRepository.findByEmail(email);
-        return usersMapper.userToUsersDTO(user);
+        return usersMapper.toDTO(user);
     }
+
     @PutMapping("/change-password/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> changePassword(
             @PathVariable Long id,
-            @RequestBody Map<String, String> body
+            @RequestBody Map<String, String> body,
+            Authentication authentication
     ) {
         Optional<Users> opt = usersRepository.findById(id);
         if (opt.isEmpty())
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
 
         Users user = opt.get();
+
+        if (!authentication.getName().equals(user.getEmail())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not allowed");
+        }
 
         String oldPass = body.get("oldPassword");
         String newPass = body.get("newPassword");
@@ -225,13 +226,4 @@ public ResponseEntity<UsersDTO> signUp(@RequestBody Users user) {
                 .header(HttpHeaders.SET_COOKIE, cleared.toString())
                 .body("Password updated successfully");
     }
-
-
-
-
-
-
-
-
-
 }

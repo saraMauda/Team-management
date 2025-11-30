@@ -6,6 +6,7 @@ import com.example.demo.model.Report;
 import com.example.demo.service.EmployeeInProjectRepository;
 import com.example.demo.service.ReportMapper;
 import com.example.demo.service.ReportRepository;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -27,27 +28,30 @@ public class ReportController {
 
     @Autowired
     private EmployeeInProjectRepository employeeInProjectRepository;
+
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','TEAMLEADER')")
     public List<ReportDTO> getAllReports() {
         return reportRepository.findAll()
                 .stream()
-                .map(reportMapper::reportToReportDTO)
+                .map(reportMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','TEAMLEADER','EMPLOYEE')")
     public ReportDTO getReportById(@PathVariable Long id) {
         Report report = reportRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Report not found"));
-        return reportMapper.reportToReportDTO(report);
+        return reportMapper.toDTO(report);
     }
 
     @PostMapping
-    public ReportDTO createReport(@RequestBody ReportDTO dto) {
+    @PreAuthorize("hasAnyRole('EMPLOYEE','TEAMLEADER')")
+    public ReportDTO createReport(@Valid @RequestBody ReportDTO dto) {
         if (dto.getProjectId() == null || dto.getUserId() == null)
             throw new RuntimeException("projectId and userId are required");
 
-        // מוצאים את המשבצת של המשתמש בפרויקט
         EmployeeInProject link = employeeInProjectRepository
                 .findByUser_IdAndProject_ProjectId(dto.getUserId(), dto.getProjectId())
                 .orElseThrow(() -> new RuntimeException("User is not assigned to this project"));
@@ -56,21 +60,18 @@ public class ReportController {
         report.setReportTitle(dto.getTitle());
         report.setReportDescription(dto.getDescription());
         report.setReportStatus(dto.getStatus());
-
-        report.setReportDate(dto.getDate());
+        report.setReportDate(dto.getReportDate());
         report.setLastEdited(LocalDate.now());
-
-        // שייכות הדוח
         report.setReportEmployeeInProject(link);
 
         Report saved = reportRepository.save(report);
 
-        return reportMapper.reportToReportDTO(saved);
+        return reportMapper.toDTO(saved);
     }
 
-
     @PutMapping("/{id}")
-    public ReportDTO updateReport(@PathVariable Long id, @RequestBody ReportDTO reportDTO) {
+    @PreAuthorize("hasAnyRole('EMPLOYEE','TEAMLEADER','ADMIN')")
+    public ReportDTO updateReport(@PathVariable Long id, @Valid @RequestBody ReportDTO reportDTO) {
         Report existing = reportRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Report not found"));
 
@@ -80,71 +81,78 @@ public class ReportController {
         existing.setLastEdited(reportDTO.getLastEdited());
 
         Report updated = reportRepository.save(existing);
-        return reportMapper.reportToReportDTO(updated);
+        return reportMapper.toDTO(updated);
     }
 
     @PutMapping("/{id}/approve")
+    @PreAuthorize("hasAnyRole('TEAMLEADER','ADMIN')")
     public ReportDTO approvalReport(@PathVariable Long id){
         Report report = reportRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("Report not found"));
+                .orElseThrow(() -> new RuntimeException("Report not found"));
 
         report.setReportStatus("APPROVED");
         Report update = reportRepository.save(report);
-        return reportMapper.reportToReportDTO(update);
+        return reportMapper.toDTO(update);
     }
 
     @GetMapping("/byEmployee/{employeeId}")
-    public List<ReportDTO>getReportsByEmployee(@PathVariable Long employeeId){
+    @PreAuthorize("hasAnyRole('TEAMLEADER','ADMIN')")
+    public List<ReportDTO> getReportsByEmployee(@PathVariable Long employeeId){
         return reportRepository.findByReportEmployeeInProject_User_Id(employeeId)
                 .stream()
-                .map(reportMapper::reportToReportDTO)
+                .map(reportMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/byProject/{projectId}")
-    public List<ReportDTO>getReportsByProject(@PathVariable Long projectId){
+    @PreAuthorize("hasAnyRole('TEAMLEADER','ADMIN')")
+    public List<ReportDTO> getReportsByProject(@PathVariable Long projectId){
         return reportRepository.findByReportEmployeeInProject_Project_ProjectId(projectId)
                 .stream()
-                .map(reportMapper::reportToReportDTO)
+                .map(reportMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('TEAMLEADER','ADMIN')")
     public void deleteReport(@PathVariable Long id){
         reportRepository.deleteById(id);
     }
 
-    // ✔ דוחות לעובד מחובר
     @GetMapping("/byEmployee")
     @PreAuthorize("hasRole('EMPLOYEE')")
     public List<ReportDTO> getReportsForLoggedEmployee(Authentication authentication) {
         String email = authentication.getName();
         return reportRepository.findByReportEmployeeInProject_User_Email(email)
                 .stream()
-                .map(reportMapper::reportToReportDTO)
+                .map(reportMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
     @GetMapping("/byLeader/{leaderId}")
+    @PreAuthorize("hasRole('TEAMLEADER')")
     public List<ReportDTO> getReportsForLeader(@PathVariable Long leaderId) {
 
-        // 1. מוצאים את כל העובדים בצוות של המנהל
         List<EmployeeInProject> teamMembers =
                 employeeInProjectRepository.findByProject_Leader_Id(leaderId);
 
-        // 2. מוצאים עבור כל אחד את כל הדוחות
         List<Report> reports = teamMembers.stream()
-                .flatMap(member -> reportRepository.findByReportEmployeeInProject_Project_ProjectId(member.getEmployeeProjectId())
+                .flatMap(member -> reportRepository
+                        .findByReportEmployeeInProject_Project_ProjectId(
+                                member.getProject().getProjectId())
                         .stream())
                 .collect(Collectors.toList());
-        // 3. ממפים ל-DTO
+
         return reports.stream()
-                .map(reportMapper::reportToReportDTO)
+                .map(reportMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
     @PutMapping("/update-status/{reportId}")
+    @PreAuthorize("hasAnyRole('TEAMLEADER','ADMIN')")
     public ReportDTO updateReportStatus(
             @PathVariable Long reportId,
-            @RequestBody ReportDTO dto
+            @Valid @RequestBody ReportDTO dto
     ) {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new RuntimeException("Report not found"));
@@ -157,7 +165,6 @@ public class ReportController {
 
         Report updated = reportRepository.save(report);
 
-        return reportMapper.reportToReportDTO(updated);
+        return reportMapper.toDTO(updated);
     }
-
 }

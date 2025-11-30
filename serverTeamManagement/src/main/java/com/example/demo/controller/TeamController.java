@@ -8,9 +8,11 @@ import com.example.demo.service.TeamMapper;
 import com.example.demo.service.TeamMemberRepository;
 import com.example.demo.service.TeamRepository;
 import com.example.demo.service.UsersRepository;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -33,8 +35,8 @@ public class TeamController {
     @Autowired
     private TeamMapper teamMapper;
 
-    // 🔹 יצירת צוות חדש
     @PostMapping("/create/{leaderId}")
+    @PreAuthorize("hasAnyRole('TEAMLEADER','ADMIN')")
     public ResponseEntity<TeamDTO> createTeam(
             @PathVariable Long leaderId,
             @RequestBody List<Long> memberIds) {
@@ -42,12 +44,10 @@ public class TeamController {
         Users leader = usersRepository.findById(leaderId)
                 .orElseThrow(() -> new RuntimeException("Leader not found"));
 
-        // יצירת צוות
         Team team = new Team();
         team.setLeader(leader);
         team = teamRepository.save(team);
 
-        // הוספת עובדים לצוות
         for (Long id : memberIds) {
             Users user = usersRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("User not found"));
@@ -58,47 +58,44 @@ public class TeamController {
             teamMemberRepository.save(tm);
         }
 
-        List<TeamMember> members = teamMemberRepository.findByTeamId(team.getId());
         return new ResponseEntity<>(teamMapper.toDTO(team), HttpStatus.CREATED);
     }
+
     @GetMapping("/byLeader/{leaderId}")
+    @PreAuthorize("hasAnyRole('TEAMLEADER','ADMIN')")
     public List<TeamDTO> getTeamsByLeader(@PathVariable Long leaderId) {
-        Users leader = usersRepository.findById(leaderId)
+        usersRepository.findById(leaderId)
                 .orElseThrow(() -> new RuntimeException("Leader not found"));
 
         List<Team> teams = teamRepository.findByLeaderId(leaderId);
 
         return teams.stream()
-                .map(team -> teamMapper.toDTO(team))  // ✔ תיקון
+                .map(teamMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    // 🔹 החזרת כל הצוותים
     @GetMapping("/all")
+    @PreAuthorize("hasAnyRole('ADMIN','TEAMLEADER')")
     public List<TeamDTO> getAllTeams() {
         List<TeamDTO> dtos = new ArrayList<>();
 
         for (Team t : teamRepository.findAll()) {
-            List<TeamMember> members = teamMemberRepository.findByTeamId(t.getId());
             dtos.add(teamMapper.toDTO(t));
         }
 
         return dtos;
     }
 
-    // 🔹 החזרת צוות לפי ID
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN','TEAMLEADER')")
     public ResponseEntity<TeamDTO> getTeam(@PathVariable Long id) {
         return teamRepository.findById(id)
-                .map(team -> {
-                    List<TeamMember> members = teamMemberRepository.findByTeamId(id);
-                    return ResponseEntity.ok(teamMapper.toDTO(team));
-                })
+                .map(team -> ResponseEntity.ok(teamMapper.toDTO(team)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // 🔹 הוספת עובד לצוות
     @PostMapping("/{teamId}/add/{userId}")
+    @PreAuthorize("hasAnyRole('TEAMLEADER','ADMIN')")
     public ResponseEntity<TeamDTO> addMember(
             @PathVariable Long teamId,
             @PathVariable Long userId) {
@@ -114,12 +111,11 @@ public class TeamController {
         member.setUser(user);
         teamMemberRepository.save(member);
 
-        List<TeamMember> members = teamMemberRepository.findByTeamId(teamId);
         return ResponseEntity.ok(teamMapper.toDTO(team));
     }
 
-    // 🔹 מחיקת עובד מהצוות
     @DeleteMapping("/remove/{memberId}")
+    @PreAuthorize("hasAnyRole('TEAMLEADER','ADMIN')")
     public ResponseEntity<TeamDTO> removeMember(@PathVariable Long memberId) {
 
         TeamMember member = teamMemberRepository.findById(memberId)
@@ -132,9 +128,6 @@ public class TeamController {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new RuntimeException("Team not found"));
 
-        List<TeamMember> members = teamMemberRepository.findByTeamId(teamId);
-
         return ResponseEntity.ok(teamMapper.toDTO(team));
     }
-
 }

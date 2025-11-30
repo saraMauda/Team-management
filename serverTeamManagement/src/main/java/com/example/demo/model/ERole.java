@@ -5,3 +5,4 @@ public enum ERole {
     ROLE_TEAMLEADER,
     ROLE_ADMIN
 }
+

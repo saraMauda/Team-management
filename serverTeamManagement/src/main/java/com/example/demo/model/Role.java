@@ -8,16 +8,49 @@ import lombok.Setter;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
 public class Role {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
+
     @Enumerated(EnumType.STRING)
     private ERole name;
+
     @ManyToMany(mappedBy = "roles")
     @JsonIgnore
     private List<Users> usersList;
+
+    public Role(Long id, ERole name, List<Users> usersList) {
+        Id = id;
+        this.name = name;
+        this.usersList = usersList;
+    }
+    public Role() {
+    }
+
+    public Long getId() {
+        return Id;
+    }
+
+    public void setId(Long id) {
+        Id = id;
+    }
+
+    public ERole getName() {
+        return name;
+    }
+
+    public void setName(ERole name) {
+        this.name = name;
+    }
+
+    public List<Users> getUsersList() {
+        return usersList;
+    }
+
+    public void setUsersList(List<Users> usersList) {
+        this.usersList = usersList;
+    }
 }
 

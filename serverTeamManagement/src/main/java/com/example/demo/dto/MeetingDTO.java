@@ -5,8 +5,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-@Getter
-@Setter
+
 public class MeetingDTO {
 
     private Long meetingId;
@@ -30,6 +29,70 @@ public class MeetingDTO {
         this.meetingLocation = meetingLocation;
         this.status = status;
         this.createdAt = createdAt;
+        this.projectId = projectId;
+    }
+
+    public Long getMeetingId() {
+        return meetingId;
+    }
+
+    public void setMeetingId(Long meetingId) {
+        this.meetingId = meetingId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public LocalDate getMeetingDate() {
+        return meetingDate;
+    }
+
+    public void setMeetingDate(LocalDate meetingDate) {
+        this.meetingDate = meetingDate;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getMeetingLocation() {
+        return meetingLocation;
+    }
+
+    public void setMeetingLocation(String meetingLocation) {
+        this.meetingLocation = meetingLocation;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
 }

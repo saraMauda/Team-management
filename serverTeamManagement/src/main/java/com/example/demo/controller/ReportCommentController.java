@@ -2,13 +2,14 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Report;
 import com.example.demo.model.ReportComment;
-import com.example.demo.model.Users; // נדרש כדי לטעון משתמש
+import com.example.demo.model.Users;
 import com.example.demo.service.ReportRepository;
 import com.example.demo.service.ReportCommentRepository;
-import com.example.demo.service.UsersRepository; // ⭐ שינוי: שימוש ב-UsersRepository במקום UserService ⭐
-
+import com.example.demo.service.UsersRepository;
+import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ public class ReportCommentController {
     private final ReportRepository reportRepository;
     private final ReportCommentRepository reportCommentRepository;
     private final UsersRepository usersRepository;
+
     @Autowired
     public ReportCommentController(ReportRepository reportRepository,
                                    ReportCommentRepository reportCommentRepository,
@@ -32,12 +34,13 @@ public class ReportCommentController {
     }
 
     @PostMapping("/add/{reportId}")
+    @PreAuthorize("hasAnyRole('EMPLOYEE','TEAMLEADER','ADMIN')")
     public ResponseEntity<ReportComment> addComment(
             @PathVariable Long reportId,
             @RequestBody Map<String, String> body) {
 
         String text = body.get("text");
-        String userIdStr = body.get("userId"); // מזהה המשתמש שכותב, נשלח מה-Front-end/body
+        String userIdStr = body.get("userId");
 
         if (text == null || text.trim().isEmpty() || userIdStr == null) {
             return ResponseEntity.badRequest().build();
@@ -45,7 +48,6 @@ public class ReportCommentController {
 
         Long userId = Long.parseLong(userIdStr);
 
-        // ⭐ טוען את אובייקט המשתמש באמצעות UsersRepository ⭐
         Users currentUser = usersRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
 
@@ -57,22 +59,21 @@ public class ReportCommentController {
         comment.setText(text);
         comment.setCommentDate(LocalDateTime.now());
         comment.setEdited(false);
-        comment.setUser(currentUser); // הקישור עכשיו תקין
+        comment.setUser(currentUser);
 
         reportCommentRepository.save(comment);
 
-        // Spring יבצע סריאליזציה של האובייקט המלא, כולל ה-getters החדשים
         return ResponseEntity.ok(comment);
     }
 
     @GetMapping("/{reportId}")
+    @PreAuthorize("hasAnyRole('EMPLOYEE','TEAMLEADER','ADMIN')")
     public List<ReportComment> getComments(@PathVariable Long reportId) {
-
-        List<ReportComment> list = reportCommentRepository.findByReportIdWithUser(reportId);
-        return list;
+        return reportCommentRepository.findByReportIdWithUser(reportId);
     }
 
     @GetMapping("/byEmployee/{employeeId}")
+    @PreAuthorize("hasAnyRole('TEAMLEADER','ADMIN')")
     public List<Report> getReportsByEmployee(@PathVariable Long employeeId) {
         return reportRepository.findByReportEmployeeInProject_User_Id(employeeId);
     }
