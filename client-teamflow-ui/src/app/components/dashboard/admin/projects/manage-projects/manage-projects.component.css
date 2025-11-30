@@ -1,4 +1,6 @@
-/* ===== בסיס ===== */
+/* =========================================================
+   WRAPPER & PAGE TITLE
+========================================================= */
 .projects-wrapper {
   padding: 20px 25px;
   color: #e8f1f8;
@@ -11,7 +13,9 @@
   margin: 0 0 18px 0;
 }
 
-/* כפתור עליון */
+/* =========================================================
+   ADD BUTTON
+========================================================= */
 .add-btn {
   background-color: #ff7f32;
   border: none;
@@ -30,7 +34,9 @@
   transform: translateY(-1px);
 }
 
-/* Panel */
+/* =========================================================
+   PANEL
+========================================================= */
 .panel {
   background: #182b3d;
   padding: 18px 22px;
@@ -46,7 +52,9 @@
   margin-bottom: 16px;
 }
 
-/* Form rows */
+/* =========================================================
+   FORM ROWS
+========================================================= */
 .form-row {
   display: flex;
   flex-direction: column;
@@ -84,7 +92,9 @@
   background-color: #18384f;
 }
 
-/* Employees chips */
+/* =========================================================
+   EMPLOYEE CHIPS
+========================================================= */
 .checkbox-container {
   display: flex;
   flex-wrap: wrap;
@@ -130,7 +140,9 @@
   white-space: nowrap;
 }
 
-/* כפתורי שמירה/ביטול */
+/* =========================================================
+   SAVE / CANCEL ACTIONS
+========================================================= */
 .edit-actions {
   display: flex;
   justify-content: flex-end;
@@ -170,7 +182,9 @@
   background-color: rgba(255,127,50,0.15);
 }
 
-/* Projects table */
+/* =========================================================
+   PROJECTS TABLE
+========================================================= */
 .projects-table {
   width: 100%;
   border-collapse: collapse;
@@ -205,7 +219,9 @@
   color: #8fa3b9;
 }
 
-/* Action buttons */
+/* =========================================================
+   ACTION BUTTONS
+========================================================= */
 .edit-btn,
 .delete-btn {
   border: none;
@@ -220,7 +236,7 @@
 
 .edit-btn {
   background-color: #285b8f;
-  color: #ffffff;
+  color: #fff;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
@@ -240,7 +256,9 @@
   transform: translateY(-1px);
 }
 
-/* Responsive */
+/* =========================================================
+   RESPONSIVE
+========================================================= */
 @media (max-width: 768px) {
   .projects-wrapper {
     padding: 15px;

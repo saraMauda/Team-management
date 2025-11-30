@@ -20,8 +20,8 @@ export class TeamMeetingsComponent implements OnInit {
   leaderId: number | null = null;
 
   meetings: any[] = [];
-  projects: any[] = [];     // יעלה לפרונט כמו ב־TeamProjects
-  leaderProjects: any[] = []; // תוצאה מסוננת לפי leaderId
+  projects: any[] = [];   
+  leaderProjects: any[] = [];
 
   showAddForm = false;
 
@@ -45,7 +45,6 @@ export class TeamMeetingsComponent implements OnInit {
     this.loadCurrentLeader();
   }
 
-  /** ✔ אותו מודל בדיוק כמו TeamProjects */
   loadCurrentLeader(): void {
     const stored = localStorage.getItem('user');
     if (!stored) {
@@ -66,7 +65,6 @@ export class TeamMeetingsComponent implements OnInit {
     });
   }
 
-  /** ✔ כמו TeamProjects → load all → filter */
   loadProjectsForLeader(): void {
     this.projectsService.getAll().subscribe({
       next: (all: any[]) => {
@@ -78,7 +76,6 @@ export class TeamMeetingsComponent implements OnInit {
     });
   }
 
-  /** ✔ מביאים את כל הפגישות */
   loadMeetings() {
     this.http.get<any[]>(`${API_BASE_URL}/meetings`, {
       withCredentials: true
@@ -94,7 +91,6 @@ export class TeamMeetingsComponent implements OnInit {
     this.showAddForm = !this.showAddForm;
   }
 
-  /** ✔ יצירת פגישה */
   createMeeting() {
     if (this.newMeeting.projectId === 0) {
       alert("Please select a project!");

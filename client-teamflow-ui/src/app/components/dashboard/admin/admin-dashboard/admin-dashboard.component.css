@@ -1,4 +1,4 @@
-/* ✅ בסיס כללי */
+
 html, body, app-root {
   margin: 0;
   padding: 0;
@@ -8,7 +8,7 @@ html, body, app-root {
   overflow: hidden;
 }
 
-/* ✅ מבנה ראשי */
+
 .admin-layout {
   display: flex;
   height: 100vh;
@@ -21,7 +21,6 @@ html, body, app-root {
   left: 0;
 }
 
-/* ✅ סרגל צד שמאל */
 .side-nav {
   width: 220px;
   background-color: #0e1c2b;
@@ -36,7 +35,6 @@ html, body, app-root {
   flex-direction: column;
 }
 
-/* לוגו */
 .logo-container {
   display: flex;
   align-items: center;
@@ -59,7 +57,6 @@ html, body, app-root {
   letter-spacing: 0.5px;
 }
 
-/* ✅ לינקים בסיידבר */
 .side-nav ul {
   list-style: none;
   margin: 0;
@@ -84,7 +81,6 @@ html, body, app-root {
   font-weight: 700;
 }
 
-/* ✅ אזור התוכן הימני */
 .admin-main {
   flex: 1;
   display: flex;
@@ -94,7 +90,6 @@ html, body, app-root {
   background-color: #10263b;
 }
 
-/* ✅ HEADER */
 app-header {
   flex-shrink: 0;
   background-color: #0f2234;
@@ -109,7 +104,6 @@ app-header {
   box-sizing: border-box;
 }
 
-/* ✅ תוכן הנתונים (החלק היחיד שגולל) */
 .admin-content {
   flex: 1;
   overflow-y: auto;
@@ -120,20 +114,17 @@ app-header {
   box-sizing: border-box;
 }
 
-/* ✅ FOOTER */
 app-footer {
   flex-shrink: 0;
   height: 45px;
   background-color: #0f2234;
   color: #cfd9e4;
   text-align: center;
-  /* line-height: 45px; */
   font-size: 14px;
   border-top: 1px solid rgba(255,127,50,0.25);
   margin: 0;
 }
 
-/* ✅ עיצוב גלילה יפה */
 .admin-content::-webkit-scrollbar {
   width: 8px;
 }
@@ -145,7 +136,6 @@ app-footer {
   background-color: #0e1c2b;
 }
 
-/* ✅ ביטול עיוותים ו־box-sizing אחיד */
 *, *::before, *::after {
   box-sizing: border-box;
 }

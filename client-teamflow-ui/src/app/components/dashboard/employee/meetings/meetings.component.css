@@ -114,3 +114,29 @@
   padding: 40px;
   font-size: 16px;
 }
+.approval-box {
+  margin-top: 10px;
+}
+
+.approve-btn {
+  background-color: #1a7f3c;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.approve-btn:hover {
+  background-color: #176c32;
+}
+
+.approved-msg {
+  color: #1a7f3c;
+  font-weight: bold;
+}
+
+.approval-count {
+  margin-top: 5px;
+  color: #666;
+}

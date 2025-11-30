@@ -50,8 +50,6 @@ export class OverviewComponent implements OnInit {
   private loadData(): void {
     this.loading = true;
     this.error = null;
-
-    // חזרנו ל-4 קריאות: Users, Projects, Reports, Meetings
     let pending = 4;
     const done = () => {
       pending--;
@@ -96,12 +94,10 @@ export class OverviewComponent implements OnInit {
       }
     });
 
-    // 3. Reports (קריאה מתוקנת)
+    // 3. Reports 
     this.reportsService.getAll().subscribe({
       next: (reports: ReportDTO[]) => {
         this.totalReports = reports.length;
-        
-        // נשתמש בדוחות האחרונים רק אם נרצה להציג אותם שוב ב-HTML
         this.recentReports = [...reports]
           .sort((a, b) => (b.date ?? b.lastEdited ?? '').localeCompare(a.date ?? a.lastEdited ?? ''))
           .slice(0, 5);
@@ -134,7 +130,6 @@ export class OverviewComponent implements OnInit {
     });
   }
 
-  // פונקציה קטנה לבר גרפי "פשוט" לאקטיביות
   getActiveUsersPercent(): number {
     if (!this.totalUsers) return 0;
     return Math.round((this.activeUsers / this.totalUsers) * 100);

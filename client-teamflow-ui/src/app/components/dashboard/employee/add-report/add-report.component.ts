@@ -19,7 +19,7 @@ export class AddReportComponent implements OnInit {
   title: string = '';
   description: string = '';
 
-  status: string = 'IN_REVIEW'; // ✔ במקום OPEN
+  status: string = 'IN_REVIEW'; 
 
   hours: number = 8;
 
@@ -79,7 +79,7 @@ export class AddReportComponent implements OnInit {
       userId: this.currentUserId,
       date: today,
       hours: this.hours,
-      status: this.status,       // ✔ מעודכן
+      status: this.status,       
       description: this.description,
       title: this.title
     };
@@ -106,7 +106,7 @@ export class AddReportComponent implements OnInit {
     this.selectedProjectId = null;
     this.title = '';
     this.description = '';
-    this.status = 'IN_REVIEW';  // ✔ במקום OPEN
+    this.status = 'IN_REVIEW';  
     this.hours = 8;
   }
 }

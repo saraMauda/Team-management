@@ -1,4 +1,4 @@
-<!-- פרופיל -->
+
 <div class="profile-wrapper" (click)="toggleMenu()">
 
   <img
@@ -38,15 +38,12 @@
 
 </div>
 
-<!-- מודל עריכת פרופיל -->
 <app-edit-profile-modal 
   *ngIf="showEditProfile && currentUser"
   [user]="currentUser"
   (close)="closeModals()"
 ></app-edit-profile-modal>
 
-
-<!-- מודל שינוי סיסמה -->
 <app-change-password-modal
   *ngIf="showChangePassword"
   (close)="closeModals()"

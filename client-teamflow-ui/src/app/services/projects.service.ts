@@ -11,37 +11,30 @@ export class ProjectsService {
 
   constructor(private http: HttpClient) {}
 
-  /** 🔹 מחזיר את כל הפרויקטים (ל־Admin) */
   getAll(): Observable<ProjectDTO[]> {
     return this.http.get<ProjectDTO[]>(`${this.API}`);
   }
 
-  /** 🔹 מחזיר פרויקט לפי מזהה */
   getById(id: number): Observable<ProjectDTO> {
     return this.http.get<ProjectDTO>(`${this.API}/${id}`);
   }
 
-  /** 🔹 יצירת פרויקט */
   create(project: Partial<ProjectDTO>): Observable<ProjectDTO> {
     return this.http.post<ProjectDTO>(`${this.API}`, project);
   }
 
-  /** 🔹 עדכון פרויקט */
   update(id: number, project: Partial<ProjectDTO>): Observable<ProjectDTO> {
     return this.http.put<ProjectDTO>(`${this.API}/${id}`, project);
   }
 
-  /** 🔹 מחיקת פרויקט */
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API}/${id}`);
   }
 
-  /** 🔹 פרויקטים של עובד מחובר */
   getMyProjects(): Observable<ProjectDTO[]> {
     return this.http.get<ProjectDTO[]>(`${this.API}/byEmployee`);
   }
 
-  /** 🔹 פרויקטים של ראש צוות */
   getByLeader(id: number) {
   return this.http.get<ProjectDTO[]>(`${this.API}/byLeader/${id}`, {
     withCredentials: true

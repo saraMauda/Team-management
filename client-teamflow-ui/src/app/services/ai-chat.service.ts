@@ -12,7 +12,6 @@ export class AiChatService {
 
   constructor(private http: HttpClient) {}
 
-  /** ✔ שולח שאלה ל-AI ומחזיר טקסט */
 sendMessage(message: string, conversationId: string): Observable<string> {
   const body = { message, conversationId };
   return this.http.post(this.baseUrl, body, {

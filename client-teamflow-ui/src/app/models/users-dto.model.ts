@@ -11,8 +11,8 @@ export interface UsersDTO {
   name: string;
   email: string;
   password?: string;
-  role: UserRole;        // חשוב – מחרוזת יחידה בלבד
+  role: UserRole;       
   active: boolean;
   image?: string; 
-  roleString:string       // Base64 או null
+  roleString:string       // Base64 or null
 }

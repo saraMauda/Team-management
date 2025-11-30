@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { MeetingsService } from '../../../../../services/meetings.service';
-import { ProjectsService } from '../../../../../services/projects.service'; // ייבוא חדש
+import { ProjectsService } from '../../../../../services/projects.service'; 
 import { MeetingDTO } from '../../../../../models/meeting-dto.model';
 import { FormsModule } from '@angular/forms';
-import { forkJoin } from 'rxjs'; // ייבוא חדש לביצוע קריאות מקבילות
+import { forkJoin } from 'rxjs'; 
 
 @Component({
   selector: 'app-manage-meetings',
@@ -22,12 +22,11 @@ export class ManageMeetingsComponent implements OnInit {
   editMode = false;
 
   
-  // מפה חדשה לאחסון שמות הפרויקטים לפי ID
   projectNamesMap: Map<number, string> = new Map(); 
 
   constructor(
     private meetingsService: MeetingsService,
-    private projectsService: ProjectsService // הזרקת ProjectsService
+    private projectsService: ProjectsService 
   ) {}
 
   ngOnInit(): void {
@@ -38,19 +37,17 @@ export class ManageMeetingsComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    // מריצים שתי קריאות במקביל: פגישות ופרויקטים
     forkJoin({
       meetingsData: this.meetingsService.getAll(),
       projectsData: this.projectsService.getAll()
     }).subscribe({
       next: ({ meetingsData, projectsData }) => {
         
-        // 1. בונים מפה מהירה של ID -> Name
+
         this.projectNamesMap = new Map(
           projectsData.map(p => [p.id!, p.name])
         );
 
-        // 2. מסדרים את הפגישות
         this.meetings = meetingsData.sort(
           (a, b) =>
             new Date(a.meetingDate!).getTime() -
@@ -76,7 +73,6 @@ export class ManageMeetingsComponent implements OnInit {
     return date ? new Date(date).toLocaleString() : '-';
   }
 
-  // פונקציה חדשה: מחזירה את שם הפרויקט לפי ID
   getProjectName(projectId: number): string {
     return this.projectNamesMap.get(projectId) || `Unknown Project ID: ${projectId}`;
   }

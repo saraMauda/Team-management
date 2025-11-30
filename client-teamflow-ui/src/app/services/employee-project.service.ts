@@ -11,12 +11,10 @@ export class EmployeeProjectService {
 
   constructor(private http: HttpClient) {}
 
-  /** שליפת עובדים ששייכים למנהל צוות */
   getEmployeesForLeader(leaderId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/employeesByLeader/${leaderId}`);
   }
 
-  /** שיבוץ עובד לפרויקט */
   assignEmployeeToProject(userId: number, projectId: number): Observable<any> {
     return this.http.post(`${this.baseUrl}/assign`, { userId, projectId });
   }

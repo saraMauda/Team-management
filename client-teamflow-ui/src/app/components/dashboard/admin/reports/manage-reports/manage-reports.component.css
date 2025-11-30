@@ -1,36 +1,34 @@
-/* ===== Page base - תיקון: column-direction */
-
+/* =========================================================
+   PAGE WRAPPER
+========================================================= */
 .admin-reports-page {
     padding: 24px 32px;
     background: #061727;
     color: #f5f7fa;
     min-height: calc(100vh - 80px);
     box-sizing: border-box;
-    /* שינוי 1: האלמנטים בפנים יסתדרו מלמעלה למטה */
     display: flex;
-    flex-direction: column; 
-    gap: 16px; /* רווח קטן יותר בין הכותרות לתוכן */
+    flex-direction: column;
+    gap: 16px;
     direction: ltr;
 }
 
-/* הוספה חדשה: עוטף לטורים */
+/* =========================================================
+   CONTENT WRAPPER (MAIN LAYOUT)
+========================================================= */
 .content-wrapper {
-    /* שינוי 2: רק הטורים יסתדרו זה לצד זה */
     display: flex;
     gap: 24px;
-    flex: 1; /* מוודא שהעוטף תופס את המקום שנותר */
+    flex: 1;
 }
 
-/* main column with teams */
-
-/* שיניתי את הסלקטור לכוון את ה-team-wrapper בתוך ה-content-wrapper */
 .content-wrapper > .team-wrapper {
     flex: 1;
 }
 
-
-/* titles */
-
+/* =========================================================
+   TITLES
+========================================================= */
 .page-title {
     font-size: 24px;
     margin: 0 0 4px;
@@ -43,8 +41,9 @@
     color: #c0ccda;
 }
 
-/* each team card */
-
+/* =========================================================
+   TEAM CARDS
+========================================================= */
 .team-wrapper {
     margin-bottom: 16px;
 }
@@ -69,8 +68,9 @@
     color: #c0ccda;
 }
 
-/* employee block */
-
+/* =========================================================
+   EMPLOYEE BLOCK
+========================================================= */
 .employee-card {
     background: rgba(8, 25, 42, 0.9);
     border-radius: 12px;
@@ -102,8 +102,9 @@
     color: #c0ccda;
 }
 
-/* reports list per employee */
-
+/* =========================================================
+   REPORTS LIST PER EMPLOYEE
+========================================================= */
 .reports-list {
     padding: 6px 10px 10px;
     max-height: 220px;
@@ -117,16 +118,16 @@
     padding: 4px 2px;
 }
 
-/* “rows” inside employee – like mail items */
-
+/* =========================================================
+   REPORT ROWS (MAIL STYLE)
+========================================================= */
 .report-row {
     padding: 8px 10px;
     border-radius: 10px;
     background: rgba(10, 30, 50, 0.9);
     margin-bottom: 6px;
     cursor: pointer;
-    transition: background 0.15s ease, transform 0.1s ease,
-        box-shadow 0.15s ease;
+    transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
 }
 
 .report-row:hover {
@@ -152,8 +153,9 @@
     color: #c0ccda;
 }
 
-/* right panel – read only report details */
-
+/* =========================================================
+   SIDE PANEL (REPORT DETAILS)
+========================================================= */
 .panel {
     flex: 0 0 30%;
     max-width: 420px;
@@ -210,8 +212,9 @@
     color: #061727;
 }
 
-/* Scrollbars */
-
+/* =========================================================
+   CUSTOM SCROLLBAR
+========================================================= */
 .reports-list::-webkit-scrollbar {
     width: 6px;
 }
@@ -221,13 +224,13 @@
     border-radius: 4px;
 }
 
-/* ===== Responsive - תיקון ל-content-wrapper ===== */
-
+/* =========================================================
+   RESPONSIVE
+========================================================= */
 @media (max-width: 1100px) {
-    /* שינוי 3: ה-content-wrapper יעבור למצב עמודה */
     .content-wrapper {
         flex-direction: column;
-        gap: 16px; 
+        gap: 16px;
     }
 
     .admin-reports-page {

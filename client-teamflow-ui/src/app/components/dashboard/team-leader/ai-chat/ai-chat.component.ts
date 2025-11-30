@@ -36,7 +36,6 @@ export class AiChatComponent {
   this.userInput = '';
   this.loading = true;
 
-  // ✔ שולחים גם conversationId
   this.aiService.sendMessage(prompt, this.conversationId).subscribe({
     next: (response) => {
       this.messages.push({ sender: 'bot', text: response });

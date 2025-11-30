@@ -301,7 +301,6 @@ export class ManageUsersComponent implements OnInit {
     const teamMemberEntry = team.members.find(m => m.id === memberId);
     if (!teamMemberEntry) return;
 
-    // memberId הוא ה־userId במקרה שלך → זה גם מה שהשרת מצפה
     this.teamService.removeMember(memberId).subscribe({
       next: () => {
         team.members = team.members.filter(m => m.id !== memberId);

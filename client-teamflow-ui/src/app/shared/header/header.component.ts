@@ -32,7 +32,6 @@ export class HeaderComponent {
     this.loadUser();
   }
 
-  // ✔ טוען את המשתמש המחובר לפי האימייל שנשמר ב-localStorage
   loadUser() {
     const storage = localStorage.getItem('user');
     if (!storage) return;
@@ -42,12 +41,10 @@ export class HeaderComponent {
     this.usersService.getByEmail(email).subscribe((user: UsersDTO) => {
       this.currentUser = user;
 
-      // אות ראשונה לשם
       this.userInitial = user.name
         ? user.name.charAt(0).toUpperCase()
         : "?";
 
-      // תמונת פרופיל מ-base64 (כמו בניהול משתמשים)
       if (user.image) {
         this.userImage = user.image;
       }
@@ -58,12 +55,10 @@ export class HeaderComponent {
     this.menuOpen = !this.menuOpen;
   }
 
-  // סגירת התפריט בלחיצה מחוץ
 @HostListener('document:click', ['$event'])
 closeOnOutsideClick(event: Event) {
   const target = event.target as HTMLElement;
 
-  // ❗ אל תסגור אם זה מודל
   if (target.closest('.modal') || target.closest('.modal-backdrop')) {
     return;
   }
@@ -80,7 +75,7 @@ closeOnOutsideClick(event: Event) {
     this.menuOpen = false;
     this.auth.signOut();
   }
-  // מצבים להצגת המודלים
+
 showEditProfile = false;
 showChangePassword = false;
 

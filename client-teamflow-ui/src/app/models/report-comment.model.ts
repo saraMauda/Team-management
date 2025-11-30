@@ -5,7 +5,6 @@ export interface ReportComment {
   // ⭐ שדות אלו מגיעים מה-Getters ב-Java (getUserId, getAuthorRole) ⭐
   userId: number;       
   authorRole: string;   
-  // -----------------------------------------------------------------
   reportId?: number; 
   text: string;
   isEdited: boolean;

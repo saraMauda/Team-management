@@ -25,7 +25,7 @@ export class TeamReportsComponent implements OnInit {
   newComment = '';
   panelOpen = false;
 
-  // ⭐ שדות חדשים למנגנון עדכון הסטטוס ⭐
+
   updatedStatus: string = '';
   savingStatus = false;
 
@@ -64,7 +64,7 @@ export class TeamReportsComponent implements OnInit {
 
   openPanel(report: any) {
     this.selectedReport = report;
-    this.updatedStatus = report.status; // ⭐ סטטוס התחלתי ⭐
+    this.updatedStatus = report.status; 
     this.panelOpen = true;
     this.commentsLoading = true;
 
@@ -106,7 +106,7 @@ export class TeamReportsComponent implements OnInit {
     });
   }
 
-  // ⭐ פונקציה לעדכון סטטוס ⭐
+
   updateStatus() {
     if (!this.selectedReport) return;
 

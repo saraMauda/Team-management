@@ -10,7 +10,7 @@ export class AuthGuard implements CanActivate {
 
   canActivate(): Observable<boolean> {
     return this.authService.isLoggedIn$.pipe(
-      filter(val => val !== null), // מחכים שיתעדכן מהשרת
+      filter(val => val !== null), 
       take(1),
       map(isLoggedIn => {
         if (isLoggedIn) {

@@ -1,8 +1,14 @@
+/* =========================================================
+   WRAPPER
+========================================================= */
 .add-report-container {
   padding: 30px;
   color: #fff;
 }
 
+/* =========================================================
+   TITLES & MESSAGES
+========================================================= */
 .title {
   font-size: 26px;
   color: #ff7f32;
@@ -22,9 +28,12 @@
   margin-bottom: 20px;
 }
 
+/* =========================================================
+   FORM
+========================================================= */
 .report-form {
   background-color: #0f2234;
-  border: 1px solid rgba(255, 127, 50, 0.25);
+  border: 1px solid rgba(255,127,50,0.25);
   border-radius: 12px;
   padding: 25px;
   display: flex;
@@ -43,15 +52,25 @@ label {
   margin-bottom: 6px;
 }
 
+/* Inputs */
 input,
 select,
 textarea {
   background-color: #10263b;
-  border: 1px solid rgba(255, 127, 50, 0.2);
+  border: 1px solid rgba(255,127,50,0.2);
   border-radius: 8px;
   padding: 10px;
   color: #fff;
   font-size: 15px;
+  transition: 0.25s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #ff7f32;
+  background-color: #163147;
 }
 
 textarea {
@@ -59,6 +78,9 @@ textarea {
   resize: vertical;
 }
 
+/* =========================================================
+   BUTTON
+========================================================= */
 button {
   align-self: flex-end;
   background-color: transparent;
@@ -74,5 +96,5 @@ button {
 button:hover {
   background-color: #ff7f32;
   color: #fff;
-  box-shadow: 0 0 10px rgba(255, 127, 50, 0.3);
+  box-shadow: 0 0 10px rgba(255,127,50,0.3);
 }

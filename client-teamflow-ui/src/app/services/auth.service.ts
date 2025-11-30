@@ -11,12 +11,9 @@ isLoggedIn$ = this._isLoggedIn.asObservable();
 
 
   constructor(private http: HttpClient, private router: Router) {
-    this.checkInitialAuthState(); // בדיקה ראשונית אם יש עוגייה תקפה
+    this.checkInitialAuthState(); 
   }
   
-
-  /** התחברות למערכת */
-/** התחברות למערכת */
 signin(email: string, password: string) {
   return this.http.post<any>(`${API_BASE_URL}/users/signin`, { email, password }, { withCredentials: true })
     .pipe(
@@ -25,10 +22,9 @@ signin(email: string, password: string) {
           console.log('✅ Sign-in successful:', response);
           this._isLoggedIn.next(true);
 
-          // שמירה של פרטי המשתמש (אם תרצי להשתמש מאוחר יותר)
+        
           localStorage.setItem('user', JSON.stringify(response));
 
-          // ניתוב לפי roleString
           const role = response.role;
           if (role === 'ROLE_ADMIN') {
             this.router.navigate(['/admin-dashboard']);
@@ -53,7 +49,6 @@ getUserByEmail(email: string) {
   );
 }
 
-  /** קריאת המשתמש מה־localStorage */
   getCurrentUser(): any | null {
     const raw = localStorage.getItem('user');
     if (!raw) return null;
@@ -65,14 +60,11 @@ getUserByEmail(email: string) {
     }
   }
 
-  /** החזרת אימייל המשתמש המחובר */
   getCurrentUserEmail(): string | null {
     const u = this.getCurrentUser();
     return u?.email ?? null;
   }
 
-
-  /** התנתקות */
 signOut(): void {
   localStorage.removeItem('user');
   this._isLoggedIn.next(false);
@@ -91,7 +83,6 @@ signOut(): void {
 }
 
 
-  /** בדיקה אם המשתמש מחובר (נשלחת לשרת פעם אחת בהפעלה) */
 checkInitialAuthState() {
   this.http.get(`${API_BASE_URL}/users/authenticated`, { withCredentials: true })
     .subscribe({

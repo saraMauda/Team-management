@@ -30,6 +30,23 @@
         <span><strong>Status:</strong> {{ m.status || '-' }}</span>
       </div>
 
+      <div class="approval-box">
+        <button 
+            class="approve-btn"
+            (click)="approveMeeting(m.meetingId)"
+            *ngIf="!m.alreadyApproved">
+            ✔ Approve
+        </button>
+
+        <span class="approved-msg" *ngIf="m.alreadyApproved">
+            ✓ You approved this meeting
+        </span>
+
+        <div class="approval-count" *ngIf="m.approvalCount !== undefined">
+            Approved: {{ m.approvalCount }}
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

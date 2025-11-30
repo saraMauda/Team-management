@@ -1,3 +1,6 @@
+/* =========================================================
+   WRAPPER
+========================================================= */
 .overview-wrapper {
   display: flex;
   flex-direction: column;
@@ -5,7 +8,9 @@
   color: #f5f7fa;
 }
 
-/* Header */
+/* =========================================================
+   HEADER
+========================================================= */
 .overview-header {
   display: flex;
   justify-content: space-between;
@@ -23,6 +28,7 @@
   color: #9fb3c8;
 }
 
+/* Tag */
 .tag {
   background-color: #ff7f32;
   color: #fff;
@@ -31,11 +37,11 @@
   font-size: 16px;
   font-weight: 600;
   font-family: 'Segoe UI', Arial, sans-serif;
-
-
 }
 
-/* Status box */
+/* =========================================================
+   STATUS BOX
+========================================================= */
 .status-box {
   padding: 10px 16px;
   border-radius: 8px;
@@ -53,7 +59,9 @@
   border: 1px solid rgba(255, 60, 60, 0.5);
 }
 
-/* Top cards */
+/* =========================================================
+   TOP CARDS
+========================================================= */
 .cards-row {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -85,14 +93,15 @@
   color: #c0d0e0;
 }
 
-/* Bottom row */
+/* =========================================================
+   BOTTOM ROW (PANELS)
+========================================================= */
 .bottom-row {
   display: grid;
   grid-template-columns: 1.2fr 1.2fr;
   gap: 16px;
 }
 
-/* Panels */
 .panel {
   background: #182b3d;
   border-radius: 14px;
@@ -123,7 +132,9 @@
   color: #ff9a57;
 }
 
-/* Activity bars */
+/* =========================================================
+   ACTIVITY BARS
+========================================================= */
 .activity-bars {
   display: flex;
   flex-direction: column;
@@ -171,7 +182,9 @@
   margin-top: 6px;
 }
 
-/* Recent columns */
+/* =========================================================
+   RECENT COLUMNS
+========================================================= */
 .recent-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -215,64 +228,29 @@
   font-style: italic;
 }
 
-/* Scrollbar small */
+/* Scrollbar */
 .recent-column ul::-webkit-scrollbar {
   width: 6px;
 }
+
 .recent-column ul::-webkit-scrollbar-thumb {
   background-color: #ff7f32;
   border-radius: 4px;
 }
 
-/* Responsive */
+/* =========================================================
+   RESPONSIVE
+========================================================= */
 @media (max-width: 1024px) {
   .cards-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
-  .bottom-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 640px) {
-  .cards-row {
-    grid-template-columns: 1fr;
-  }
-
-  .overview-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-}
-/* ... כל ה-CSS הקודם נשאר זהה עד ה-Recent columns ... */
-
-/* Recent columns */
-.recent-columns {
-  /* שינוי חשוב: חזרה ל-2 עמודות, כפי שהיה ב-HTML המקורי */
-  display: grid;
-  grid-template-columns: 1fr 1fr; 
-  gap: 12px;
-}
-
-.recent-column h3 {
-/* ... נשאר זהה ... */
-}
-/* ... שאר ה-CSS נשאר זהה עד המדיה קווריז ... */
-
-/* Responsive */
-@media (max-width: 1024px) {
-  .cards-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
+  
   .bottom-row {
     grid-template-columns: 1fr;
   }
 
-  /* ב-1024px, זה נשאר 2 עמודות (הן יהפכו קטנות יותר) */
-  .recent-columns { 
+  .recent-columns {
     grid-template-columns: 1fr 1fr;
   }
 }
@@ -288,7 +266,6 @@
     gap: 8px;
   }
 
-  /* במכשירי מובייל, זה עובר לעמודה אחת */
   .recent-columns {
     grid-template-columns: 1fr;
   }

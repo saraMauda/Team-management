@@ -1,4 +1,6 @@
-/* ===== בסיס ===== */
+/* =========================================================
+   BASE
+========================================================= */
 .users-container {
   padding: 20px 25px;
   color: #e8f1f8;
@@ -11,7 +13,9 @@
   margin: 0 0 18px 0;
 }
 
-/* Status box */
+/* =========================================================
+   STATUS BOX
+========================================================= */
 .status-box {
   padding: 10px 14px;
   border-radius: 10px;
@@ -30,7 +34,9 @@
   border: 1px solid rgba(255, 60, 60, 0.4);
 }
 
-/* Panel */
+/* =========================================================
+   PANEL
+========================================================= */
 .panel {
   background: #182b3d;
   padding: 18px 22px;
@@ -51,14 +57,15 @@
   color: #9fb3c8;
 }
 
-/* Toolbar */
+/* =========================================================
+   TOOLBAR + BUTTONS
+========================================================= */
 .toolbar {
   display: flex;
   justify-content: flex-end;
   margin-bottom: 12px;
 }
 
-/* Buttons – main */
 .add-btn,
 .save-btn,
 .assign-btn {
@@ -80,7 +87,6 @@
   transform: translateY(-1px);
 }
 
-/* Cancel btn */
 .cancel-btn {
   background: transparent;
   border: 1px solid #9fb3c8;
@@ -96,7 +102,9 @@
   background-color: rgba(255,255,255,0.08);
 }
 
-/* Add user form */
+/* =========================================================
+   ADD USER FORM
+========================================================= */
 .add-user-form {
   margin-bottom: 20px;
 }
@@ -142,7 +150,9 @@
   justify-content: flex-end;
 }
 
-/* Users table */
+/* =========================================================
+   USERS TABLE
+========================================================= */
 .users-table {
   width: 100%;
   border-collapse: collapse;
@@ -177,7 +187,9 @@
   color: #8fa3b9;
 }
 
-/* Profile images */
+/* =========================================================
+   PROFILE IMAGES
+========================================================= */
 .profile-img,
 .preview-img {
   width: 50px;
@@ -196,7 +208,9 @@
   color: #ff7f32;
 }
 
-/* Status pill */
+/* =========================================================
+   STATUS PILL
+========================================================= */
 .status {
   padding: 4px 10px;
   border-radius: 20px;
@@ -213,7 +227,9 @@
   background-color: #b33425;
 }
 
-/* Action buttons in table */
+/* =========================================================
+   ACTION BUTTONS IN TABLE
+========================================================= */
 .edit-btn,
 .delete-btn {
   border: none;
@@ -248,7 +264,9 @@
   transform: translateY(-1px);
 }
 
-/* === EDIT MODAL === */
+/* =========================================================
+   EDIT MODAL
+========================================================= */
 .edit-overlay {
   position: fixed;
   inset: 0;
@@ -276,8 +294,7 @@
 }
 
 .edit-panel h3 {
-  margin-top: 0;
-  margin-bottom: 18px;
+  margin: 0 0 18px;
   color: #ff7f32;
   font-size: 22px;
   font-weight: 700;
@@ -320,7 +337,6 @@
 .edit-grid select:focus {
   background: #18384f;
   border-color: #ff7f32;
-  outline: none;
 }
 
 input[type="file"] {
@@ -331,7 +347,6 @@ input[type="file"] {
   border: 1px solid rgba(255,127,50,0.35);
 }
 
-/* Preview img inside modal – קצת יותר גדול */
 .preview-img {
   width: 70px;
   height: 70px;
@@ -341,7 +356,6 @@ input[type="file"] {
   margin-top: 6px;
 }
 
-/* Buttons row in modal */
 .panel-actions {
   display: flex;
   justify-content: flex-end;
@@ -349,7 +363,9 @@ input[type="file"] {
   gap: 10px;
 }
 
-/* ===== TEAMS SECTION ===== */
+/* =========================================================
+   TEAMS SECTION
+========================================================= */
 .teams-panel {
   margin-top: 8px;
 }
@@ -373,6 +389,7 @@ input[type="file"] {
   padding: 14px 16px;
   box-shadow: 0 8px 18px rgba(0,0,0,0.35);
   border: 1px solid rgba(255,255,255,0.04);
+  overflow: visible; /* FIX */
 }
 
 .team-header {
@@ -430,7 +447,7 @@ input[type="file"] {
   background-color: rgba(255,127,50,0.15);
 }
 
-/* Team body */
+/* TEAM BODY */
 .team-body {
   margin-top: 6px;
   border-top: 1px solid rgba(255,255,255,0.06);
@@ -480,15 +497,14 @@ input[type="file"] {
   color: #ff9b9b;
   font-size: 13px;
   cursor: pointer;
-  padding: 0 2px;
 }
 
-/* Add member row */
+/* ADD MEMBER ROW — FIXED */
 .add-member-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 10px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .add-member-row label {
@@ -497,7 +513,7 @@ input[type="file"] {
 }
 
 .add-member-row select {
-  flex: 1;
+  min-width: 180px;
   padding: 7px 9px;
   border-radius: 8px;
   border: 1px solid rgba(255,127,50,0.35);
@@ -506,21 +522,22 @@ input[type="file"] {
   font-size: 13px;
 }
 
-/* Empty text */
-.empty-text {
-  margin-top: 10px;
-  color: #8fa3b9;
-  font-size: 14px;
+.add-member-row button.assign-btn {
+  flex-shrink: 0;
 }
 
-/* Autofill fix */
+/* =========================================================
+   AUTOFILL FIX
+========================================================= */
 input:-webkit-autofill {
   background-color: #132534 !important;
   -webkit-text-fill-color: #fff !important;
   transition: background-color 10000s ease-in-out 0s;
 }
 
-/* Responsive */
+/* =========================================================
+   RESPONSIVE
+========================================================= */
 @media (max-width: 768px) {
   .edit-panel {
     width: 95%;
@@ -534,24 +551,4 @@ input:-webkit-autofill {
   .add-member-row select {
     width: 100%;
   }
-}
-/* FIX – Make add-member-row always visible and prevent overflow */
-.add-member-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;        /* מאפשר שבירה שורה ולא דחיפה החוצה */
-}
-
-.add-member-row select {
-  min-width: 180px;
-}
-
-.add-member-row button.assign-btn {
-  flex-shrink: 0;         /* מונע מהכפתור להתכווץ / להיעלם */
-}
-
-/* כדי למנוע מהכרטיס לדחוף החוצה דברים */
-.team-card {
-  overflow: visible;       /* היה כנראה hidden במצב אחר */
 }

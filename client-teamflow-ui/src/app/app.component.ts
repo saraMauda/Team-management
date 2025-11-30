@@ -13,7 +13,6 @@ export class AppComponent {
   title = 'TeamFlow';
 
   constructor(private authService: AuthService) {
-    // 🔹 נוודא שהמערכת בודקת אם המשתמש עדיין מחובר ברגע שטוענים את האפליקציה
     this.authService.checkInitialAuthState();
   }
 }

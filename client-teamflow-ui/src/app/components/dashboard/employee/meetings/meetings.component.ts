@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MeetingsService } from '../../../../services/meetings.service';
-import { MeetingDTO } from '../../../../models/meeting-dto.model';
 import { ProjectsService } from '../../../../services/projects.service';
+import { ApprovalService } from '../../../../services/approval.service';
 
 @Component({
   selector: 'app-meetings',
@@ -13,72 +13,106 @@ import { ProjectsService } from '../../../../services/projects.service';
 })
 export class MeetingsComponent implements OnInit {
 
-  // שיניתי ל-any כדי לאפשר field חדש projectName
   meetings: any[] = [];
   loading = true;
   error: string | null = null;
 
   constructor(
     private meetingsService: MeetingsService,
-    private projectsService: ProjectsService
-  ) {}
+    private projectsService: ProjectsService,
+    private approvalService: ApprovalService
+  ) { }
 
   ngOnInit(): void {
     this.loadMeetings();
   }
 
-  /** ✨ טוען פגישות + מוסיף projectName מכל הפרויקטים */
   loadMeetings(): void {
     this.meetingsService.getMyMeetings().subscribe({
-      next: (meetings: MeetingDTO[]) => {
-
-        // אחרי שיש לנו פגישות – נטען את הפרויקטים
+      next: meetings => {
         this.projectsService.getAll().subscribe({
-          next: (projects: any[]) => {
+          next: projects => {
+
 
             const enriched = meetings.map(m => {
-              // מניח שיש m.projectId שמגיע מהשרת
-              const projectId = (m as any).projectId;
-
-              const project = projects.find(p =>
-                p.id === projectId || p.projectId === projectId
+              const p = projects.find(p =>
+                p.id === (m as any).projectId
               );
+
 
               return {
                 ...m,
-                projectName: project ? (project.name || project.projectName || 'Unnamed project') : null
+                projectName: p?.name || null,
+                approvalCount: 0,
+                alreadyApproved: false
               };
             });
 
-            this.meetings = enriched.sort(
-              (a: any, b: any) =>
-                new Date(a.meetingDate!).getTime() - new Date(b.meetingDate!).getTime()
-            );
+            this.meetings = enriched;
+
+           
+            this.loadApprovalsForAllMeetings();
+
             this.loading = false;
           },
-          error: () => {
-            // במקרה שהפרויקטים נופלים – עדיין נציג פגישות בלי projectName
-            this.meetings = meetings.sort(
-              (a: MeetingDTO, b: MeetingDTO) =>
-                new Date(a.meetingDate!).getTime() - new Date(b.meetingDate!).getTime()
-            );
-            this.loading = false;
-          }
+          error: () => this.loading = false
         });
       },
       error: () => {
-        this.error = 'Failed to load your meetings.';
+        this.error = 'Failed to load meetings';
         this.loading = false;
       }
     });
   }
 
-  isPast(date: string | undefined): boolean {
-    if (!date) return false;
+ 
+  loadApprovalsForAllMeetings(): void {
+    const userId = this.getUserIdFromCookie();
+
+    this.meetings.forEach(m => {
+      this.approvalService.getApprovalsByMeeting(m.meetingId).subscribe({
+        next: approvals => {
+
+          m.approvalCount = approvals.length;
+
+          m.alreadyApproved = approvals.some(a =>
+            a.employeeInProjectId === userId
+          );
+        }
+      });
+    });
+  }
+
+  approveMeeting(meetingId: number): void {
+
+    const body = {
+      approved: true,
+      meeting: { meetingId },
+      approvalEmployeeInProject: { employeeProjectId: this.getUserIdFromCookie() }
+    };
+
+    this.approvalService.createApproval(body).subscribe({
+      next: () => {
+        const meeting = this.meetings.find(m => m.meetingId === meetingId);
+        if (meeting) {
+          meeting.alreadyApproved = true;
+          meeting.approvalCount++;
+        }
+      }
+    });
+  }
+
+  getUserIdFromCookie(): number {
+    const c = document.cookie.split('; ')
+      .find(row => row.startsWith('userId='));
+    return c ? Number(c.split('=')[1]) : -1;
+  }
+
+  isPast(date: string): boolean {
     return new Date(date) < new Date();
   }
 
-  formatDate(date: string | undefined): string {
-    return date ? new Date(date).toLocaleString() : '-';
+  formatDate(date: string): string {
+    return new Date(date).toLocaleString();
   }
 }

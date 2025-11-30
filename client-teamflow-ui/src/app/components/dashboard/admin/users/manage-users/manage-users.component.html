@@ -4,18 +4,15 @@
     <h1>Manage Users</h1>
   </div>
 
-  <!-- טעינה / שגיאה -->
   <div *ngIf="loading" class="status-box loading">Loading users...</div>
   <div *ngIf="error" class="status-box error">{{ error }}</div>
 
-  <!-- ▶️ טולבר -->
   <div class="toolbar">
     <button class="add-btn" (click)="showAddForm = !showAddForm">
       {{ showAddForm ? 'Cancel' : '+ Add User' }}
     </button>
   </div>
 
-  <!-- ➕ טופס הוספת משתמש -->
   <div *ngIf="showAddForm" class="add-user-form panel">
 
     <div class="form-grid">
@@ -52,7 +49,6 @@
 
   </div>
 
-  <!-- 🧑‍💼 טבלת משתמשים -->
   <div class="panel">
     <div class="panel-title">All Users</div>
 
@@ -103,7 +99,6 @@
     </ng-template>
   </div>
 
-  <!-- ✏️ מודאל עריכה -->
   <div *ngIf="showEditForm && editingUser" class="edit-overlay">
     <div class="edit-panel">
       <h3>Edit User</h3>

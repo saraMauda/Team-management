@@ -31,7 +31,6 @@ export class ChangePasswordModalComponent {
     this.loadUserId();
   }
 
-  /** ✔ מביאים את ה-ID מהשרת לפי אימייל */
   loadUserId() {
     const email = this.authService.getCurrentUserEmail();
     if (!email) {
@@ -41,7 +40,7 @@ export class ChangePasswordModalComponent {
 
     this.usersService.getByEmail(email).subscribe({
       next: (user) => {
-        this.userId = user.id; // ⭐ פה ID אמיתי
+        this.userId = user.id; 
       },
       error: () => {
         this.message = "Cannot load user info";
@@ -67,7 +66,6 @@ export class ChangePasswordModalComponent {
     this.submit();
   }
 
-  /** ✔ שליחת הבקשה לשרת */
   submit() {
   const email = this.authService.getCurrentUserEmail();
   if (!email) {
@@ -84,7 +82,6 @@ export class ChangePasswordModalComponent {
           next: () => {
             this.message = "Password updated successfully!";
 
-            // 🔥 מבצעים Logout מיד — בלי לחכות לבקשה נוספת
             this.forceLogout();
           },
           error: (err) => {
@@ -99,16 +96,13 @@ export class ChangePasswordModalComponent {
 }
 
 forceLogout() {
-  // 🔥 חשוב!!! לסגור מודל לפני ה־Logout
+  
   this.close.emit();
 
-  // מוחקים לוקל סטורג' שלא יישאר "תקוע"
   localStorage.removeItem('user');
 
-  // 🔥 ניתוב ישיר — לא מחכים לתשובה מהשרת בכלל
   this.authService.signOut();
 
-  // fallback ביטוח למקרה שהשרת לא יחזיר תשובה
   setTimeout(() => {
     this.authService.navigateToLogin();
   }, 300);

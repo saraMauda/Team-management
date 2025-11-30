@@ -139,7 +139,7 @@ export class TeamProjectsComponent implements OnInit {
   }
 
   // ----------------------------------------------------
-  // UPDATE PROJECT — ✔ תיקון מלא מתאים לשרת
+ // UPDATE PROJECT 
   // ----------------------------------------------------
   updateProject(): void {
     if (!this.editingProject?.id) return;
@@ -177,7 +177,7 @@ export class TeamProjectsComponent implements OnInit {
   }
 
   // ----------------------------------------------------
-  // DELETE PROJECT — ✔ כמו אדמין
+  // DELETE PROJECT — ✔ 
   // ----------------------------------------------------
   deleteProject(id: number): void {
     if (!confirm('Delete project?')) return;

@@ -1,24 +1,37 @@
+/* =========================================================
+   BASE RESET + ROOT
+========================================================= */
 html, body, app-root {
   margin: 0;
   padding: 0;
-  height: 100%;
   width: 100%;
+  height: 100%;
   background-color: #10263b;
   overflow: hidden;
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   EMPLOYEE LAYOUT (MAIN WRAPPER)
+========================================================= */
 .employee-layout {
   display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
   height: 100vh;
   width: 100vw;
   background-color: #10263b;
   color: #fff;
   overflow: hidden;
-  position: fixed;
-  top: 0;
-  left: 0;
 }
 
+/* =========================================================
+   SIDE NAVIGATION
+========================================================= */
 .employee-side-nav {
   width: 220px;
   background-color: #0e1c2b;
@@ -57,8 +70,8 @@ html, body, app-root {
 
 .employee-side-nav ul {
   list-style: none;
-  margin: 0;
   padding: 0 0 0 25px;
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -69,8 +82,8 @@ html, body, app-root {
   text-decoration: none;
   font-weight: 500;
   font-size: 20px;
-  transition: 0.2s;
   cursor: pointer;
+  transition: 0.2s;
 }
 
 .employee-side-nav a:hover,
@@ -79,11 +92,14 @@ html, body, app-root {
   font-weight: 700;
 }
 
+/* =========================================================
+   MAIN CONTENT AREA
+========================================================= */
 .employee-main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  margin-left: 220px;
+  margin-left: 220px; /* space for side-nav */
   height: 100vh;
   background-color: #10263b;
 }
@@ -91,12 +107,12 @@ html, body, app-root {
 .employee-content {
   flex: 1;
   overflow-y: auto;
+  padding: 30px;
   background-color: #10263b;
   color: #fff;
-  padding: 30px;
-  box-sizing: border-box;
 }
 
+/* Scrollbar style */
 .employee-content::-webkit-scrollbar {
   width: 8px;
 }
@@ -110,19 +126,16 @@ html, body, app-root {
   background-color: #0e1c2b;
 }
 
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-/* ===== FIX HEADER FOR EMPLOYEE (MATCH TEAM-LEADER) ===== */
-
+/* =========================================================
+   HEADER FIX (MATCH TEAM-LEADER STYLE)
+========================================================= */
 app-header {
   margin: 0 !important;
   height: 65px !important;
+  padding: 25px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: flex-end !important;
   background-color: #0f2234 !important;
   border-bottom: 1px solid rgba(255,127,50,0.25) !important;
-  padding: 25px;
 }
-
