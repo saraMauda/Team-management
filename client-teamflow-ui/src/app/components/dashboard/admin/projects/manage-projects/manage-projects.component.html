@@ -126,7 +126,7 @@
 
     <div class="form-row">
       <label>Progress</label>
-      <input type="number" min="0" max="100" [(ngModel)]="editingProject!.progress">
+      <input type="number" min="0" max="100" [(ngModel)]="editingProject!.progressPercentage">
     </div>
 
 <div class="form-row">
@@ -193,7 +193,7 @@
         <td>{{ project.name }}</td>
         <td>{{ project.leaderName }}</td>
         <td>{{ project.status }}</td>
-        <td>{{ project.progress }}%</td>
+        <td>{{ project.progressPercentage }}%</td>
         <td>{{ project.startDate }} → {{ project.endDate }}</td>
         <td>
           <button class="edit-btn" (click)="openEdit(project)">Edit</button>

@@ -90,10 +90,10 @@
           <div class="progress-bar-wrapper">
             <div class="progress-bar-text">
               <span class="progress-label">Progress:</span>
-              <span class="progress-percent">{{ project.progress || 0 }}%</span>
+              <span class="progress-percent">{{ project.progressPercentage || 0 }}%</span>
             </div>
             <div class="progress-bar">
-              <div class="progress-fill" [style.width.%]="project.progress || 0"></div>
+              <div class="progress-fill" [style.width.%]="project.progressPercentage || 0"></div>
             </div>
           </div>
         </div>

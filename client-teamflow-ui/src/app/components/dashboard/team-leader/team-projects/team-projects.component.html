@@ -40,13 +40,13 @@
       <!-- PROGRESS -->
       <div class="progress-row">
         <span>Progress</span>
-        <span class="progress-value">{{ p.progress || 0 }}%</span>
+        <span class="progress-value">{{ p.progressPercentage || 0 }}%</span>
       </div>
 
       <div class="progress-bar">
         <div class="progress-fill"
-             [style.width.%]="p.progress || 0"
-             [style.background]="getProgressColor(p.progress)">
+             [style.width.%]="p.progressPercentage || 0"
+             [style.background]="getProgressColor(p.progressPercentage)">
         </div>
       </div>
 
@@ -100,7 +100,7 @@
           <div class="form-field">
             <label>Progress</label>
             <input type="number" min="0" max="100"
-                   [(ngModel)]="editingProject!.progress">
+                   [(ngModel)]="editingProject!.progressPercentage">
           </div>
 
           <div class="form-field full">

@@ -7,11 +7,12 @@ export interface Project {
   endDate?: string | null;
 
   status?: string | null;
-  progress?: number | null;
+  progressPercentage?: number | null;
 
   leaderId?: number | null;
-  categoryId?: number | null;
+  leaderName?: string | null;
 
   location?: string | null;
+
   employeeIds?: number[];
 }

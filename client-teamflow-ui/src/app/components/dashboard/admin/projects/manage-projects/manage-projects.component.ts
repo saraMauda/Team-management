@@ -193,7 +193,7 @@ loadTeams(): void {
       startDate: this.newProject.startDate || undefined,
       endDate: this.newProject.endDate || undefined,
       status: this.newProject.status,
-      progress: this.newProject.progress,
+      progressPercentage: this.newProject.progress,
       location: this.newProject.location || undefined,
       leaderId: this.newProject.leaderId || undefined,
       employeeIds: this.newProject.employeeIds
@@ -279,7 +279,7 @@ loadTeams(): void {
       startDate: this.editingProject.startDate,
       endDate: this.editingProject.endDate,
       status: this.editingProject.status,
-      progress: this.editingProject.progress,
+      progressPercentage: this.editingProject.progressPercentage,
       location: this.editingProject.location,
       leaderId: this.editingProject.leaderId,
       employeeIds: this.editingProject.employeeIds

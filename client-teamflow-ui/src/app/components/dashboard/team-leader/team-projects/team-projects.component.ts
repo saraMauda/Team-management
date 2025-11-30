@@ -22,12 +22,9 @@ export class TeamProjectsComponent implements OnInit {
   projects: ProjectDTO[] = [];
   loading = true;
   error: string | null = null;
-
   currentUserId: number | null = null;
-
   teams: TeamDTO[] = [];
   leaderTeamMembers: UsersDTO[] = [];
-
   editingProject: ProjectDTO | null = null;
   saving = false;
 
@@ -153,11 +150,10 @@ export class TeamProjectsComponent implements OnInit {
       startDate: this.editingProject.startDate,
       endDate: this.editingProject.endDate,
       status: this.editingProject.status,
-      progress: this.editingProject.progress ?? 0,
+      progressPercentage: this.editingProject.progressPercentage ?? 0,
       employeeIds: this.editingProject.employeeIds || [],
       leaderId: this.currentUserId!, // ✔ חובה לפי השרת
       location: this.editingProject.location ?? null,
-      categoryName: this.editingProject.categoryName ?? null,
       leaderName: this.editingProject.leaderName ?? null
     };
 

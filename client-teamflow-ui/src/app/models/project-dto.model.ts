@@ -7,13 +7,10 @@ export interface ProjectDTO {
   endDate?: string | null;
 
   status?: string | null;
-  progress?: number | null;
+  progressPercentage?: number | null;
 
-  leaderName?: string | null;
   leaderId?: number | null;
-
-  categoryName?: string | null;
-  categoryId?: number | null;
+  leaderName?: string | null;
 
   location?: string | null;
 
