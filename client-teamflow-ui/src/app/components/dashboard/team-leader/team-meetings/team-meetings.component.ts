@@ -31,7 +31,7 @@ export class TeamMeetingsComponent implements OnInit {
     description: '',
     meetingLocation: '',
     meetingDate: '',
-    status: 'Scheduled'
+    status: 'SCHEDULED'
   };
 
   constructor(
@@ -110,7 +110,7 @@ export class TeamMeetingsComponent implements OnInit {
           description: '',
           meetingLocation: '',
           meetingDate: '',
-          status: 'Scheduled'
+          status: 'SCHEDULED'
         };
       },
       error: err => console.error("❌ Error creating meeting:", err)

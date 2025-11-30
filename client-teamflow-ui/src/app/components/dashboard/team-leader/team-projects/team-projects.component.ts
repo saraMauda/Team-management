@@ -197,4 +197,78 @@ export class TeamProjectsComponent implements OnInit {
     if (progress >= 50) return '#ff9800';
     return '#f44336';
   }
+
+  // ----------------------------------------------------
+// VALIDATION FOR EDIT
+// ----------------------------------------------------
+// isEditFormValid(): boolean {
+//   if (!this.editingProject) return false;
+
+//   const nameValid =
+//     !!this.editingProject.name &&
+//     this.editingProject.name.trim().length >= 3 &&
+//     this.editingProject.name.trim().length <= 40;
+
+//   const descValid =
+//     !this.editingProject.description ||
+//     this.editingProject.description.trim().length >= 10;
+
+//   const startValid = !!this.editingProject.startDate;
+//   const endValid = !!this.editingProject.endDate;
+
+//   const datesValid =
+//     startValid &&
+//     endValid &&
+//     new Date(this.editingProject.endDate!) >=
+//     new Date(this.editingProject.startDate!);
+
+//   const progressValid =
+//     this.editingProject.progress !== null &&
+//     this.editingProject.progress !== undefined &&
+//     this.editingProject.progress >= 0 &&
+//     this.editingProject.progress <= 100;
+
+//   return (
+//     nameValid &&
+//     descValid &&
+//     startValid &&
+//     endValid &&
+//     datesValid &&
+//     progressValid
+//   );
+// }
+isDateRangeInvalid(): boolean {
+  if (!this.editingProject?.startDate || !this.editingProject?.endDate) {
+    return false; // אין שתי תאריכים -> אין הודעת שגיאה
+  }
+  return new Date(this.editingProject.endDate) < new Date(this.editingProject.startDate);
+}
+
+isEditFormValid(): boolean {
+  if (!this.editingProject) return false;
+
+  const nameValid =
+    !!this.editingProject.name &&
+    this.editingProject.name.trim().length >= 3 &&
+    this.editingProject.name.trim().length <= 40;
+
+  const descValid =
+    !this.editingProject.description ||
+    this.editingProject.description.trim().length >= 10;
+
+  const startValid = !!this.editingProject.startDate;
+  const endValid   = !!this.editingProject.endDate;
+
+  const datesValid =
+    startValid &&
+    endValid &&
+    !this.isDateRangeInvalid(); // כאן נשתמש בבדיקה
+
+  const progress = this.editingProject.progress ?? 0;
+  const progressValid = progress >= 0 && progress <= 100;
+
+  return nameValid && descValid && startValid && endValid && datesValid && progressValid;
+}
+
+
 }

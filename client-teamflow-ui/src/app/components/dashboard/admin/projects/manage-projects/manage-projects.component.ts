@@ -51,16 +51,16 @@ export class ManageProjectsComponent implements OnInit {
     leaderId: number | null;
     employeeIds: number[];
   } = {
-    name: '',
-    description: '',
-    startDate: null,
-    endDate: null,
-    status: 'ACTIVE',
-    progress: 0,
-    location: null,
-    leaderId: null,
-    employeeIds: []
-  };
+      name: '',
+      description: '',
+      startDate: null,
+      endDate: null,
+      status: 'ACTIVE',
+      progress: 0,
+      location: null,
+      leaderId: null,
+      employeeIds: []
+    };
 
   /** טופס עריכת פרויקט */
   showEditForm = false;
@@ -71,13 +71,13 @@ export class ManageProjectsComponent implements OnInit {
     private usersService: UsersService,
     private employeeProjectService: EmployeeProjectService,
     private teamService: TeamService
-  ) {}
+  ) { }
 
-ngOnInit(): void {
-  this.loadUsers();     // קודם משתמשים
-  this.loadTeams();     // אחר־כך צוותים
-  this.loadProjects();  // אחר־כך פרויקטים
-}
+  ngOnInit(): void {
+    this.loadUsers();     // קודם משתמשים
+    this.loadTeams();     // אחר־כך צוותים
+    this.loadProjects();  // אחר־כך פרויקטים
+  }
 
 
   /* ------------------ LOAD DATA ------------------- */
@@ -108,22 +108,22 @@ ngOnInit(): void {
       }
     });
   }
-loadTeams(): void {
-  this.teamService.getAllTeams().subscribe({
-    next: (data: TeamDTO[]) => {
-      this.teams = data || [];
+  loadTeams(): void {
+    this.teamService.getAllTeams().subscribe({
+      next: (data: TeamDTO[]) => {
+        this.teams = data || [];
 
-      // המתנה קטנה כדי לוודא ש-ngModel הספיק להתעדכן
-      setTimeout(() => {
-        this.syncAvailableEmployeesForNew();
-        this.syncAvailableEmployeesForEdit();
-      }, 0);
-    },
-    error: () => {
-      console.error('Failed to load teams');
-    }
-  });
-}
+        // המתנה קטנה כדי לוודא ש-ngModel הספיק להתעדכן
+        setTimeout(() => {
+          this.syncAvailableEmployeesForNew();
+          this.syncAvailableEmployeesForEdit();
+        }, 0);
+      },
+      error: () => {
+        console.error('Failed to load teams');
+      }
+    });
+  }
 
 
   /* ------------------ HELPERS לצוותים ------------------- */
@@ -316,4 +316,63 @@ loadTeams(): void {
       error: () => alert('❌ Failed to delete project')
     });
   }
+
+  isDateRangeValid(): boolean {
+    if (!this.newProject.startDate || !this.newProject.endDate) return true;
+    return new Date(this.newProject.endDate) >= new Date(this.newProject.startDate);
+  }
+
+isNewProjectFormValid(): boolean {
+  return (
+    this.newProject.name.trim().length >= 3 &&
+    this.newProject.name.trim().length <= 40 &&
+    (
+      (this.newProject.description ?? '').trim().length === 0 ||
+      (this.newProject.description ?? '').trim().length >= 10
+    ) &&
+    !!this.newProject.startDate &&
+    !!this.newProject.endDate &&
+    this.isDateRangeValid() &&
+    this.newProject.leaderId !== null &&
+    this.newProject.progress >= 0 &&
+    this.newProject.progress <= 100
+  );
+}
+isEditProjectFormValid(): boolean {
+  if (!this.editingProject) return false;
+
+  const nameValid =
+    !!this.editingProject.name &&
+    this.editingProject.name.trim().length >= 3 &&
+    this.editingProject.name.trim().length <= 40;
+
+  const descValid =
+    !this.editingProject.description ||
+    this.editingProject.description.trim().length >= 10;
+
+  const startValid = !!this.editingProject.startDate;
+  const endValid = !!this.editingProject.endDate;
+
+  const datesValid =
+    startValid &&
+    endValid &&
+    new Date(this.editingProject.endDate!) >= new Date(this.editingProject.startDate!);
+
+  const leaderValid = this.editingProject.leaderId !== null;
+
+  const progressValid =
+    (this.editingProject.progress ?? 0) >= 0 &&
+    (this.editingProject.progress ?? 0) <= 100;
+
+  return (
+    nameValid &&
+    descValid &&
+    startValid &&
+    endValid &&
+    datesValid &&
+    leaderValid &&
+    progressValid
+  );
+}
+
 }

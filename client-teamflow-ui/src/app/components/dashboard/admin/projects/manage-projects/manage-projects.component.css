@@ -289,3 +289,9 @@
     text-align: center;
   }
 }
+.error {
+  color: #ff4d4d;
+  font-size: 12px;
+  margin-top: 4px;
+}
+

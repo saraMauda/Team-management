@@ -124,11 +124,6 @@
   font-weight: 600;
 }
 
-.status.Scheduled {
-  background: #294b6e;
-  color: #79b6ff;
-}
-
 .status.Done {
   background: #2a6e3a;
   color: #94ffa5;
