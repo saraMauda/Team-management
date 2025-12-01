@@ -24,7 +24,6 @@ public class Report {
 
     @ManyToOne
     @JoinColumn(name = "employeeProjectId")
-    @JsonIgnore
     private EmployeeInProject reportEmployeeInProject;
 
     @OneToMany(mappedBy = "report")

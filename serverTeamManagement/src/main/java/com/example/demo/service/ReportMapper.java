@@ -12,10 +12,16 @@ public interface ReportMapper {
     @Mapping(target = "title", source = "reportTitle")
     @Mapping(target = "description", source = "reportDescription")
     @Mapping(target = "status", source = "reportStatus")
-    @Mapping(target = "employeeName", source = "reportEmployeeInProject.user.name")
+    @Mapping(target = "reportDate", source = "reportDate")
+    @Mapping(target = "lastEdited", source = "lastEdited")
+
     @Mapping(target = "projectName", source = "reportEmployeeInProject.project.name")
+
+    @Mapping(target = "employeeName", source = "reportEmployeeInProject.user.name")
+
     @Mapping(target = "projectId", source = "reportEmployeeInProject.project.projectId")
     @Mapping(target = "userId", source = "reportEmployeeInProject.user.id")
+
     @Mapping(target = "commentCount",
             expression = "java(report.getReportComments() == null ? 0 : report.getReportComments().size())")
     ReportDTO toDTO(Report report);

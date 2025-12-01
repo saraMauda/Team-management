@@ -27,7 +27,6 @@ public class EmployeeInProject {
 
     @ManyToOne
     @JoinColumn(name = "userId")
-    @JsonIgnore
     private Users user;
 
     private String roleDescription;
