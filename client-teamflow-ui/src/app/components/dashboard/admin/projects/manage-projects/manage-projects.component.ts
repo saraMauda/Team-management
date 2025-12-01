@@ -46,7 +46,7 @@ export class ManageProjectsComponent implements OnInit {
     startDate: string | null;
     endDate: string | null;
     status: string;
-    progress: number;
+    progressPercentage: number;
     location: string | null;
     leaderId: number | null;
     employeeIds: number[];
@@ -56,7 +56,7 @@ export class ManageProjectsComponent implements OnInit {
       startDate: null,
       endDate: null,
       status: 'ACTIVE',
-      progress: 0,
+      progressPercentage: 0,
       location: null,
       leaderId: null,
       employeeIds: []
@@ -193,7 +193,7 @@ export class ManageProjectsComponent implements OnInit {
       startDate: this.newProject.startDate || undefined,
       endDate: this.newProject.endDate || undefined,
       status: this.newProject.status,
-      progressPercentage: this.newProject.progress,
+      progressPercentage: this.newProject.progressPercentage,
       location: this.newProject.location || undefined,
       leaderId: this.newProject.leaderId || undefined,
       employeeIds: this.newProject.employeeIds
@@ -219,7 +219,7 @@ export class ManageProjectsComponent implements OnInit {
       startDate: null,
       endDate: null,
       status: 'ACTIVE',
-      progress: 0,
+      progressPercentage: 0,
       location: null,
       leaderId: null,
       employeeIds: []
@@ -334,8 +334,8 @@ isNewProjectFormValid(): boolean {
     !!this.newProject.endDate &&
     this.isDateRangeValid() &&
     this.newProject.leaderId !== null &&
-    this.newProject.progress >= 0 &&
-    this.newProject.progress <= 100
+    this.newProject.progressPercentage >= 0 &&
+    this.newProject.progressPercentage <= 100
   );
 }
 isEditProjectFormValid(): boolean {
@@ -361,8 +361,8 @@ isEditProjectFormValid(): boolean {
   const leaderValid = this.editingProject.leaderId !== null;
 
   const progressValid =
-    (this.editingProject.progress ?? 0) >= 0 &&
-    (this.editingProject.progress ?? 0) <= 100;
+    (this.editingProject.progressPercentage ?? 0) >= 0 &&
+    (this.editingProject.progressPercentage ?? 0) <= 100;
 
   return (
     nameValid &&
@@ -374,5 +374,6 @@ isEditProjectFormValid(): boolean {
     progressValid
   );
 }
+
 
 }
