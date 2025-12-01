@@ -13,6 +13,7 @@
     </button>
   </div>
 
+  <!-- ADD USER FORM -->
   <div *ngIf="showAddForm" class="add-user-form panel">
 
     <div class="form-grid">
@@ -38,7 +39,6 @@
           <option value="ROLE_TEAMLEADER">Team Leader</option>
         </select>
       </div>
-
     </div>
 
     <div class="form-actions">
@@ -46,9 +46,9 @@
         {{ saving ? 'Saving...' : 'Save User' }}
       </button>
     </div>
-
   </div>
 
+  <!-- USERS LIST -->
   <div class="panel">
     <div class="panel-title">All Users</div>
 
@@ -87,7 +87,7 @@
 
             <td>
               <button class="edit-btn" (click)="openEdit(user)">Edit</button>
-              <button class="delete-btn" (click)="deleteUser(user.id!)">Delete</button>
+              <button class="delete-btn" (click)="openDeleteConfirm(user.id!)">Delete</button>
             </td>
           </tr>
         </ng-container>
@@ -99,6 +99,7 @@
     </ng-template>
   </div>
 
+  <!-- EDIT MODAL -->
   <div *ngIf="showEditForm && editingUser" class="edit-overlay">
     <div class="edit-panel">
       <h3>Edit User</h3>
@@ -113,6 +114,7 @@
           <label>Email</label>
           <input type="text" [(ngModel)]="editingUser.email" />
         </div>
+
         <div class="field">
           <label>Role</label>
           <select [(ngModel)]="editingUser.role">
@@ -120,7 +122,6 @@
             <option value="ROLE_TEAMLEADER">Team Leader</option>
           </select>
         </div>
-
 
         <div class="field">
           <label>Status</label>
@@ -133,9 +134,7 @@
         <div class="field full">
           <label>Profile Image</label>
           <input type="file" (change)="onEditImageSelected($event)" />
-          <img *ngIf="previewImageBase64"
-               [src]="previewImageBase64"
-               class="preview-img"/>
+          <img *ngIf="previewImageBase64" [src]="previewImageBase64" class="preview-img"/>
         </div>
       </div>
 
@@ -148,17 +147,17 @@
     </div>
   </div>
 
-  <!-- 👥 TEAMS SECTION -->
+  <!-- TEAMS SECTION -->
   <div class="panel teams-panel">
     <div class="panel-header">
       <div>
         <div class="panel-title">Teams</div>
-        <div class="panel-subtitle">Assign employees to Team Leaders (frontend only)</div>
+        <div class="panel-subtitle">Assign employees to Team Leaders</div>
       </div>
     </div>
 
     <div *ngIf="teamLeaders.length === 0" class="empty-text">
-      No Team Leaders found. Create users with role "Team Leader" to manage teams.
+      No Team Leaders found.
     </div>
 
     <div class="teams-grid" *ngIf="teamLeaders.length > 0">
@@ -167,7 +166,7 @@
         <div class="team-header">
           <div class="leader-info">
             <div class="leader-avatar">
-              {{ leader.name?.charAt(0) || 'L' }}
+              {{ leader.name?.charAt(0) }}
             </div>
             <div class="leader-text">
               <div class="leader-name">{{ leader.name }}</div>
@@ -181,12 +180,12 @@
         </div>
 
         <div class="team-body" *ngIf="isTeamExpanded(leader.id)">
-          <!-- Members -->
+
           <div class="members-section">
             <div class="subtitle">Team Members</div>
 
             <div *ngIf="getTeamMembers(leader.id).length === 0" class="no-members">
-              No employees in this team yet.
+              No employees yet.
             </div>
 
             <div class="members-chips" *ngIf="getTeamMembers(leader.id).length > 0">
@@ -197,9 +196,9 @@
             </div>
           </div>
 
-          <!-- Add member -->
           <div class="add-member-row">
             <label>Add Employee:</label>
+
             <select [(ngModel)]="selectedMemberToAdd[leader.id!]">
               <option [ngValue]="null">-- Select Employee --</option>
               <option *ngFor="let emp of teamEmployees"
@@ -213,11 +212,30 @@
               Add to Team
             </button>
           </div>
-        </div>
 
+        </div>
       </div>
     </div>
-
   </div>
 
+</div>
+
+<!-- ⭐ DELETE CONFIRMATION MODAL -->
+<div class="confirm-overlay" *ngIf="confirmDeleteId !== null">
+  <div class="confirm-box">
+    <div class="confirm-title">Are you sure?</div>
+    <div class="confirm-text">This action will permanently remove this user.</div>
+
+    <div class="confirm-actions">
+      <button class="cancel-btn" (click)="closeDeleteConfirm()">Cancel</button>
+      <button class="delete-btn" (click)="deleteUserConfirmed()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ⭐ TOAST -->
+<div class="toast-container" *ngIf="toastMessage">
+  <div class="toast-box" [ngClass]="toastType">
+    {{ toastMessage }}
+  </div>
 </div>

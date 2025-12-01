@@ -37,15 +37,40 @@ export class ManageUsersComponent implements OnInit {
   editingImageFile: File | null = null;
   previewImageBase64: string | null = null;
 
-  /** ------- TEAMS (SERVER SIDE) ------- */
   teams: TeamDTO[] = [];
-
   teamLeaders: UsersDTO[] = [];
   teamEmployees: UsersDTO[] = [];
 
   expandedTeams: { [leaderId: number]: boolean } = {};
-
   selectedMemberToAdd: { [leaderId: number]: number | null } = {};
+
+  /* ---------------------------------------------------------
+     TOAST SYSTEM
+  --------------------------------------------------------- */
+  toastMessage: string | null = null;
+  toastType: 'success' | 'error' = 'success';
+
+  showToast(message: string, type: 'success' | 'error' = 'success') {
+    this.toastMessage = message;
+    this.toastType = type;
+
+    setTimeout(() => {
+      this.toastMessage = null;
+    }, 5000);
+  }
+
+  /* ---------------------------------------------------------
+     DELETE CONFIRMATION MODAL
+  --------------------------------------------------------- */
+  confirmDeleteId: number | null = null;
+
+  openDeleteConfirm(id: number) {
+    this.confirmDeleteId = id;
+  }
+
+  closeDeleteConfirm() {
+    this.confirmDeleteId = null;
+  }
 
   constructor(
     private usersService: UsersService,
@@ -57,9 +82,9 @@ export class ManageUsersComponent implements OnInit {
     this.loadTeams();
   }
 
-  /** -------------------------------
-   *        LOAD USERS
-   --------------------------------*/
+  /* ---------------------------------------------------------
+     LOAD USERS
+  --------------------------------------------------------- */
   loadUsers(): void {
     this.loading = true;
     this.usersService.getAllUsers().subscribe({
@@ -75,16 +100,16 @@ export class ManageUsersComponent implements OnInit {
     });
   }
 
-  /** -------------------------------
-   *        LOAD TEAMS
-   --------------------------------*/
+  /* ---------------------------------------------------------
+     LOAD TEAMS
+  --------------------------------------------------------- */
   loadTeams(): void {
     this.teamService.getAllTeams().subscribe({
       next: (data) => {
         this.teams = data || [];
       },
-      error: (err) => {
-        console.error('❌ Failed to load teams', err);
+      error: () => {
+        console.error('Failed to load teams');
       }
     });
   }
@@ -94,9 +119,9 @@ export class ManageUsersComponent implements OnInit {
     this.teamEmployees = this.users.filter(u => this.isEmployee(u));
   }
 
-  /** -------------------------------
-   *        ADD USER
-   --------------------------------*/
+  /* ---------------------------------------------------------
+     ADD USER
+  --------------------------------------------------------- */
   addUser(): void {
     if (!this.newUser.name || !this.newUser.email) return;
 
@@ -115,10 +140,11 @@ export class ManageUsersComponent implements OnInit {
         this.users.unshift(user);
         this.refreshRoleLists();
         this.resetAddForm();
+        this.showToast('User added successfully!', 'success');
         this.saving = false;
       },
       error: () => {
-        alert('❌ Failed to add user.');
+        this.showToast('Failed to add user.', 'error');
         this.saving = false;
       }
     });
@@ -135,9 +161,9 @@ export class ManageUsersComponent implements OnInit {
     this.showAddForm = false;
   }
 
-  /** -------------------------------
-   *        EDIT USER
-   --------------------------------*/
+  /* ---------------------------------------------------------
+     EDIT USER
+  --------------------------------------------------------- */
   openEdit(user: UsersDTO): void {
     this.editingUser = { ...user };
     this.previewImageBase64 = user.image || null;
@@ -168,10 +194,11 @@ export class ManageUsersComponent implements OnInit {
           this.users = this.users.map(u => u.id === updated.id ? updated : u);
           this.refreshRoleLists();
           this.cancelEdit();
+          this.showToast('User updated successfully!', 'success');
           this.saving = false;
         },
         error: () => {
-          alert('❌ Failed to update user.');
+          this.showToast('Failed to update user.', 'error');
           this.saving = false;
         }
       });
@@ -184,7 +211,7 @@ export class ManageUsersComponent implements OnInit {
           finalize();
         },
         error: () => {
-          alert('❌ Failed to upload image.');
+          this.showToast('Failed to upload image.', 'error');
           this.saving = false;
         }
       });
@@ -193,22 +220,35 @@ export class ManageUsersComponent implements OnInit {
     }
   }
 
-  deleteUser(id: number): void {
-    if (!confirm('Are you sure?')) return;
+  /* ---------------------------------------------------------
+     DELETE USER (WITH CUSTOM CONFIRM MODAL)
+  --------------------------------------------------------- */
+  deleteUserConfirmed() {
+    if (this.confirmDeleteId === null) return;
+
+    const id = this.confirmDeleteId;
 
     this.usersService.delete(id).subscribe({
       next: () => {
         this.users = this.users.filter(u => u.id !== id);
 
-        // Remove from teams
         this.teams.forEach(team => {
           team.members = team.members.filter(m => m.id !== id);
         });
 
         this.refreshRoleLists();
+        this.showToast('User deleted successfully!', 'success');
+        this.confirmDeleteId = null;
       },
-      error: () => alert('❌ Failed to delete user.')
+      error: () => {
+        this.showToast('Failed to delete user.', 'error');
+        this.confirmDeleteId = null;
+      }
     });
+  }
+
+  closeModal() {
+    this.confirmDeleteId = null;
   }
 
   cancelEdit(): void {
@@ -218,9 +258,9 @@ export class ManageUsersComponent implements OnInit {
     this.editingImageFile = null;
   }
 
-  /** -------------------------------
-   *        HELPER FUNCTIONS
-   --------------------------------*/
+  /* ---------------------------------------------------------
+     HELPERS
+  --------------------------------------------------------- */
   isTeamLeader(u: UsersDTO): boolean {
     return u.role?.includes('TEAMLEADER') ?? false;
   }
@@ -238,10 +278,6 @@ export class ManageUsersComponent implements OnInit {
     return map[role] || role;
   }
 
-  /** -------------------------------
-   *        TEAMS LOGIC
-   --------------------------------*/
-
   getTeamByLeader(leaderId: number): TeamDTO | null {
     return this.teams.find(t => t.leaderId === leaderId) || null;
   }
@@ -254,13 +290,12 @@ export class ManageUsersComponent implements OnInit {
     const team = this.getTeamByLeader(leaderId);
 
     if (!team) {
-      // Create empty team
       this.teamService.createTeam(leaderId, []).subscribe({
         next: newTeam => {
           this.teams.push(newTeam);
           this.expandedTeams[leaderId] = true;
         },
-        error: () => alert('❌ Failed to create team.')
+        error: () => this.showToast('Failed to create team.', 'error')
       });
     } else {
       this.expandedTeams[leaderId] = !this.expandedTeams[leaderId];
@@ -276,7 +311,6 @@ export class ManageUsersComponent implements OnInit {
     return !!team?.members.some(m => m.id === userId);
   }
 
-  /** ADD member */
   addMemberToLeader(leaderId: number): void {
     const memberId = this.selectedMemberToAdd[leaderId];
     if (memberId == null) return;
@@ -288,24 +322,22 @@ export class ManageUsersComponent implements OnInit {
       next: updated => {
         this.teams = this.teams.map(t => t.id === updated.id ? updated : t);
         this.selectedMemberToAdd[leaderId] = null;
+        this.showToast('Employee added to team!', 'success');
       },
-      error: () => alert('❌ Failed to add member.')
+      error: () => this.showToast('Failed to add member.', 'error')
     });
   }
 
-  /** REMOVE member */
   removeMemberFromLeader(leaderId: number, memberId: number): void {
     const team = this.getTeamByLeader(leaderId);
     if (!team) return;
 
-    const teamMemberEntry = team.members.find(m => m.id === memberId);
-    if (!teamMemberEntry) return;
-
     this.teamService.removeMember(memberId).subscribe({
       next: () => {
         team.members = team.members.filter(m => m.id !== memberId);
+        this.showToast('Member removed.', 'success');
       },
-      error: () => alert('❌ Failed to remove member.')
+      error: () => this.showToast('Failed to remove member.', 'error')
     });
   }
 }

@@ -17,11 +17,24 @@ export class MeetingsComponent implements OnInit {
   loading = true;
   error: string | null = null;
 
+  // ====== TOAST ======
+  toastVisible = false;
+  toastMessage = '';
+  toastType: 'success' | 'error' = 'success';
+
+  showToast(msg: string, type: 'success' | 'error' = 'success') {
+    this.toastMessage = msg;
+    this.toastType = type;
+    this.toastVisible = true;
+
+    setTimeout(() => (this.toastVisible = false), 5000);
+  }
+
   constructor(
     private meetingsService: MeetingsService,
     private projectsService: ProjectsService,
     private approvalService: ApprovalService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.loadMeetings();
@@ -33,13 +46,8 @@ export class MeetingsComponent implements OnInit {
         this.projectsService.getAll().subscribe({
           next: projects => {
 
-
             const enriched = meetings.map(m => {
-              const p = projects.find(p =>
-                p.id === (m as any).projectId
-              );
-
-
+              const p = projects.find(p => p.id === m.projectId);
               return {
                 ...m,
                 projectName: p?.name || null,
@@ -49,42 +57,41 @@ export class MeetingsComponent implements OnInit {
             });
 
             this.meetings = enriched;
-
-           
             this.loadApprovalsForAllMeetings();
 
             this.loading = false;
           },
-          error: () => this.loading = false
+          error: () => {
+            this.loading = false;
+            this.showToast('Failed loading project data', 'error');
+          }
         });
       },
       error: () => {
         this.error = 'Failed to load meetings';
         this.loading = false;
+        this.showToast('Failed to load meetings', 'error');
       }
     });
   }
 
- 
   loadApprovalsForAllMeetings(): void {
     const userId = this.getUserIdFromCookie();
 
     this.meetings.forEach(m => {
       this.approvalService.getApprovalsByMeeting(m.meetingId).subscribe({
         next: approvals => {
-
           m.approvalCount = approvals.length;
-
-          m.alreadyApproved = approvals.some(a =>
-            a.employeeInProjectId === userId
-          );
+          m.alreadyApproved = approvals.some(a => a.employeeInProjectId === userId);
+        },
+        error: () => {
+          this.showToast('Failed loading approval data', 'error');
         }
       });
     });
   }
 
   approveMeeting(meetingId: number): void {
-
     const body = {
       approved: true,
       meeting: { meetingId },
@@ -98,13 +105,16 @@ export class MeetingsComponent implements OnInit {
           meeting.alreadyApproved = true;
           meeting.approvalCount++;
         }
+        this.showToast('You approved this meeting!', 'success');
+      },
+      error: () => {
+        this.showToast('Failed to approve meeting', 'error');
       }
     });
   }
 
   getUserIdFromCookie(): number {
-    const c = document.cookie.split('; ')
-      .find(row => row.startsWith('userId='));
+    const c = document.cookie.split('; ').find(row => row.startsWith('userId='));
     return c ? Number(c.split('=')[1]) : -1;
   }
 

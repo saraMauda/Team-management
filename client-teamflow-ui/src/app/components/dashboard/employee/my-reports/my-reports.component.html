@@ -25,7 +25,6 @@
                             {{ report.commentCount || 0 }} Comments
                         </span>
 
-                        <!-- ⭐ NORMALIZED STATUS ⭐ -->
                         <span class="status" 
                               [style.color]="getStatusColor(report.status)">
                             {{ normalizeStatus(report.status) }}
@@ -105,4 +104,11 @@
             </button>
         </div>
     </div>
+</div>
+
+<!-- ⭐ Toast -->
+<div class="toast" 
+     *ngIf="toastVisible"
+     [ngClass]="toastType">
+    {{ toastMessage }}
 </div>

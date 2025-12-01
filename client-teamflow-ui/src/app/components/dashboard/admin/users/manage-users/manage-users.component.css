@@ -552,3 +552,129 @@ input:-webkit-autofill {
     width: 100%;
   }
 }
+/* ============================
+   TOAST NOTIFICATION
+============================ */
+.toast-container {
+  position: fixed;
+  bottom: 25px;
+  left: 25px;
+  z-index: 2000;
+  animation: slideUp 0.35s ease-out;
+}
+
+.toast-box {
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+  border-left: 4px solid #ff7f32;
+  background: #1b3248;
+  color: #eaf3ff;
+  min-width: 240px;
+  animation: fadeIn .3s ease-out;
+}
+
+.toast-box.success {
+  border-color: #23a35d;
+  color: #d4ffe4;
+}
+
+.toast-box.error {
+  border-color: #d64c3a;
+  color: #ffd4d4;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to   { transform: translateY(0);   opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+/* ================================
+   DELETE CONFIRM MODAL
+================================ */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1500;
+  animation: fadeConfirm 0.25s ease-out;
+}
+
+@keyframes fadeConfirm {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.confirm-box {
+  background: #0f2234;
+  border: 1px solid rgba(255,127,50,0.25);
+  padding: 26px 28px;
+  border-radius: 14px;
+  width: 360px;
+  color: #fff;
+  box-shadow: 0 10px 35px rgba(0,0,0,0.55);
+  animation: scaleIn 0.25s ease-out;
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+.confirm-title {
+  font-size: 22px;
+  color: #ff7f32;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.confirm-text {
+  font-size: 14px;
+  color: #cbd5e1;
+  margin-bottom: 20px;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.confirm-actions .delete-btn {
+  background-color: #c23b22;
+  color: #fff;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.confirm-actions .delete-btn:hover {
+  background-color: #d64c3a;
+}
+
+.confirm-actions .cancel-btn {
+  background: transparent;
+  border: 1px solid #9fb3c8;
+  color: #ddd;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.confirm-actions .cancel-btn:hover {
+  background-color: rgba(255,255,255,0.08);
+}

@@ -1,10 +1,8 @@
 <div class="add-report-container">
   <h2 class="title">Add New Report</h2>
 
-  <div *ngIf="successMessage" class="success-msg">{{ successMessage }}</div>
-  <div *ngIf="errorMessage" class="error-msg">{{ errorMessage }}</div>
-
   <form (ngSubmit)="submitReport()" #reportForm="ngForm" class="report-form">
+
     <div class="form-group">
       <label for="project">Select Project:</label>
       <select id="project" [(ngModel)]="selectedProjectId" name="project" required>
@@ -20,31 +18,48 @@
         type="text"
         [(ngModel)]="title"
         name="title"
-        placeholder="Enter report title"
         required
       />
     </div>
 
     <div class="form-group">
-      <label for="description">Description:</label>
+      <label>Description:</label>
       <textarea
-        id="description"
         [(ngModel)]="description"
         name="description"
-        placeholder="Write your report details..."
         required
       ></textarea>
     </div>
 
     <div class="form-group">
-      <label for="status">Status:</label>
-      <select id="status" [(ngModel)]="status" name="status">
+      <label>Status:</label>
+      <select [(ngModel)]="status" name="status">
         <option value="IN_REVIEW">In Review</option>
         <option value="APPROVED">Approved</option>
         <option value="REJECTED">Rejected</option>
       </select>
     </div>
 
+    <div class="form-group">
+      <label>Hours Worked:</label>
+      <input
+        type="number"
+        min="1"
+        max="12"
+        [(ngModel)]="hours"
+        name="hours"
+      />
+    </div>
+
     <button type="submit" [disabled]="loading">Submit Report</button>
+
   </form>
+</div>
+
+<!-- ========================= TOAST ========================= -->
+<div class="toast"
+     *ngIf="toastVisible"
+     [class.toast-success]="toastType === 'success'"
+     [class.toast-error]="toastType === 'error'">
+  {{ toastMessage }}
 </div>

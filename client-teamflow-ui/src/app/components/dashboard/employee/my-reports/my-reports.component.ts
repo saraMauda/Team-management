@@ -27,6 +27,11 @@ export class MyReportsComponent implements OnInit {
   commentsLoading = false;
   panelOpen: boolean = false;
 
+  // ⭐ Toast
+  toastVisible = false;
+  toastMessage = '';
+  toastType: 'success' | 'error' = 'success';
+
   constructor(
     private reportsService: ReportsService,
     private auth: AuthService,
@@ -37,7 +42,17 @@ export class MyReportsComponent implements OnInit {
     this.loadUserInfo();
   }
 
-  // ⭐ Normalize report status (DB → UI)
+  // ⭐ Toast function
+  showToast(message: string, type: 'success' | 'error' = 'success') {
+    this.toastMessage = message;
+    this.toastType = type;
+    this.toastVisible = true;
+
+    setTimeout(() => {
+      this.toastVisible = false;
+    }, 5000);
+  }
+
   normalizeStatus(s: string | null | undefined): string {
     if (!s) return 'IN_REVIEW';
 
@@ -52,6 +67,7 @@ export class MyReportsComponent implements OnInit {
     const email = this.auth.getCurrentUserEmail();
     if (!email) {
       this.error = 'User not logged in.';
+      this.showToast('User not logged in.', 'error');
       return;
     }
 
@@ -60,7 +76,10 @@ export class MyReportsComponent implements OnInit {
         this.currentUserId = user.id;
         this.loadReports();
       },
-      error: () => this.error = 'Failed to load user info.'
+      error: () => {
+        this.error = 'Failed to load user info.';
+        this.showToast('Failed to load user info.', 'error');
+      }
     });
   }
 
@@ -71,13 +90,16 @@ export class MyReportsComponent implements OnInit {
 
     this.reportsService.getByEmployee(this.currentUserId).pipe(
       switchMap((reports: any[]) => {
-        if (reports.length === 0) return of([]);
+        if (reports.length === 0) {
+          this.loading = false;
+          return of([]);
+        }
 
         const calls = reports.map(report =>
           this.reportsService.getComments(report.id).pipe(
             map(comments => ({
               ...report,
-              status: this.normalizeStatus(report.status),   // ⭐ FIX
+              status: this.normalizeStatus(report.status),
               commentCount: comments.length
             }))
           )
@@ -91,9 +113,12 @@ export class MyReportsComponent implements OnInit {
           (a, b) => new Date(b.reportDate).getTime() - new Date(a.reportDate).getTime()
         );
         this.loading = false;
+
+        this.showToast('Reports loaded successfully!', 'success');
       },
       error: () => {
         this.error = 'Failed to load reports.';
+        this.showToast('Failed to load reports.', 'error');
         this.loading = false;
       }
     });
@@ -107,7 +132,7 @@ export class MyReportsComponent implements OnInit {
 
     this.selectedReport = {
       ...report,
-      status: this.normalizeStatus(report.status)  // ⭐ FIX
+      status: this.normalizeStatus(report.status)
     };
 
     this.panelOpen = true;
@@ -118,7 +143,10 @@ export class MyReportsComponent implements OnInit {
         this.comments = comments;
         this.commentsLoading = false;
       },
-      error: () => this.commentsLoading = false
+      error: () => {
+        this.commentsLoading = false;
+        this.showToast('Failed to load comments.', 'error');
+      }
     });
   }
 
@@ -144,13 +172,17 @@ export class MyReportsComponent implements OnInit {
 
         const report = this.reports.find(r => r.id === this.selectedReport.id);
         if (report) report.commentCount++;
+
+        this.showToast('Comment added successfully!', 'success');
       },
-      error: err => console.error(err)
+      error: () => {
+        this.showToast('Failed to add comment.', 'error');
+      }
     });
   }
 
   getStatusColor(status: string): string {
-    status = this.normalizeStatus(status); // ⭐ FIX
+    status = this.normalizeStatus(status);
 
     switch (status) {
       case 'APPROVED': return '#4caf50';

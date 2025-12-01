@@ -300,7 +300,6 @@
     cursor: not-allowed;
 }
 
-/* Responsive adjustments */
 @media (max-width: 1200px) {
     .details-panel {
         width: 350px;
@@ -322,4 +321,36 @@
 .comment-item {
     display: flex;
     width: 100%;
+}
+.toast {
+    position: fixed;
+    bottom: 25px;
+    left: 25px;
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    animation: slideIn 0.35s ease-out;
+    z-index: 9999;
+}
+
+.toast.success {
+    background-color: #2ecc71;
+}
+
+.toast.error {
+    background-color: #e74c3c;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

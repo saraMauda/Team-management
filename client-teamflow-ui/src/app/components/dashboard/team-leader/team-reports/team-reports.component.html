@@ -45,15 +45,20 @@
             <div class="report-box">
                 {{ selectedReport.description }}
             </div>
+
             <div class="meta">
                 <span>Status: 
                     <strong [style.color]="getStatusColor(selectedReport.status)">
                         {{ selectedReport.status }}
                     </strong>
                 </span>
-                <span>Date: <strong>{{ selectedReport.reportDate | date: 'mediumDate' }}</strong></span>
+
+                <span>Date:
+                    <strong>{{ selectedReport.reportDate | date: 'mediumDate' }}</strong>
+                </span>
             </div>
 
+            <!-- STATUS UPDATE SECTION -->
             <div class="status-edit-section">
                 <label><strong>Change Status:</strong></label>
 
@@ -63,8 +68,8 @@
                     <option value="IN_REVIEW">In Review</option>
                 </select>
 
-                <button class="send-btn" (click)="updateStatus()" style="margin-top:10px;">
-                    Update
+                <button class="send-btn" (click)="updateStatus()" [disabled]="savingStatus">
+                    {{ savingStatus ? 'Updating...' : 'Update' }}
                 </button>
             </div>
 
@@ -97,9 +102,17 @@
 
         <div class="add-comment-box">
             <textarea [(ngModel)]="newComment" placeholder="Write a comment..." rows="3"></textarea>
-            <button class="send-btn" (click)="submitComment()" [disabled]="!newComment.trim()">Send</button>
+
+            <button class="send-btn" (click)="submitComment()" [disabled]="!newComment.trim()">
+                Send
+            </button>
         </div>
 
     </div>
 
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" *ngIf="toastVisible" [ngClass]="toastType">
+  {{ toastMessage }}
 </div>

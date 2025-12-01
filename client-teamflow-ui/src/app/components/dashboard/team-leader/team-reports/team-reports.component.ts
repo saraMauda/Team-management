@@ -25,9 +25,21 @@ export class TeamReportsComponent implements OnInit {
   newComment = '';
   panelOpen = false;
 
-
   updatedStatus: string = '';
   savingStatus = false;
+
+  // ---------- TOAST ----------
+  toastVisible = false;
+  toastMessage = '';
+  toastType: 'success' | 'error' = 'success';
+
+  showToast(msg: string, type: 'success' | 'error' = 'success') {
+    this.toastMessage = msg;
+    this.toastType = type;
+    this.toastVisible = true;
+
+    setTimeout(() => (this.toastVisible = false), 5000);
+  }
 
   constructor(
     private reportsService: ReportsService,
@@ -58,13 +70,14 @@ export class TeamReportsComponent implements OnInit {
         this.teamReports = reps.sort(
           (a, b) => new Date(b.reportDate).getTime() - new Date(a.reportDate).getTime()
         );
-      }
+      },
+      error: () => this.showToast('Failed to load reports', 'error')
     });
   }
 
   openPanel(report: any) {
     this.selectedReport = report;
-    this.updatedStatus = report.status; 
+    this.updatedStatus = report.status;
     this.panelOpen = true;
     this.commentsLoading = true;
 
@@ -75,7 +88,10 @@ export class TeamReportsComponent implements OnInit {
         this.comments = comments;
         this.commentsLoading = false;
       },
-      error: () => this.commentsLoading = false
+      error: () => {
+        this.commentsLoading = false;
+        this.showToast('Failed to load comments', 'error');
+      }
     });
   }
 
@@ -89,10 +105,7 @@ export class TeamReportsComponent implements OnInit {
   submitComment() {
     if (!this.newComment.trim()) return;
 
-    const body = {
-      text: this.newComment,
-      userId: this.leaderId
-    };
+    const body = { text: this.newComment, userId: this.leaderId };
 
     this.http.post(
       `${API_BASE_URL}/report-comments/add/${this.selectedReport.id}`,
@@ -102,34 +115,33 @@ export class TeamReportsComponent implements OnInit {
       next: (createdComment: any) => {
         this.comments.push(createdComment);
         this.newComment = '';
-      }
+        this.showToast('Comment added', 'success');
+      },
+      error: () => this.showToast('Failed to add comment', 'error')
     });
   }
-
 
   updateStatus() {
     if (!this.selectedReport) return;
 
     this.savingStatus = true;
 
-    const body = { status: this.updatedStatus };
+    this.reportsService.updateStatus(this.selectedReport.id, this.updatedStatus)
+      .subscribe({
+        next: updated => {
+          this.selectedReport.status = updated.status;
+          this.teamReports = this.teamReports.map(r =>
+            r.id === updated.id ? updated : r
+          );
 
-this.reportsService.updateStatus(this.selectedReport.id, this.updatedStatus)
-  .subscribe({
-    next: (updated) => {
-      this.selectedReport.status = updated.status;
-
-      this.teamReports = this.teamReports.map(r =>
-        r.id === updated.id ? updated : r
-      );
-
-      this.savingStatus = false;
-    },
-    error: () => {
-      alert('Failed to update status');
-      this.savingStatus = false;
-    }
-  });
+          this.savingStatus = false;
+          this.showToast('Status updated successfully', 'success');
+        },
+        error: () => {
+          this.savingStatus = false;
+          this.showToast('Failed to update status', 'error');
+        }
+      });
   }
 
   getStatusColor(status: string) {

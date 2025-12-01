@@ -16,18 +16,20 @@ export class AddReportComponent implements OnInit {
 
   projects: any[] = [];
   selectedProjectId: number | null = null;
+
   title: string = '';
   description: string = '';
-
-  status: string = 'IN_REVIEW'; 
-
+  status: string = 'IN_REVIEW';
   hours: number = 8;
 
-  successMessage = '';
-  errorMessage = '';
   loading = false;
 
   currentUserId: number | null = null;
+
+  // TOAST
+  toastVisible = false;
+  toastMessage = '';
+  toastType: 'success' | 'error' = 'success';
 
   constructor(
     private reportsService: ReportsService,
@@ -37,6 +39,14 @@ export class AddReportComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUser();
+  }
+
+  showToast(msg: string, type: 'success' | 'error' = 'success') {
+    this.toastMessage = msg;
+    this.toastType = type;
+    this.toastVisible = true;
+
+    setTimeout(() => this.toastVisible = false, 5000);
   }
 
   loadUser() {
@@ -50,25 +60,25 @@ export class AddReportComponent implements OnInit {
         this.currentUserId = u.id;
         this.loadProjects();
       },
-      error: () => this.errorMessage = 'Failed to load user info.'
+      error: () => this.showToast('Failed to load user info.', 'error')
     });
   }
 
   loadProjects(): void {
     this.projectsService.getMyProjects().subscribe({
       next: (data) => (this.projects = data),
-      error: () => (this.errorMessage = 'Failed to load projects.')
+      error: () => this.showToast('Failed to load projects.', 'error')
     });
   }
 
   submitReport(): void {
     if (!this.selectedProjectId || !this.title.trim() || !this.description.trim()) {
-      this.errorMessage = 'Please fill out all required fields.';
+      this.showToast('Please fill out all required fields.', 'error');
       return;
     }
 
     if (!this.currentUserId) {
-      this.errorMessage = 'User not found.';
+      this.showToast('User not found.', 'error');
       return;
     }
 
@@ -79,7 +89,7 @@ export class AddReportComponent implements OnInit {
       userId: this.currentUserId,
       date: today,
       hours: this.hours,
-      status: this.status,       
+      status: this.status,
       description: this.description,
       title: this.title
     };
@@ -88,15 +98,12 @@ export class AddReportComponent implements OnInit {
 
     this.reportsService.addReport(reportData).subscribe({
       next: () => {
-        this.successMessage = 'Report submitted successfully!';
-        this.errorMessage = '';
+        this.showToast('Report submitted successfully!', 'success');
         this.loading = false;
         this.resetForm();
       },
-      error: (err) => {
-        console.error('❌ Failed to submit report', err);
-        this.errorMessage = 'Failed to submit report.';
-        this.successMessage = '';
+      error: () => {
+        this.showToast('Failed to submit report.', 'error');
         this.loading = false;
       }
     });
@@ -106,7 +113,7 @@ export class AddReportComponent implements OnInit {
     this.selectedProjectId = null;
     this.title = '';
     this.description = '';
-    this.status = 'IN_REVIEW';  
+    this.status = 'IN_REVIEW';
     this.hours = 8;
   }
 }

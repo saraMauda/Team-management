@@ -3,59 +3,48 @@
   <h2 class="page-title">My Team Projects</h2>
   <p class="subtitle">Manage your projects, progress and team members.</p>
 
-  <!-- ERROR -->
   <div *ngIf="error" class="error-box">{{ error }}</div>
 
-  <!-- EMPTY -->
   <div *ngIf="projects.length === 0 && !error" class="empty-box">
     You currently have no projects as a team leader.
   </div>
 
-  <!-- PROJECTS -->
   <div class="projects-grid" *ngIf="projects.length > 0">
 
     <div class="project-card" *ngFor="let p of projects">
 
-      <!-- HEADER -->
       <div class="card-header">
         <div>
           <h3 class="project-name">{{ p.name }}</h3>
           <div class="dates">
-            {{ p.startDate || 'No start date' }} →
-            {{ p.endDate || 'No end date' }}
+            {{ p.startDate || 'No start date' }} → {{ p.endDate || 'No end date' }}
           </div>
         </div>
 
-        <span class="status-chip" [ngClass]="{
-                'active': p.status === 'ACTIVE',
-                'completed': p.status === 'COMPLETED',
-                'onhold': p.status === 'ON_HOLD'
+        <span class="status-chip"
+              [ngClass]="{
+                  'active': p.status === 'ACTIVE',
+                  'completed': p.status === 'COMPLETED',
+                  'onhold': p.status === 'ON_HOLD'
               }">
           {{ p.status }}
         </span>
       </div>
 
-      <!-- DESCRIPTION -->
-      <p class="description">
-        {{ p.description || 'No description provided.' }}
-      </p>
+      <p class="description">{{ p.description || 'No description provided.' }}</p>
 
-      <!-- PROGRESS -->
       <div class="progress-row">
         <span>Progress</span>
         <span class="progress-value">{{ p.progressPercentage || 0 }}%</span>
       </div>
 
       <div class="progress-bar">
-
         <div class="progress-fill"
              [style.width.%]="p.progressPercentage || 0"
              [style.background]="getProgressColor(p.progressPercentage)">
-
         </div>
       </div>
 
-      <!-- EMPLOYEES -->
       <div class="employees-row">
         <span class="label">Employees:</span>
         <span class="employees-list">
@@ -66,31 +55,23 @@
         </span>
       </div>
 
-      <!-- ACTION -->
       <div class="card-actions">
         <button class="edit-btn" (click)="openEdit(p)">Edit</button>
+        <button class="delete-btn" (click)="deleteProject(p.id!)">Delete</button>
       </div>
 
-      <!-- ====================== EDIT PANEL ====================== -->
+      <!-- EDIT PANEL -->
       <div class="edit-panel" *ngIf="editingProject?.id === p.id">
-
         <h4>Edit Project</h4>
 
         <div class="form-grid">
 
-          <!-- NAME -->
           <div class="form-field">
             <label>Name</label>
-            <input type="text" [(ngModel)]="editingProject!.name" #name="ngModel" required minlength="3" maxlength="40">
-
-            <div class="error" *ngIf="name.invalid && name.touched">
-              <span *ngIf="name.errors?.['required']">Name is required.</span>
-              <span *ngIf="name.errors?.['minlength']">Min 3 characters.</span>
-              <span *ngIf="name.errors?.['maxlength']">Max 40 characters.</span>
-            </div>
+            <input type="text" [(ngModel)]="editingProject!.name" #name="ngModel"
+                   required minlength="3" maxlength="40">
           </div>
 
-          <!-- STATUS -->
           <div class="form-field">
             <label>Status</label>
             <select [(ngModel)]="editingProject!.status">
@@ -100,54 +81,30 @@
             </select>
           </div>
 
-          <!-- START DATE -->
           <div class="form-field">
             <label>Start Date</label>
-            <input type="date" [(ngModel)]="editingProject!.startDate" #sd="ngModel" required>
-            <div class="error" *ngIf="sd.invalid && sd.touched">
-              Start date is required.
+            <input type="date" [(ngModel)]="editingProject!.startDate">
+          </div>
+
+          <div class="form-field">
+            <label>End Date</label>
+            <input type="date" [(ngModel)]="editingProject!.endDate">
+
+            <div class="error" *ngIf="isDateRangeInvalid()">
+              End date must be after start date.
             </div>
           </div>
-          
 
- <!-- END DATE -->
-<div class="form-field">
-  <label>End Date</label>
-  <input type="date" [(ngModel)]="editingProject!.endDate" #ed="ngModel" required>
-
-  <div class="error" *ngIf="ed.invalid && ed.touched">
-    End date is required.
-  </div>
-
-  <div class="error" *ngIf="isDateRangeInvalid()">
-    End date must be after start date.
-  </div>
-</div>
-
-
-          <!-- PROGRESS -->
           <div class="form-field">
             <label>Progress</label>
-
-            <input type="number" min="0" max="100" [(ngModel)]="editingProject!.progressPercentage" #prog="ngModel" required>
-
-            <div class="error" *ngIf="prog.invalid && prog.touched">
-              Progress must be between 0–100.
-            </div>
-
+            <input type="number" min="0" max="100" [(ngModel)]="editingProject!.progressPercentage">
           </div>
 
-          <!-- DESCRIPTION -->
           <div class="form-field full">
             <label>Description</label>
-            <textarea [(ngModel)]="editingProject!.description" #desc="ngModel" minlength="10"></textarea>
-
-            <div class="error" *ngIf="desc.invalid && desc.touched">
-              Description must be at least 10 characters.
-            </div>
+            <textarea [(ngModel)]="editingProject!.description"></textarea>
           </div>
 
-          <!-- TEAM MEMBERS -->
           <div class="form-field full">
             <label>Team Members</label>
 
@@ -158,35 +115,38 @@
               </div>
 
               <label class="chip" *ngFor="let emp of leaderTeamMembers">
-                <input type="checkbox" [checked]="editingProject!.employeeIds!.includes(emp.id!)"
-                  (change)="toggleEmployee($event, emp.id!)">
+                <input type="checkbox"
+                       [checked]="editingProject!.employeeIds!.includes(emp.id!)"
+                       (change)="toggleEmployee($event, emp.id!)">
+
                 <span class="chip-avatar">{{ emp.name?.charAt(0) }}</span>
                 <span class="chip-name">{{ emp.name }}</span>
               </label>
 
             </div>
           </div>
-
         </div>
 
-        <!-- ACTIONS -->
         <div class="edit-actions">
-          <button class="save-btn" (click)="updateProject()" [disabled]="saving || !isEditFormValid()">
+          <button class="save-btn"
+                  (click)="updateProject()"
+                  [disabled]="saving || !isEditFormValid()">
             {{ saving ? 'Saving...' : 'Save Changes' }}
           </button>
 
           <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
         </div>
-
       </div>
-      <!-- ====================== END EDIT PANEL ====================== -->
 
     </div>
-
   </div>
 </div>
 
-<!-- LOADING TEMPLATE -->
 <ng-template #loadingTpl>
   <div class="loading-box">Loading projects...</div>
 </ng-template>
+
+<!-- TOAST -->
+<div class="toast" *ngIf="toastVisible" [ngClass]="toastType">
+  {{ toastMessage }}
+</div>

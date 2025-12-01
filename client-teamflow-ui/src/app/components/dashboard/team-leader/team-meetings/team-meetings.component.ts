@@ -20,7 +20,7 @@ export class TeamMeetingsComponent implements OnInit {
   leaderId: number | null = null;
 
   meetings: any[] = [];
-  projects: any[] = [];   
+  projects: any[] = [];
   leaderProjects: any[] = [];
 
   showAddForm = false;
@@ -34,6 +34,11 @@ export class TeamMeetingsComponent implements OnInit {
     status: 'SCHEDULED'
   };
 
+  // 🔔 Toast
+  toastVisible = false;
+  toastMessage = '';
+  toastType: 'success' | 'error' = 'success';
+
   constructor(
     private http: HttpClient,
     private auth: AuthService,
@@ -45,10 +50,25 @@ export class TeamMeetingsComponent implements OnInit {
     this.loadCurrentLeader();
   }
 
+  // ---------------- TOAST ----------------
+
+  showToast(message: string, type: 'success' | 'error' = 'success'): void {
+    this.toastMessage = message;
+    this.toastType = type;
+    this.toastVisible = true;
+
+    setTimeout(() => {
+      this.toastVisible = false;
+    }, 5000);
+  }
+
+  // ---------------- LOAD DATA ----------------
+
   loadCurrentLeader(): void {
     const stored = localStorage.getItem('user');
     if (!stored) {
-      console.error("❌ No user in localStorage");
+      console.error('❌ No user in localStorage');
+      this.showToast('User is not logged in.', 'error');
       return;
     }
 
@@ -61,7 +81,10 @@ export class TeamMeetingsComponent implements OnInit {
         this.loadProjectsForLeader();
         this.loadMeetings();
       },
-      error: () => console.error("❌ Cannot load leader user")
+      error: () => {
+        console.error('❌ Cannot load leader user');
+        this.showToast('Failed to load leader details.', 'error');
+      }
     });
   }
 
@@ -70,30 +93,54 @@ export class TeamMeetingsComponent implements OnInit {
       next: (all: any[]) => {
         this.projects = all || [];
         this.leaderProjects = this.projects.filter(p => p.leaderId === this.leaderId);
-        console.log("Leader Projects:", this.leaderProjects);
+        console.log('Leader Projects:', this.leaderProjects);
       },
-      error: () => console.error("❌ Failed loading all projects")
+      error: () => {
+        console.error('❌ Failed loading all projects');
+        this.showToast('Failed to load projects.', 'error');
+      }
     });
   }
 
-  loadMeetings() {
+  loadMeetings(): void {
     this.http.get<any[]>(`${API_BASE_URL}/meetings`, {
       withCredentials: true
     }).subscribe({
       next: (data) => {
-        this.meetings = data;
+        this.meetings = data || [];
       },
-      error: err => console.error("❌ Error loading meetings:", err)
+      error: err => {
+        console.error('❌ Error loading meetings:', err);
+        this.showToast('Failed to load meetings.', 'error');
+      }
     });
   }
 
-  toggleAddForm() {
+  // ---------------- FORM ACTIONS ----------------
+
+  toggleAddForm(): void {
     this.showAddForm = !this.showAddForm;
   }
 
-  createMeeting() {
+  createMeeting(): void {
+    // ולידציה – הכל עם Toast, בלי alert
     if (this.newMeeting.projectId === 0) {
-      alert("Please select a project!");
+      this.showToast('Please select a project.', 'error');
+      return;
+    }
+
+    if (!this.newMeeting.title.trim()) {
+      this.showToast('Please enter a meeting title.', 'error');
+      return;
+    }
+
+    if (!this.newMeeting.meetingDate) {
+      this.showToast('Please select a meeting date.', 'error');
+      return;
+    }
+
+    if (!this.newMeeting.description.trim()) {
+      this.showToast('Please enter a meeting description.', 'error');
       return;
     }
 
@@ -101,6 +148,7 @@ export class TeamMeetingsComponent implements OnInit {
       withCredentials: true
     }).subscribe({
       next: () => {
+        this.showToast('Meeting created successfully.', 'success');
         this.toggleAddForm();
         this.loadMeetings();
 
@@ -113,7 +161,10 @@ export class TeamMeetingsComponent implements OnInit {
           status: 'SCHEDULED'
         };
       },
-      error: err => console.error("❌ Error creating meeting:", err)
+      error: err => {
+        console.error('❌ Error creating meeting:', err);
+        this.showToast('Failed to create meeting.', 'error');
+      }
     });
   }
 }

@@ -52,7 +52,6 @@
       <span class="status" [ngClass]="m.status?.toUpperCase()">
         {{ m.status | uppercase }}
       </span>
-
     </div>
 
     <div class="info-row">
@@ -70,4 +69,9 @@
     <p class="desc">{{ m.description }}</p>
 
   </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" *ngIf="toastVisible" [ngClass]="toastType">
+  {{ toastMessage }}
 </div>

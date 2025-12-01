@@ -128,27 +128,20 @@ Goal:
      */
     public String getResponse(String prompt, String conversationId, Authentication authentication) {
 
-        // 1. שליפת היסטוריה קיימת
         List<Message> history = conversations.computeIfAbsent(conversationId, k -> new ArrayList<>());
 
-        // 2. יצירת SystemMessage (כמו שיש לך)
         SystemMessage system = new SystemMessage(SYSTEM_INSTRUCTION);
 
-        // 3. בניית systemData והוספת UserMessage
         UserMessage userMessage = buildUserMessageWithSystemData(prompt, authentication);
 
-        // 4. הוספת הודעת המשתמש להיסטוריה
         history.add(userMessage);
 
-        // 5. בניית רשימת הודעות מלאה (system + history)
         List<Message> fullConversation = new ArrayList<>();
         fullConversation.add(system);
         fullConversation.addAll(history);
 
-        // 6. קריאה ל־ChatClient
         String response = chatClient.prompt().messages(fullConversation).call().content();
 
-        // 7. שמירת תגובת ה-AI בהיסטוריה
         history.add(new AssistantMessage(response));
 
         return response;
@@ -168,13 +161,6 @@ Goal:
         return false;
     }
 
-    // ======================================
-    //  Builders – לייצר טקסט מסודר מהדאטה
-    // ======================================
-
-    /**
-     * פרויקטים שמנהל ראש הצוות המחובר.
-     */
     private String buildProjectsSummary(Long leaderId) {
         List<Project> projects = projectRepository.findByLeader_Id(leaderId);
 
@@ -194,9 +180,6 @@ Goal:
         return sb.toString();
     }
 
-    /**
-     * צוותים + עובדים בצוות של המנהל (לפי TeamController).
-     */
     private String buildTeamSummary(Long leaderId) {
         List<Team> teams = teamRepository.findByLeaderId(leaderId);
 
@@ -220,9 +203,6 @@ Goal:
         return sb.toString();
     }
 
-    /**
-     * דוחות של כל העובדים בצוות של המנהל (לפי הלוגיקה מ-ReportController.byLeader).
-     */
     private String buildReportsSummary(Long leaderId) {
         List<Report> reports = reportRepository
                 .findByReportEmployeeInProject_Project_Leader_Id(leaderId);
@@ -244,9 +224,6 @@ Goal:
     }
 
 
-    /**
-     * פגישות של העובד/מנהל המחובר (לפי MeetingController.getMyMeetings).
-     */
     private String buildMeetingsSummary(Users user) {
 
         List<Meeting> meetings =
@@ -282,14 +259,12 @@ Goal:
     }
     private UserMessage buildUserMessageWithSystemData(String prompt, Authentication authentication) {
 
-        // 1. מי המשתמש המחובר?
         Users currentUser = usersRepository.findByEmail(authentication.getName());
         Long leaderId = currentUser.getId();
 
         String normalized = prompt.toLowerCase();
         String systemData = null;
 
-        // 2. Intent detection בדיוק כמו בקוד שלך
         if (containsAny(normalized, "project", "projects", "פרויק")) {
             systemData = buildProjectsSummary(leaderId);
         } else if (containsAny(normalized, "team", "צוות")) {
@@ -300,7 +275,6 @@ Goal:
             systemData = buildMeetingsSummary(currentUser);
         }
 
-        // 3. החזרת הודעה מתאימה
         if (systemData != null) {
             String combined = """
                 User query:

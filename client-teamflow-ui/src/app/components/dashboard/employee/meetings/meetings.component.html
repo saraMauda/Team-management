@@ -1,9 +1,11 @@
 <div class="meetings-container" *ngIf="!loading; else loadingTpl">
+
   <h2 class="title">My Meetings</h2>
 
   <div *ngIf="error" class="error-msg">{{ error }}</div>
 
   <div class="meetings-grid" *ngIf="meetings.length > 0; else noMeetingsTpl">
+    
     <div class="meeting-card" *ngFor="let m of meetings">
 
       <div class="meeting-header">
@@ -12,11 +14,10 @@
         <span class="meeting-status"
               [class.past]="isPast(m.meetingDate)"
               [class.upcoming]="!isPast(m.meetingDate)">
-          {{ isPast(m.meetingDate!) ? 'Completed' : 'Upcoming' }}
+          {{ isPast(m.meetingDate) ? 'Completed' : 'Upcoming' }}
         </span>
       </div>
 
-      <!-- NEW — Project Name -->
       <div class="project-line">
         <i class="fa fa-folder"></i>
         <span>{{ m.projectName || 'No project' }}</span>
@@ -32,22 +33,23 @@
 
       <div class="approval-box">
         <button 
-            class="approve-btn"
-            (click)="approveMeeting(m.meetingId)"
-            *ngIf="!m.alreadyApproved">
-            ✔ Approve
+          class="approve-btn"
+          (click)="approveMeeting(m.meetingId)"
+          *ngIf="!m.alreadyApproved">
+          ✔ Approve
         </button>
 
         <span class="approved-msg" *ngIf="m.alreadyApproved">
-            ✓ You approved this meeting
+          ✓ You approved this meeting
         </span>
 
-        <div class="approval-count" *ngIf="m.approvalCount !== undefined">
-            Approved: {{ m.approvalCount }}
+        <div class="approval-count">
+          Approved: {{ m.approvalCount }}
         </div>
       </div>
 
     </div>
+
   </div>
 </div>
 
@@ -58,3 +60,8 @@
 <ng-template #noMeetingsTpl>
   <div class="no-meetings">You don't have any meetings scheduled.</div>
 </ng-template>
+
+<!-- ====== TOAST ====== -->
+<div class="toast" *ngIf="toastVisible" [ngClass]="toastType">
+  {{ toastMessage }}
+</div>

@@ -393,3 +393,39 @@
   cursor: not-allowed;
   opacity: 0.5;
 }
+/* כל ה-CSS הקיים שלך — נשאר בדיוק אותו דבר */
+/* ... */
+/* ... */
+/* ... */
+
+/* =============================== */
+/*           TOAST GLOBAL          */
+/* =============================== */
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  z-index: 9999;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  animation: slideIn 0.35s ease-out;
+  max-width: 260px;
+}
+
+.toast.success {
+  background-color: #2ecc71;
+}
+
+.toast.error {
+  background-color: #e74c3c;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
