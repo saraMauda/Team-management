@@ -128,24 +128,37 @@ Goal:
      */
     public String getResponse(String prompt, String conversationId, Authentication authentication) {
 
+        // היסטוריה לפי שיחה
         List<Message> history = conversations.computeIfAbsent(conversationId, k -> new ArrayList<>());
 
+        // system
         SystemMessage system = new SystemMessage(SYSTEM_INSTRUCTION);
 
+        // הודעת המשתמש + system-data
         UserMessage userMessage = buildUserMessageWithSystemData(prompt, authentication);
 
-        history.add(userMessage);
-
+        // בניית כל מה שנשלח למודל
         List<Message> fullConversation = new ArrayList<>();
         fullConversation.add(system);
         fullConversation.addAll(history);
+        fullConversation.add(userMessage);
 
-        String response = chatClient.prompt().messages(fullConversation).call().content();
+        // קריאה למודל
+        var result = chatClient
+                .prompt()
+                .messages(fullConversation)
+                .call();
 
-        history.add(new AssistantMessage(response));
+        String aiText = result.content();
 
-        return response;
+        // היסטוריה
+        history.add(userMessage);
+        history.add(new AssistantMessage(aiText));
+
+        return aiText;
     }
+
+
 
 
     // ===========================
