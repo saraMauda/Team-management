@@ -133,14 +133,18 @@ public class ReportController {
     @PreAuthorize("hasRole('TEAMLEADER')")
     public List<ReportDTO> getReportsForLeader(@PathVariable Long leaderId) {
 
-        List<EmployeeInProject> teamMembers =
-                employeeInProjectRepository.findByProject_Leader_Id(leaderId);
+        List<Long> projectIds = employeeInProjectRepository
+                .findByProject_Leader_Id(leaderId)
+                .stream()
+                .map(e -> e.getProject().getProjectId())
+                .distinct()
+                .collect(Collectors.toList());
 
-        List<Report> reports = teamMembers.stream()
-                .flatMap(member -> reportRepository
-                        .findByReportEmployeeInProject_Project_ProjectId(
-                                member.getProject().getProjectId())
+        List<Report> reports = projectIds.stream()
+                .flatMap(pid -> reportRepository
+                        .findByReportEmployeeInProject_Project_ProjectId(pid)
                         .stream())
+                .distinct()
                 .collect(Collectors.toList());
 
         return reports.stream()
