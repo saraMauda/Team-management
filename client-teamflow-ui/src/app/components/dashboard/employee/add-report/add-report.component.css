@@ -98,3 +98,8 @@ button:hover {
   color: #fff;
   box-shadow: 0 0 10px rgba(255,127,50,0.3);
 }
+.error {
+  color: #ff6b6b;
+  font-size: 13px;
+  margin-top: 4px;
+}

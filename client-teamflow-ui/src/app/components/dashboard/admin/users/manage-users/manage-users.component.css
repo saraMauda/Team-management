@@ -552,3 +552,9 @@ input:-webkit-autofill {
     width: 100%;
   }
 }
+.error-text {
+  color: #ff4d4d;
+  font-size: 13px;
+  margin-top: 4px;
+  margin-left: 4px;
+}

@@ -18,17 +18,29 @@
     <div class="form-grid">
       <div class="form-col">
         <label>Name</label>
-        <input type="text" [(ngModel)]="newUser.name" placeholder="User name" />
+        <input type="text" [(ngModel)]="newUser.name" placeholder="User name"
+          [class.invalid]="newUser.name.trim().length < 3" />
+        <div class="error-text" *ngIf="newUser.name.trim().length < 3">
+          Minimum 3 characters.
+        </div>
       </div>
 
       <div class="form-col">
         <label>Email</label>
-        <input type="email" [(ngModel)]="newUser.email" placeholder="Email address" />
+        <input type="email" [(ngModel)]="newUser.email" placeholder="Email address"
+          [class.invalid]="isEmailInvalid()" />
+        <div class="error-text" *ngIf="isEmailInvalid()">
+          Invalid email format.
+        </div>
       </div>
 
       <div class="form-col">
         <label>Password</label>
-        <input type="password" [(ngModel)]="newUser.password" placeholder="Initial password" />
+        <input type="password" [(ngModel)]="newUser.password" placeholder="Initial password"
+          [class.invalid]="newUser.password && newUser.password.length < 3" />
+        <div class="error-text" *ngIf="newUser.password && newUser.password.length < 3">
+          Minimum 3 characters.
+        </div>
       </div>
 
       <div class="form-col">
@@ -42,7 +54,7 @@
     </div>
 
     <div class="form-actions">
-      <button class="save-btn" (click)="addUser()" [disabled]="saving">
+      <button class="save-btn" (click)="addUser()" [disabled]="saving || !isAddUserFormValid()">
         {{ saving ? 'Saving...' : 'Save User' }}
       </button>
     </div>
@@ -69,8 +81,8 @@
           <tr>
             <td>
               <img *ngIf="user.image"
-                   [src]="user.image.startsWith('data:') ? user.image : 'data:image/png;base64,' + user.image"
-                   class="profile-img"/>
+                [src]="user.image.startsWith('data:') ? user.image : 'data:image/png;base64,' + user.image"
+                class="profile-img" />
 
               <div *ngIf="!user.image" class="placeholder-img">👤</div>
             </td>
@@ -106,19 +118,33 @@
       <div class="edit-grid">
         <div class="field">
           <label>Name</label>
-          <input type="text" [(ngModel)]="editingUser.name" />
+          <input type="text" [(ngModel)]="editingUser.name" [class.invalid]="isEditNameInvalid()" />
+
+          <div class="error-text" *ngIf="isEditNameInvalid()">
+            Minimum 3 characters.
+          </div>
         </div>
 
         <div class="field">
           <label>Email</label>
-          <input type="text" [(ngModel)]="editingUser.email" />
+          <input type="text" [(ngModel)]="editingUser.email" [class.invalid]="isEditEmailInvalid()" />
+
+          <div class="error-text" *ngIf="isEditEmailInvalid()">
+            Invalid email format.
+          </div>
         </div>
         <div class="field">
           <label>Role</label>
-          <select [(ngModel)]="editingUser.role">
+          <select [(ngModel)]="editingUser.role" [class.invalid]="isEditRoleInvalid()">
+
             <option value="ROLE_EMPLOYEE">Employee</option>
             <option value="ROLE_TEAMLEADER">Team Leader</option>
+
           </select>
+
+          <div class="error-text" *ngIf="isEditRoleInvalid()">
+            Please select a valid role.
+          </div>
         </div>
 
 
@@ -133,16 +159,15 @@
         <div class="field full">
           <label>Profile Image</label>
           <input type="file" (change)="onEditImageSelected($event)" />
-          <img *ngIf="previewImageBase64"
-               [src]="previewImageBase64"
-               class="preview-img"/>
+          <img *ngIf="previewImageBase64" [src]="previewImageBase64" class="preview-img" />
         </div>
       </div>
 
       <div class="panel-actions">
-        <button class="save-btn" (click)="updateUser()" [disabled]="saving">
+        <button class="save-btn" (click)="updateUser()" [disabled]="saving || !isEditFormValid()">
           {{ saving ? 'Saving...' : 'Save Changes' }}
         </button>
+
         <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
       </div>
     </div>
@@ -202,9 +227,8 @@
             <label>Add Employee:</label>
             <select [(ngModel)]="selectedMemberToAdd[leader.id!]">
               <option [ngValue]="null">-- Select Employee --</option>
-              <option *ngFor="let emp of teamEmployees"
-                      [ngValue]="emp.id"
-                      [disabled]="isMemberInTeam(leader.id!, emp.id!)">
+              <option *ngFor="let emp of teamEmployees" [ngValue]="emp.id"
+                [disabled]="isMemberInTeam(leader.id!, emp.id!)">
                 {{ emp.name }} ({{ emp.email }})
               </option>
             </select>

@@ -11,34 +11,56 @@
     <label>Project</label>
     <select [(ngModel)]="newMeeting.projectId">
       <option value="0">Select Project...</option>
-      <option *ngFor="let p of leaderProjects" [value]="p.id">
-        {{ p.name }}
-      </option>
+      <option *ngFor="let p of leaderProjects" [value]="p.id">{{ p.name }}</option>
     </select>
+
+    <div class="error" *ngIf="newMeeting.projectId === 0">
+      Please select a project.
+    </div>
   </div>
 
   <div class="form-row">
     <label>Title</label>
     <input type="text" [(ngModel)]="newMeeting.title">
+
+    <div class="error" *ngIf="newMeeting.title && newMeeting.title.trim().length < 3">
+      Title must be at least 3 characters.
+    </div>
   </div>
 
   <div class="form-row">
     <label>Date</label>
     <input type="date" [(ngModel)]="newMeeting.meetingDate">
+
+    <div class="error" *ngIf="!newMeeting.meetingDate">
+      Meeting date is required.
+    </div>
   </div>
 
   <div class="form-row">
     <label>Location</label>
     <input type="text" [(ngModel)]="newMeeting.meetingLocation">
+
+    <div class="error" *ngIf="newMeeting.meetingLocation &&
+              newMeeting.meetingLocation.trim().length < 3">
+      Location must be at least 3 characters.
+    </div>
   </div>
 
   <div class="form-row">
     <label>Description</label>
     <textarea [(ngModel)]="newMeeting.description"></textarea>
+
+    <div class="error" *ngIf="newMeeting.description &&
+              newMeeting.description.trim().length < 10">
+      Description must be at least 10 characters.
+    </div>
   </div>
 
   <div class="form-actions">
-    <button class="save-btn" (click)="createMeeting()">Create</button>
+    <button class="save-btn" (click)="createMeeting()" [disabled]="!isMeetingFormValid()">
+      Create
+    </button>
     <button class="cancel-btn" (click)="toggleAddForm()">Cancel</button>
   </div>
 </div>

@@ -145,8 +145,8 @@ export class LeaderDashboardHomeComponent implements OnInit {
 
         const enrichedReports: EnrichedReportDTO[] = mergedReports.map(report => ({
           ...report,
-          status: this.normalizeStatus(report.status),   // ⭐ FIX
-          employeeName: memberNameMap.get(report.employeeProjectId!) || 'Unknown'
+          status: this.normalizeStatus(report.status),  
+          employeeName: report.employeeName || 'Unknown'
         }));
 
         // ⭐ ONLY IN_REVIEW reports

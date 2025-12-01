@@ -20,7 +20,7 @@ export class TeamMeetingsComponent implements OnInit {
   leaderId: number | null = null;
 
   meetings: any[] = [];
-  projects: any[] = [];   
+  projects: any[] = [];
   leaderProjects: any[] = [];
 
   showAddForm = false;
@@ -39,7 +39,7 @@ export class TeamMeetingsComponent implements OnInit {
     private auth: AuthService,
     private usersService: UsersService,
     private projectsService: ProjectsService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadCurrentLeader();
@@ -116,4 +116,27 @@ export class TeamMeetingsComponent implements OnInit {
       error: err => console.error("❌ Error creating meeting:", err)
     });
   }
+  isMeetingFormValid(): boolean {
+    const titleValid =
+      !!this.newMeeting.title &&
+      this.newMeeting.title.trim().length >= 3;
+
+    const dateValid =
+      !!this.newMeeting.meetingDate;
+
+    const projectValid =
+      this.newMeeting.projectId !== 0;
+
+    const locationValid =
+      !this.newMeeting.meetingLocation ||
+      this.newMeeting.meetingLocation.trim().length >= 3;
+
+    const descValid =
+      !this.newMeeting.description ||
+      this.newMeeting.description.trim().length >= 10;
+
+    return titleValid && dateValid && projectValid && locationValid && descValid;
+  }
+
 }
+

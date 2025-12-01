@@ -109,7 +109,7 @@ export class EmployeeDashboardHomeComponent implements OnInit {
           .map(r => ({
             reportTitle: r.title ?? 'Untitled Report',
             reportStatus: this.normalizeStatus(r.status),
-            reportDate: r.date ?? null
+            reportDate: r.reportDate ?? null
           }))
           .sort((a, b) => (b.reportDate ?? '').localeCompare(a.reportDate ?? ''))
           .slice(0, 5);

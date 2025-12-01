@@ -6,34 +6,33 @@
 
   <form (ngSubmit)="submitReport()" #reportForm="ngForm" class="report-form">
     <div class="form-group">
-      <label for="project">Select Project:</label>
       <select id="project" [(ngModel)]="selectedProjectId" name="project" required>
         <option [value]="null" disabled selected>-- Select a Project --</option>
         <option *ngFor="let p of projects" [value]="p.id">{{ p.name }}</option>
       </select>
+
+      <div class="error" *ngIf="!selectedProjectId">
+        Please select a project.
+      </div>
     </div>
 
     <div class="form-group">
       <label for="title">Report Title:</label>
-      <input
-        id="title"
-        type="text"
-        [(ngModel)]="title"
-        name="title"
-        placeholder="Enter report title"
-        required
-      />
+      <input id="title" type="text" [(ngModel)]="title" name="title" placeholder="Enter report title" required />
+
+      <div class="error" *ngIf="title && title.trim().length < 3">
+        Title must be at least 3 characters.
+      </div>
     </div>
 
     <div class="form-group">
       <label for="description">Description:</label>
-      <textarea
-        id="description"
-        [(ngModel)]="description"
-        name="description"
-        placeholder="Write your report details..."
-        required
-      ></textarea>
+      <textarea id="description" [(ngModel)]="description" name="description" placeholder="Write your report details..."
+        required></textarea>
+
+      <div class="error" *ngIf="description && description.trim().length < 10">
+        Description must be at least 10 characters long.
+      </div>
     </div>
 
     <div class="form-group">
@@ -45,6 +44,8 @@
       </select>
     </div>
 
-    <button type="submit" [disabled]="loading">Submit Report</button>
+    <button type="submit" [disabled]="!isReportFormValid() || loading">
+      Submit Report
+    </button>
   </form>
 </div>

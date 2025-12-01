@@ -19,7 +19,7 @@ export class AddReportComponent implements OnInit {
   title: string = '';
   description: string = '';
 
-  status: string = 'IN_REVIEW'; 
+  status: string = 'IN_REVIEW';
 
   hours: number = 8;
 
@@ -33,7 +33,7 @@ export class AddReportComponent implements OnInit {
     private reportsService: ReportsService,
     private projectsService: ProjectsService,
     private auth: AuthService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadUser();
@@ -79,7 +79,7 @@ export class AddReportComponent implements OnInit {
       userId: this.currentUserId,
       date: today,
       hours: this.hours,
-      status: this.status,       
+      status: this.status,
       description: this.description,
       title: this.title
     };
@@ -106,7 +106,21 @@ export class AddReportComponent implements OnInit {
     this.selectedProjectId = null;
     this.title = '';
     this.description = '';
-    this.status = 'IN_REVIEW';  
+    this.status = 'IN_REVIEW';
     this.hours = 8;
   }
+  isReportFormValid(): boolean {
+    const projectValid = !!this.selectedProjectId;
+
+    const titleValid =
+      !!this.title &&
+      this.title.trim().length >= 3;
+
+    const descValid =
+      !!this.description &&
+      this.description.trim().length >= 10;
+
+    return projectValid && titleValid && descValid;
+  }
+
 }

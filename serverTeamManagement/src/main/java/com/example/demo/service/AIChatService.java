@@ -1,11 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.model.Project;
-import com.example.demo.model.Report;
-import com.example.demo.model.Meeting;
-import com.example.demo.model.Team;
-import com.example.demo.model.TeamMember;
-import com.example.demo.model.Users;
+import com.example.demo.model.*;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
@@ -17,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,6 +27,7 @@ public class AIChatService {
     private final MeetingRepository meetingRepository;
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
+    private final EmployeeInProjectRepository employeeInProjectRepository;
     private final Map<String, List<Message>> conversations = new ConcurrentHashMap<>();
 
 
@@ -110,6 +107,7 @@ Goal:
                          ReportRepository reportRepository,
                          MeetingRepository meetingRepository,
                          TeamRepository teamRepository,
+                         EmployeeInProjectRepository employeeInProjectRepository ,
                          TeamMemberRepository teamMemberRepository) {
 
         this.chatClient = chatClient.build();
@@ -119,6 +117,7 @@ Goal:
         this.meetingRepository = meetingRepository;
         this.teamRepository = teamRepository;
         this.teamMemberRepository = teamMemberRepository;
+        this.employeeInProjectRepository = employeeInProjectRepository;
     }
 
     /**
@@ -273,6 +272,181 @@ Goal:
         return sb.toString();
     }
 
+    private String buildEmployeeFitSummary(Long leaderId) {
+
+        List<Team> teams = teamRepository.findByLeaderId(leaderId);
+
+        if (teams.isEmpty()) {
+            return "Employees: none";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Employees:\n");
+
+        for (Team t : teams) {
+            List<TeamMember> members = teamMemberRepository.findByTeamId(t.getId());
+
+            for (TeamMember m : members) {
+                Users u = m.getUser();
+
+                sb.append("• ").append(u.getName()).append("\n")
+                        .append("  Email: ").append(u.getEmail()).append("\n\n");
+            }
+        }
+
+        return sb.toString();
+    }
+
+    private String buildEmployeeAdvancedAnalysis(Long leaderId) {
+
+        List<Team> teams = teamRepository.findByLeaderId(leaderId);
+        if (teams.isEmpty()) {
+            return "Employees: none";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Employees:\n");
+
+        // נעבור על הצוותים
+        for (Team team : teams) {
+
+            // שליפת כל העובדים
+            List<TeamMember> members = teamMemberRepository.findByTeamId(team.getId());
+
+            for (TeamMember tm : members) {
+                Users user = tm.getUser();
+
+                // כמות פרויקטים שבהם העובד משתתף
+                int projectCount = employeeInProjectRepository.countByUser_Id(user.getId());
+
+
+                // דוחות שעבד עליהם (רמז לתחום העיסוק)
+                List<Report> userReports =
+                        reportRepository.findByReportEmployeeInProject_Project_Leader_Id(leaderId).stream()
+                                .filter(r -> r.getReportEmployeeInProject().getUser().getId() == user.getId())
+                                .toList();
+
+                // תאריכים אחרונים (פעילות)
+                String lastReportDate = userReports.isEmpty()
+                        ? "N/A"
+                        : userReports.get(userReports.size() - 1).getReportDate().toString();
+
+                sb.append("• ").append(user.getName()).append("\n")
+                        .append("  Email: ").append(user.getEmail()).append("\n")
+                        .append("  ActiveProjects: ").append(projectCount).append("\n")
+                        .append("  LastReport: ").append(lastReportDate).append("\n")
+                        .append("  Notes: fewer active projects means more availability\n\n");
+            }
+        }
+
+        return sb.toString();
+    }
+    private String buildEmployeeLoadSummary(Long leaderId) {
+
+        List<EmployeeInProject> members =
+                employeeInProjectRepository.findByProject_Leader_Id(leaderId);
+
+        if (members.isEmpty()) {
+            return "Employees: none";
+        }
+
+        Map<Users, Integer> loadMap = new HashMap<>();
+
+        for (EmployeeInProject eip : members) {
+            Users u = eip.getUser();
+
+            int count = employeeInProjectRepository.countByUser_Id(u.getId());
+
+            loadMap.put(u, count);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Employees:\n");
+
+        loadMap.forEach((user, load) -> {
+            sb.append("• ").append(user.getName()).append("\n")
+                    .append("  Email: ").append(user.getEmail()).append("\n")
+                    .append("  CurrentProjects: ").append(load).append("\n\n");
+        });
+
+        return sb.toString();
+    }
+    private String buildEmployeeSpecialtiesSummary(Long leaderId) {
+
+        List<EmployeeInProject> members =
+                employeeInProjectRepository.findByProject_Leader_Id(leaderId);
+
+        if (members.isEmpty()) {
+            return "Employees: none";
+        }
+
+        Map<Users, String> specialties = new HashMap<>();
+
+        for (EmployeeInProject eip : members) {
+            Users user = eip.getUser();
+
+            String specialty = eip.getRoleDescription();
+            if (specialty == null || specialty.trim().isEmpty()) {
+                specialty = "N/A";
+            }
+
+            specialties.put(user, specialty);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Employees:\n");
+
+        specialties.forEach((user, specialty) -> {
+            sb.append("• ").append(user.getName()).append("\n")
+                    .append("  Email: ").append(user.getEmail()).append("\n")
+                    .append("  Specialty: ").append(specialty).append("\n\n");
+        });
+
+        return sb.toString();
+    }
+
+    private String buildReportsByEmployeeSummary(Long leaderId) {
+
+        List<Report> reports =
+                reportRepository.findByReportEmployeeInProject_Project_Leader_Id(leaderId);
+
+        if (reports.isEmpty()) {
+            return "ReportsByEmployee: none";
+        }
+
+        // מיפוי עובד → רשימת דוחות
+        Map<Users, List<Report>> map = new HashMap<>();
+
+        for (Report r : reports) {
+            Users u = r.getReportEmployeeInProject().getUser();
+
+            map.computeIfAbsent(u, k -> new ArrayList<>()).add(r);
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("ReportsByEmployee:\n");
+
+        for (Map.Entry<Users, List<Report>> entry : map.entrySet()) {
+            Users user = entry.getKey();
+            List<Report> employeeReports = entry.getValue();
+
+            sb.append("• ").append(user.getName()).append("\n")
+                    .append("  Email: ").append(user.getEmail()).append("\n");
+
+            for (Report r : employeeReports) {
+                sb.append("  → ").append(r.getReportTitle()).append("\n")
+                        .append("     Date: ").append(safeDate(r.getReportDate())).append("\n")
+                        .append("     Status: ").append(r.getReportStatus()).append("\n");
+            }
+
+            sb.append("\n");
+        }
+
+        return sb.toString();
+    }
+
+
+
     private String safeDate(LocalDate date) {
         return (date == null) ? "N/A" : date.toString();
     }
@@ -280,43 +454,100 @@ Goal:
     private String safeDate(LocalDateTime dateTime) {
         return (dateTime == null) ? "N/A" : dateTime.toString();
     }
+
     private UserMessage buildUserMessageWithSystemData(String prompt, Authentication authentication) {
 
-        // 1. מי המשתמש המחובר?
         Users currentUser = usersRepository.findByEmail(authentication.getName());
         Long leaderId = currentUser.getId();
 
         String normalized = prompt.toLowerCase();
         String systemData = null;
 
-        // 2. Intent detection בדיוק כמו בקוד שלך
-        if (containsAny(normalized, "project", "projects", "פרויק")) {
+        // ============================
+        // A) שאלות על עומס / פנוי
+        // ============================
+        if (containsAny(normalized,
+                "פנוי", "עמוס", "עומס",
+                "free", "available", "load", "busy")) {
+
+            systemData = buildEmployeeLoadSummary(leaderId);
+        }
+
+        else if (containsAny(normalized,
+                "דוחות לפי עובד", "פעיל", "הכי פעיל", "activity", "report count", "reports per employee")) {
+
+            systemData = buildReportsByEmployeeSummary(leaderId);
+        }
+
+        // ============================
+        // B) שאלות על כישורים / מומחיות
+        // ============================
+        else if (containsAny(normalized,
+                "מומח", "התמח", "skill", "skills",
+                "expert", "expertise", "specialty")) {
+
+            systemData = buildEmployeeSpecialtiesSummary(leaderId);
+        }
+
+        // ============================
+        // C) שאלות על התאמה / מי הכי טוב
+        // ============================
+        else if (containsAny(normalized,
+                "מתאים", "הכי טוב", "הכי מתאים", "מומלץ",
+                "fit", "suitable", "recommend", "best")) {
+
+            String specialties = buildEmployeeSpecialtiesSummary(leaderId);
+            String load = buildEmployeeAdvancedAnalysis(leaderId);
+            systemData = specialties + "\n" + load;
+        }
+
+        // ============================
+        // D) שאלות כלליות על עובדים
+        // ============================
+        else if (containsAny(normalized, "עובד", "employees", "employee")) {
+
+            systemData = buildEmployeeFitSummary(leaderId);
+        }
+
+        // ============================
+        // E) שאר הדברים הרגילים
+        // ============================
+        else if (containsAny(normalized, "project", "projects", "פרויק")) {
             systemData = buildProjectsSummary(leaderId);
-        } else if (containsAny(normalized, "team", "צוות")) {
+        }
+
+        else if (containsAny(normalized, "team", "צוות")) {
             systemData = buildTeamSummary(leaderId);
-        } else if (containsAny(normalized, "report", "reports", "דוח", "דוחות")) {
+        }
+
+        else if (containsAny(normalized, "report", "reports", "דוח", "דוחות")) {
             systemData = buildReportsSummary(leaderId);
-        } else if (containsAny(normalized, "meeting", "meetings", "פגיש")) {
+        }
+
+        else if (containsAny(normalized, "meeting", "meetings", "פגיש")) {
             systemData = buildMeetingsSummary(currentUser);
         }
 
-        // 3. החזרת הודעה מתאימה
+        // ============================
+        // החזרת ההודעה
+        // ============================
         if (systemData != null) {
             String combined = """
-                User query:
-                %s
-                
-                System data (from the database, already filtered for this Team Leader):
-                %s
-                
-                Please answer the user in the same language as the query (Hebrew or English),
-                in a professional and friendly tone.
-                """.formatted(prompt, systemData);
+            User query:
+            %s
+            
+            System data (from the database, already filtered for this Team Leader):
+            %s
+            
+            Please answer the user in the same language as the query (Hebrew or English),
+            in a professional and friendly tone.
+            """.formatted(prompt, systemData);
 
             return new UserMessage(combined);
         }
 
         return new UserMessage(prompt);
     }
+
 
 }
