@@ -1,4 +1,5 @@
-package com.example.demo.service;
+
+        package com.example.demo.service;
 
 import com.example.demo.dto.UsersDTO;
 import com.example.demo.model.Users;
@@ -15,3 +16,4 @@ public interface UsersMapper {
             expression = "java(ImageUtils.wrapBase64(user.getImagePath()))")
     UsersDTO toDTO(Users user);
 }
+

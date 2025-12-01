@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface EmployeeInProjectRepository extends JpaRepository<EmployeeInProject, Long> {
-
+    int countByUser_Id(Long userId);
     // עובד נמצא בפרויקט
     boolean existsByUser_IdAndProject_ProjectId(Long userId, Long projectId);
 

@@ -25,13 +25,15 @@ export class ManageUsersComponent implements OnInit {
   showEditForm = false;
   saving = false;
 
-  newUser: Partial<UsersDTO> = {
+  newUser = {
     name: '',
     email: '',
     password: '',
     role: 'ROLE_EMPLOYEE',
     active: true
   };
+
+
 
   editingUser: UsersDTO | null = null;
   editingImageFile: File | null = null;
@@ -75,7 +77,7 @@ export class ManageUsersComponent implements OnInit {
   constructor(
     private usersService: UsersService,
     private teamService: TeamService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -123,7 +125,10 @@ export class ManageUsersComponent implements OnInit {
      ADD USER
   --------------------------------------------------------- */
   addUser(): void {
-    if (!this.newUser.name || !this.newUser.email) return;
+    if (!this.isAddUserFormValid()) {
+      alert("❌ Invalid user data. Please check the fields.");
+      return;
+    }
 
     const payload: Partial<UsersDTO> = {
       name: this.newUser.name.trim(),
@@ -160,6 +165,29 @@ export class ManageUsersComponent implements OnInit {
     };
     this.showAddForm = false;
   }
+  isEmailInvalid(): boolean {
+    if (!this.newUser.email) return false;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return !emailRegex.test(this.newUser.email);
+  }
+
+  isAddUserFormValid(): boolean {
+    const nameValid =
+      !!this.newUser.name &&
+      this.newUser.name.trim().length >= 3;
+
+const emailValid = !this.isEmailInvalid();
+
+
+    const passwordValid =
+      !this.newUser.password || this.newUser.password.length >= 4;
+
+    const roleValid =
+      !!this.newUser.role;
+
+    return nameValid && emailValid && passwordValid && roleValid;
+  }
+
 
   /* ---------------------------------------------------------
      EDIT USER
@@ -257,6 +285,30 @@ export class ManageUsersComponent implements OnInit {
     this.previewImageBase64 = null;
     this.editingImageFile = null;
   }
+isEditNameInvalid(): boolean {
+  return !this.editingUser?.name || this.editingUser.name.trim().length < 3;
+}
+
+isEditEmailInvalid(): boolean {
+  if (!this.editingUser?.email) return true;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return !emailRegex.test(this.editingUser.email.trim());
+}
+
+isEditRoleInvalid(): boolean {
+  return !this.editingUser?.role;
+}
+
+isEditFormValid(): boolean {
+  if (!this.editingUser) return false;
+
+  const nameValid = !this.isEditNameInvalid();
+  const emailValid = !this.isEditEmailInvalid();
+  const roleValid = !this.isEditRoleInvalid();
+
+  return nameValid && emailValid && roleValid;
+}
+
 
   /* ---------------------------------------------------------
      HELPERS

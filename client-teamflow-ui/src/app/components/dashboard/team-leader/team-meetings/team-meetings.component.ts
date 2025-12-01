@@ -44,7 +44,7 @@ export class TeamMeetingsComponent implements OnInit {
     private auth: AuthService,
     private usersService: UsersService,
     private projectsService: ProjectsService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadCurrentLeader();
@@ -167,4 +167,27 @@ export class TeamMeetingsComponent implements OnInit {
       }
     });
   }
+  isMeetingFormValid(): boolean {
+    const titleValid =
+      !!this.newMeeting.title &&
+      this.newMeeting.title.trim().length >= 3;
+
+    const dateValid =
+      !!this.newMeeting.meetingDate;
+
+    const projectValid =
+      this.newMeeting.projectId !== 0;
+
+    const locationValid =
+      !this.newMeeting.meetingLocation ||
+      this.newMeeting.meetingLocation.trim().length >= 3;
+
+    const descValid =
+      !this.newMeeting.description ||
+      this.newMeeting.description.trim().length >= 10;
+
+    return titleValid && dateValid && projectValid && locationValid && descValid;
+  }
+
 }
+
