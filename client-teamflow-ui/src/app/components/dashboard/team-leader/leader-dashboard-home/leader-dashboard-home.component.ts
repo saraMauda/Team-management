@@ -51,7 +51,6 @@ export class LeaderDashboardHomeComponent implements OnInit {
     this.loadLeaderInfo();
   }
 
-  // ⭐ Normalize statuses so SUBMITTED / OPEN → IN_REVIEW
   normalizeStatus(status: string | null | undefined): string {
     if (!status) return 'IN_REVIEW';
     status = status.toUpperCase();
@@ -145,11 +144,10 @@ export class LeaderDashboardHomeComponent implements OnInit {
 
         const enrichedReports: EnrichedReportDTO[] = mergedReports.map(report => ({
           ...report,
-          status: this.normalizeStatus(report.status),   // ⭐ FIX
-          employeeName: memberNameMap.get(report.employeeProjectId!) || 'Unknown'
+          status: this.normalizeStatus(report.status),
+          employeeName: report.employeeName || 'Unknown'
         }));
 
-        // ⭐ ONLY IN_REVIEW reports
         this.reportsAwaitingReview = enrichedReports.filter(
           r => r.status === 'IN_REVIEW'
         );

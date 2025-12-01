@@ -8,7 +8,9 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface UsersMapper {
 
-    @Mapping(target = "role", expression = "java(user.getRoleString())")
+    @Mapping(target = "role",
+            expression = "java(user.getRoles().stream().findFirst().map(r -> r.getName().name()).orElse(null))")
+
     @Mapping(target = "image",
             expression = "java(ImageUtils.wrapBase64(user.getImagePath()))")
     UsersDTO toDTO(Users user);

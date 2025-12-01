@@ -99,7 +99,7 @@ export class OverviewComponent implements OnInit {
       next: (reports: ReportDTO[]) => {
         this.totalReports = reports.length;
         this.recentReports = [...reports]
-          .sort((a, b) => (b.date ?? b.lastEdited ?? '').localeCompare(a.date ?? a.lastEdited ?? ''))
+          .sort((a, b) => (b.reportDate ?? b.lastEdited ?? '').localeCompare(a.reportDate ?? a.lastEdited ?? ''))
           .slice(0, 5);
 
         done();
