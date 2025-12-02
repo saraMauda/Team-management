@@ -1,111 +1,107 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { UsersService } from '../../../services/users.service';
-import { AuthService } from '../../../services/auth.service';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-change-password-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule],
   templateUrl: './change-password-modal.component.html',
-  styleUrls: ['./change-password-modal.component.css']
+  styleUrls: ['./change-password-modal.component.css'],
+  imports: [CommonModule, FormsModule]
 })
-export class ChangePasswordModalComponent {
+export class ChangePasswordModalComponent implements OnInit {
 
   @Output() close = new EventEmitter<void>();
 
   oldPassword = '';
   newPassword = '';
   confirmPassword = '';
-  message = '';
 
-  userId: number | null = null;
+  userId: number = 0;
 
-  constructor(
-    private usersService: UsersService,
-    private authService: AuthService
-  ) {}
+  errorMessage = '';
+  successMessage = '';
+  loading = false;
 
-  ngOnInit() {
-    this.loadUserId();
+  constructor(private usersService: UsersService) {}
+
+  ngOnInit(): void {
+    this.loadUser();
   }
 
-  loadUserId() {
-    const email = this.authService.getCurrentUserEmail();
-    if (!email) {
-      this.message = "User not authenticated";
+  /** -----------------------------------------
+   * שליפת userId מה־localStorage (כמו HEADER)
+   * ----------------------------------------- */
+  loadUser() {
+    const stored = localStorage.getItem("user");
+
+    if (!stored) {
+      this.errorMessage = "Unable to find user session";
       return;
     }
 
-    this.usersService.getByEmail(email).subscribe({
-      next: (user) => {
-        this.userId = user.id; 
-      },
-      error: () => {
-        this.message = "Cannot load user info";
-      }
-    });
-  }
-
-  cancel() {
-    this.close.emit();
-  }
-
-  save() {
-    if (!this.oldPassword || !this.newPassword || !this.confirmPassword) {
-      this.message = "All fields are required";
-      return;
+    try {
+      const parsed = JSON.parse(stored);
+      this.userId = parsed.id;       // ← הכי חשוב
+    } catch {
+      this.errorMessage = "Session error";
     }
+  }
+
+  /** ולידציה בסיסית */
+  validateNewPassword(): string | null {
+    if (this.newPassword.length < 8) {
+      return "Password must be at least 8 characters";
+    }
+
+    const letters = this.newPassword.split("").filter(ch => /[a-zA-Z]/.test(ch));
+    if (letters.length < 2) {
+      return "Password must contain at least 2 English letters";
+    }
+
+    return null;
+  }
+
+  /** שינוי סיסמה */
+  changePassword() {
+    this.errorMessage = '';
+    this.successMessage = '';
 
     if (this.newPassword !== this.confirmPassword) {
-      this.message = "New passwords do not match";
+      this.errorMessage = "Passwords do not match";
       return;
     }
 
-    this.submit();
-  }
-
-  submit() {
-  const email = this.authService.getCurrentUserEmail();
-  if (!email) {
-    this.message = "User not authenticated";
-    return;
-  }
-
-  this.usersService.getByEmail(email).subscribe({
-    next: (user) => {
-      const userId = user.id;
-
-      this.usersService.changePassword(userId, this.oldPassword, this.newPassword)
-        .subscribe({
-          next: () => {
-            this.message = "Password updated successfully!";
-
-            this.forceLogout();
-          },
-          error: (err) => {
-            this.message = err.error || "Error updating password";
-          }
-        });
-    },
-    error: () => {
-      this.message = "Could not load user info";
+    const valid = this.validateNewPassword();
+    if (valid) {
+      this.errorMessage = valid;
+      return;
     }
-  });
-}
 
-forceLogout() {
-  
-  this.close.emit();
+    if (!this.userId) {
+      this.errorMessage = "User not loaded";
+      return;
+    }
 
-  localStorage.removeItem('user');
+    this.loading = true;
 
-  this.authService.signOut();
+    this.usersService.changePassword(this.userId, this.oldPassword, this.newPassword)
+      .subscribe({
+        next: () => {
+          this.loading = false;
+          this.successMessage = "Password updated successfully";
 
-  setTimeout(() => {
-    this.authService.navigateToLogin();
-  }, 300);
-}
+          setTimeout(() => this.closeModal(), 1200);
+        },
+        error: (err) => {
+          this.loading = false;
+          this.errorMessage = err.error?.message || "Error updating password";
+        }
+      });
+  }
 
+  closeModal() {
+    this.close.emit();
+  }
 }

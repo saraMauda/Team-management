@@ -64,35 +64,26 @@ public class WebSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration corsConfiguration = new CorsConfiguration();
-                    corsConfiguration.setAllowedOrigins(List.of("http://localhost:4200"));
+                    corsConfiguration.setAllowedOriginPatterns(List.of("http://localhost:4200"));
                     corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     corsConfiguration.setAllowedHeaders(List.of("*"));
                     corsConfiguration.setAllowCredentials(true);
                     return corsConfiguration;
                 }))
+
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // 🟢 פתוחים לכולם (לא דורשים אימות)
+
                         .requestMatchers("/api/users/signin").permitAll()
                         .requestMatchers("/api/users/authenticated").permitAll()
+                        .requestMatchers("/register").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/error").permitAll()
-                                .requestMatchers("/register").permitAll()
-                                .requestMatchers("/api/users/**").permitAll()
+                        .requestMatchers("/api/chatAI").permitAll()
 
-                        // TEAMLEADER + EMPLOYEE
-                        .requestMatchers("/api/reports/**").permitAll()
-
-                        // כל המשתמשים המחוברים (כולל EMPLOYEE)
-//                        .requestMatchers("/api/meetings/**").authenticated()
-                        .requestMatchers("/api/meetings/**").permitAll()
-                        .requestMatchers("/api/teams/**").permitAll()
-                                .requestMatchers("api/chatAI").permitAll()
-                        // כל השאר - דורש התחברות
                         .anyRequest().authenticated()
                 );
 
-        // טיפול בשגיאות גישה והרשאות
         http.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler));
 
         // הגדרות ל-H2 console

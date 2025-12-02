@@ -119,7 +119,7 @@
                        [checked]="editingProject!.employeeIds!.includes(emp.id!)"
                        (change)="toggleEmployee($event, emp.id!)">
 
-                <span class="chip-avatar">{{ emp.name?.charAt(0) }}</span>
+                <span class="chip-avatar">{{ emp.name.charAt(0) }}</span>
                 <span class="chip-name">{{ emp.name }}</span>
               </label>
 

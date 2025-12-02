@@ -197,33 +197,51 @@ public class UsersController {
             @RequestBody Map<String, String> body,
             Authentication authentication
     ) {
-        Optional<Users> opt = usersRepository.findById(id);
-        if (opt.isEmpty())
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        String oldPassword = body.get("oldPassword");
+        String newPassword = body.get("newPassword");
 
-        Users user = opt.get();
-
-        if (!authentication.getName().equals(user.getEmail())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not allowed");
+        if (newPassword == null || newPassword.length() < 8) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("success", false, "message",
+                            "Password must be at least 8 characters long"));
         }
 
-        String oldPass = body.get("oldPassword");
-        String newPass = body.get("newPassword");
+        long englishLetters = newPassword.chars()
+                .filter(Character::isLetter)
+                .count();
+
+        if (englishLetters < 2) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("success", false, "message",
+                            "Password must contain at least 2 English letters"));
+        }
+
+        Users user = usersRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!authentication.getName().equals(user.getEmail())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("success", false, "message", "Not authorized"));
+        }
 
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-        if (!encoder.matches(oldPass, user.getPassword())) {
+        if (!encoder.matches(oldPassword, user.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Old password is incorrect");
+                    .body(Map.of("success", false, "message", "Old password is incorrect"));
         }
 
-        user.setPassword(encoder.encode(newPass));
+        user.setPassword(encoder.encode(newPassword));
         usersRepository.save(user);
 
         ResponseCookie cleared = jwtUtils.getCleanJwtCookie();
+        CustomUserDetails ud = (CustomUserDetails) authentication.getPrincipal();
+        ResponseCookie newJwt = jwtUtils.generateJwtCookie(ud);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cleared.toString())
-                .body("Password updated successfully");
+                .header(HttpHeaders.SET_COOKIE, newJwt.toString())
+                .body(Map.of("success", true, "message", "Password updated successfully"));
     }
+
 }

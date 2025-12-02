@@ -29,16 +29,13 @@ export class UsersService {
     });
   }
 
-  changePassword(id: number, oldPassword: string, newPassword: string) {
-    return this.http.put(
-      `${this.baseUrl}/change-password/${id}`,
-      {
-        oldPassword: oldPassword,
-        newPassword: newPassword
-      },
-      { withCredentials: true }
-    );
-  }
+changePassword(id: number, oldPassword: string, newPassword: string) {
+  return this.http.put(
+    `${this.baseUrl}/change-password/${id}`,
+    { oldPassword, newPassword },
+    { withCredentials: true }
+  );
+}
 
   create(user: Partial<UsersDTO>): Observable<UsersDTO> {
     return this.http.post<UsersDTO>(`${this.baseUrl}/signup`, user, {
