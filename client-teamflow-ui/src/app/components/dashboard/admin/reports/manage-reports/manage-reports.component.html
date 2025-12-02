@@ -1,60 +1,74 @@
 <div class="admin-reports-page">
 
-    <h1 class="page-title">Reports Management</h1>
-    <p class="page-subtitle">View reports sorted by teams</p>
+  <h1 class="page-title">Reports Management</h1>
+  <p class="page-subtitle">View reports sorted by teams</p>
 
-    <div class="content-wrapper">
-    
-        <div class="team-wrapper" *ngFor="let team of teams">
+  <div class="content-wrapper">
 
-            <div class="team-card">
+    <div class="teams-list">
 
-                <h2 class="team-title">Team Leader: {{ team.leaderName }}</h2>
-                <p class="team-email">📧 {{ team.leaderEmail }}</p>
+      <div class="team-wrapper" *ngFor="let team of teams">
 
-                <div class="employee-card" *ngFor="let emp of team.members">
+        <div class="team-card">
 
-                    <div class="employee-header" (click)="toggleEmployee(emp)">
-                        <span class="emp-name">👤 {{ emp.name }}</span>
-                        <span class="arrow">{{ expandedEmployee === emp.id ? "▲" : "▼" }}</span>
-                    </div>
+          <h2 class="team-title">Team Leader: {{ team.leaderName }}</h2>
+          <p class="team-email">📧 {{ team.leaderEmail }}</p>
 
-                    <div class="reports-list" *ngIf="expandedEmployee === emp.id">
+          <div class="employee-card" *ngFor="let emp of team.members">
 
-                        <div *ngIf="employeeReports.length === 0" class="no-reports">
-                            No reports for this employee
-                        </div>
-
-                        <div class="report-row"
-                            *ngFor="let r of employeeReports"
-                            (click)="openReport(r)">
-
-                            <h4>Report #{{ r.reportId }}</h4>
-                            <p><strong>Date:</strong> {{ r.reportDate }}</p>
-                            <p class="desc">{{ r.description }}</p>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-        </div>
-
-        <div class="panel" *ngIf="selectedReport">
-
-            <button class="close-btn" (click)="closePanel()">✖</button>
-
-            <h2>Report Details</h2>
-
-            <p><strong>Date:</strong> {{ selectedReport.reportDate }}</p>
-
-            <strong>Description:</strong>
-            <div class="panel-box">
-                {{ selectedReport.description }}
+            <div class="employee-header" (click)="toggleEmployee(emp)">
+              <span class="emp-name">👤 {{ emp.name }}</span>
+              <span class="arrow">
+                {{ expandedEmployee === emp.id ? "▲" : "▼" }}
+              </span>
             </div>
 
-        </div>
-    
-    </div>
-    
+            <div class="reports-list" *ngIf="expandedEmployee === emp.id">
+
+              <div *ngIf="employeeReports.length === 0" class="no-reports">
+                No reports for this employee
+              </div>
+
+              <div
+                class="report-row"
+                *ngFor="let r of employeeReports"
+                (click)="openReport(r)">
+
+                <h4>Report #{{ r.reportId }}</h4>
+                <p><strong>Date:</strong> {{ r.reportDate }}</p>
+
+                <p class="desc">
+                  {{ r.description }}
+                </p>
+
+              </div>
+
+            </div>
+
+          </div> 
+
+        </div> 
+
+      </div> 
+
+    </div> 
+
+
+    <div class="panel" *ngIf="selectedReport">
+
+      <button class="close-btn" (click)="closePanel()">✖</button>
+
+      <h2>Report Details</h2>
+
+      <p><strong>Date:</strong> {{ selectedReport.reportDate }}</p>
+
+      <strong>Description:</strong>
+      <div class="panel-box">
+        {{ selectedReport.description }}
+      </div>
+
+    </div> 
+
+  </div>
+
 </div>

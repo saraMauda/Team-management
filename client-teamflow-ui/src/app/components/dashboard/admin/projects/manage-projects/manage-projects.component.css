@@ -1,6 +1,3 @@
-/* =========================================================
-   WRAPPER & PAGE TITLE
-========================================================= */
 .projects-wrapper {
   padding: 20px 25px;
   color: #e8f1f8;
@@ -13,9 +10,6 @@
   margin: 0 0 18px 0;
 }
 
-/* =========================================================
-   ADD BUTTON
-========================================================= */
 .add-btn {
   background-color: #ff7f32;
   border: none;
@@ -34,9 +28,6 @@
   transform: translateY(-1px);
 }
 
-/* =========================================================
-   PANEL
-========================================================= */
 .panel {
   background: #182b3d;
   padding: 18px 22px;
@@ -52,9 +43,6 @@
   margin-bottom: 16px;
 }
 
-/* =========================================================
-   FORM ROWS
-========================================================= */
 .form-row {
   display: flex;
   flex-direction: column;
@@ -92,9 +80,6 @@
   background-color: #18384f;
 }
 
-/* =========================================================
-   EMPLOYEE CHIPS
-========================================================= */
 .checkbox-container {
   display: flex;
   flex-wrap: wrap;
@@ -103,8 +88,8 @@
 
 .hint-text {
   font-size: 13px;
-  color: #9fb3c8;
-  font-style: italic;
+  color: #ccc;
+  margin-top: 4px;
 }
 
 .chip {
@@ -140,9 +125,6 @@
   white-space: nowrap;
 }
 
-/* =========================================================
-   SAVE / CANCEL ACTIONS
-========================================================= */
 .edit-actions {
   display: flex;
   justify-content: flex-end;
@@ -182,9 +164,6 @@
   background-color: rgba(255,127,50,0.15);
 }
 
-/* =========================================================
-   PROJECTS TABLE
-========================================================= */
 .projects-table {
   width: 100%;
   border-collapse: collapse;
@@ -219,9 +198,6 @@
   color: #8fa3b9;
 }
 
-/* =========================================================
-   ACTION BUTTONS
-========================================================= */
 .edit-btn,
 .delete-btn {
   border: none;
@@ -256,9 +232,6 @@
   transform: translateY(-1px);
 }
 
-/* =========================================================
-   RESPONSIVE
-========================================================= */
 @media (max-width: 768px) {
   .projects-wrapper {
     padding: 15px;
@@ -289,15 +262,13 @@
     text-align: center;
   }
 }
+
 .error {
   color: #ff4d4d;
   font-size: 12px;
   margin-top: 4px;
 }
 
-/* =========================================================
-   DELETE CONFIRM MODAL
-========================================================= */
 .confirm-overlay {
   position: fixed;
   inset: 0;
@@ -379,9 +350,6 @@
   background-color: rgba(255,255,255,0.08);
 }
 
-/* =========================================================
-   TOAST NOTIFICATION
-========================================================= */
 .toast {
   position: fixed;
   bottom: 24px;
@@ -418,6 +386,7 @@
   color: #fff;
   border-left: 6px solid #ff4d4d;
 }
+
 .invalid-field {
   border: 2px solid #ff5252 !important;
   background: rgba(255, 82, 82, 0.08);
@@ -430,52 +399,21 @@
   font-weight: 500;
 }
 
-.hint-text {
-  color: #ccc;
-  font-size: 13px;
-  margin-top: 4px;
-}
-
-input.ng-touched.ng-invalid,
-textarea.ng-touched.ng-invalid,
-select.ng-touched.ng-invalid {
-  border-color: #ff5252;
-}
-/* ====== VALIDATION STATES ====== */
-
-/* שדה לא תקין */
-.invalid-field {
-  border-color: #ff4d4d !important;
-  background-color: rgba(255, 77, 77, 0.08);
-}
-
-/* הודעת שגיאה */
-.error {
-  color: #ff8080;
-  font-size: 13px;
-  margin-top: 5px;
-  font-weight: 500;
-}
-
-/* סימון אדום בכותרת/שורה */
 .label-error {
   color: #ff8080;
   font-weight: 600;
 }
 
-/* לשדות חובה */
 .required-star::after {
   content: " *";
   color: #ff4d4d;
   font-weight: bold;
 }
 
-/* Highlight של שורות לא תקינות בטבלאות */
 .row-invalid {
   background-color: rgba(255, 77, 77, 0.15) !important;
 }
 
-/* במידה ורוצים תזוזת שגיאה (אנימציה עדינה) */
 @keyframes shake {
   0% { transform: translateX(0); }
   20% { transform: translateX(-3px); }
@@ -489,9 +427,59 @@ select.ng-touched.ng-invalid {
   animation: shake 0.25s ease-in-out;
 }
 
-/* טקסט הכוונה */
 .hint-text {
   font-size: 13px;
   color: #ffa94d;
   margin-bottom: 8px;
+}
+
+input.ng-touched.ng-invalid,
+textarea.ng-touched.ng-invalid,
+select.ng-touched.ng-invalid {
+  border-color: #ff5252;
+}
+.invalid-field {
+  border-color: #ff4d4d !important;
+  background-color: rgba(255, 77, 77, 0.08);
+}
+
+.error {
+  color: #ff4d4d;
+  font-size: 13px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.label-error {
+  color: #ff8080;
+  font-weight: 600;
+}
+
+.required-star::after {
+  content: " *";
+  color: #ff4d4d;
+  font-weight: bold;
+}
+
+.row-invalid {
+  background-color: rgba(255, 77, 77, 0.15) !important;
+}
+
+.input-error-animate {
+  animation: shake 0.25s ease-in-out;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-3px); }
+  40% { transform: translateX(3px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
+input.ng-touched.ng-invalid,
+textarea.ng-touched.ng-invalid,
+select.ng-touched.ng-invalid {
+  border-color: #ff4d4d !important;
 }

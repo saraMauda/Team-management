@@ -1,247 +1,211 @@
-/* ====== WRAPPER ====== */
-.users-wrapper {
-  padding: 20px 30px;
-  color: #fff;
-  width: 100%;
+/* =============================== */
+/*           PAGE WRAPPER          */
+/* =============================== */
+.admin-reports-page {
+  padding: 24px 32px;
+  background: #061727;
+  color: #dce6f3;
+  min-height: 100vh;
 }
 
-/* ====== PAGE TITLE ====== */
 .page-title {
-  font-size: 26px;
-  margin-bottom: 20px;
-  color: #f57c00;
+  font-size: 30px;
   font-weight: 700;
-  text-align: left;
+  color: #ff7f32;
+  margin: 0 0 6px;
 }
 
-/* ====== ADD BUTTON ====== */
-.add-btn {
-  background-color: #1f3b5c;
-  border: 1px solid #285b8f;
-  color: #f57c00;
-  padding: 10px 16px;
-  border-radius: 6px;
-  cursor: pointer;
+.page-subtitle {
+  font-size: 15px;
+  opacity: 0.8;
+  margin-bottom: 22px;
+}
+
+/* =============================== */
+/*        LAYOUT – TWO SIDES       */
+/* =============================== */
+.content-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+}
+
+@media (max-width: 1100px) {
+  .content-wrapper {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =============================== */
+/*           TEAM SECTION          */
+/* =============================== */
+.team-wrapper {
   margin-bottom: 20px;
-  font-weight: 600;
 }
 
-.add-btn:hover {
-  background-color: #24476c;
+.team-card {
+  background: #0b2238;
+  padding: 18px 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,127,50,0.25);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+  animation: fadeIn 0.25s ease-out;
 }
 
-/* ====== PANEL ====== */
-.panel {
-  background-color: #0d1b2a;
-  border: 1px solid rgba(255, 127, 50, 0.3);
-  padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 25px;
-}
-
-.panel-title {
+.team-title {
+  margin: 0;
   font-size: 20px;
+  color: #ffb347;
   font-weight: 600;
-  margin-bottom: 15px;
-  color: #f57c00;
 }
 
-/* ====== FORM ROW ====== */
-.form-row {
+.team-email {
+  margin: 4px 0 14px;
+  font-size: 14px;
+  color: #c3d4e6;
+}
+
+/* =============================== */
+/*        EMPLOYEE ACCORDION       */
+/* =============================== */
+.employee-card {
+  background: #10263b;
+  border: 1px solid #1f3a52;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: 0.25s ease;
+}
+
+.employee-header {
+  padding: 12px 14px;
+  cursor: pointer;
+  background: #173754;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #ffb657;
+  font-size: 15px;
+  font-weight: 600;
+  transition: 0.25s ease;
+}
+
+.employee-header:hover {
+  background: #1f4c75;
+}
+
+.arrow {
+  color: #dce6f3;
+}
+
+/* =============================== */
+/*        REPORTS INSIDE EMP       */
+/* =============================== */
+.reports-list {
+  background: #112b43;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  margin-bottom: 15px;
+  gap: 12px;
+  animation: slideDown 0.25s ease-out;
 }
 
-label {
-  margin-bottom: 5px;
-  font-weight: 600;
+.no-reports {
+  padding: 8px;
+  color: #a8b7c4;
+  font-size: 14px;
+  opacity: 0.9;
 }
 
-input,
-select {
-  padding: 8px 10px;
-  border-radius: 5px;
-  border: 1px solid #285b8f;
-  background-color: #10263b;
-  color: white;
-}
-
-input:focus,
-select:focus {
-  outline: none;
-  border-color: #f57c00;
-}
-
-/* ====== INVALID FIELD ====== */
-.invalid-field {
-  border-color: #ff4e4e !important;
-  background-color: rgba(255, 50, 50, 0.15);
-}
-
-/* ERROR MESSAGE */
-.error {
-  margin-top: 4px;
-  font-size: 13px;
-  color: #ff6b6b;
-}
-
-/* ====== ACTION BUTTONS ====== */
-.edit-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.save-btn,
-.cancel-btn {
-  padding: 10px 16px;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.save-btn {
-  background-color: #285b8f;
-  border: 1px solid #3b6fa8;
-  color: #fff;
-}
-
-.save-btn:hover {
-  background-color: #3279b3;
-}
-
-.cancel-btn {
-  background-color: transparent;
-  border: 1px solid #999;
-  color: #ccc;
-}
-
-.cancel-btn:hover {
-  background-color: rgba(255,255,255,0.1);
-}
-
-/* ====== TABLE ====== */
-.users-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
-
-.users-table th,
-.users-table td {
-  padding: 12px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.users-table th {
-  color: #f57c00;
-  font-weight: 700;
-  background-color: #132b45;
-}
-
-.users-table tr:hover {
-  background-color: rgba(255,127,50,0.12);
-}
-
-/* ====== TABLE BUTTONS ====== */
-.edit-btn {
-  background-color: #2b6dad;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  color: #fff;
-  font-weight: 600;
-}
-
-.edit-btn:hover {
-  background-color: #3880c0;
-}
-
-.delete-btn {
-  background-color: #b83232;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  color: #fff;
-  font-weight: 600;
-}
-
-delete-btn:hover {
-  background-color: #d64545;
-}
-
-/* ====== EMPTY TEXT ====== */
-.empty-text {
-  text-align: center;
-  padding: 20px;
-  color: #ccc;
-}
-
-/* ====== CONFIRM MODAL ====== */
-.confirm-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-}
-
-.confirm-box {
-  background: #0d1b2a;
-  border: 1px solid #f57c00;
-  padding: 25px;
+.report-row {
+  background: #153452;
+  padding: 12px 14px;
   border-radius: 10px;
-  width: 350px;
-  text-align: center;
+  border: 1px solid rgba(255,127,50,0.25);
+  cursor: pointer;
+  transition: 0.25s ease;
 }
 
-.confirm-title {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  color: #f57c00;
+.report-row:hover {
+  background: #1b4365;
+  transform: translateY(-2px);
 }
 
-.confirm-actions {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 20px;
+.report-row h4 {
+  color: #ff9e2b;
+  margin: 0 0 4px;
 }
 
-/* ====== TOAST ====== */
-.toast {
-  position: fixed;
-  bottom: 25px;
-  right: 25px;
-  background: #10263b;
-  padding: 15px 25px;
-  border-radius: 8px;
-  border-left: 5px solid #fff;
-  color: white;
-  font-weight: 600;
-  animation: fadeIn 0.3s ease-out;
+.report-row .desc {
+  margin: 4px 0 0;
+  font-size: 13px;
+  opacity: 0.8;
 }
 
-.toast-success {
-  border-color: #3fcf5c;
+/* =============================== */
+/*           SIDE PANEL            */
+/* =============================== */
+.panel {
+  background: #0d1b2a;
+  border-radius: 14px;
+  padding: 22px;
+  border: 1px solid rgba(255,127,50,0.35);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  animation: slideInRight 0.3s ease-out;
+  height: fit-content;
 }
 
-.toast-error {
-  border-color: #ff4646;
+.close-btn {
+  background: transparent;
+  border: 1px solid #ff7f32;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  cursor: pointer;
+  color: #ff7f32;
+  float: right;
+  transition: 0.25s ease;
 }
 
+.close-btn:hover {
+  background: #ff7f32;
+  color: #0d1b2a;
+}
+
+.panel h2 {
+  margin: 10px 0 14px;
+  color: #ff9e2b;
+  font-size: 22px;
+}
+
+.panel strong {
+  color: #ffb657;
+}
+
+.panel-box {
+  padding: 12px;
+  border-radius: 10px;
+  background: #12263c;
+  border: 1px solid rgba(255,127,50,0.25);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* =============================== */
+/*          ANIMATIONS             */
+/* =============================== */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.error {
-  color: #ff4d4d;
-  font-size: 12px;
-  margin-top: 4px;
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
 }

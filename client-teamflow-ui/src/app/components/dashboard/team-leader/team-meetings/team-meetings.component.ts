@@ -20,11 +20,11 @@ export class TeamMeetingsComponent implements OnInit {
   leaderId: number | null = null;
 
   meetings: any[] = [];
-  projects: any[] = [];
   leaderProjects: any[] = [];
 
   showAddForm = false;
 
+  // NEW MEETING MODEL
   newMeeting = {
     projectId: 0,
     title: '',
@@ -33,6 +33,9 @@ export class TeamMeetingsComponent implements OnInit {
     meetingDate: '',
     status: 'SCHEDULED'
   };
+
+  // EDITING MEETING
+  editingMeeting: any = null;
 
   // Toast
   toastVisible = false;
@@ -44,7 +47,7 @@ export class TeamMeetingsComponent implements OnInit {
     private auth: AuthService,
     private usersService: UsersService,
     private projectsService: ProjectsService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.loadCurrentLeader();
@@ -59,7 +62,7 @@ export class TeamMeetingsComponent implements OnInit {
 
     setTimeout(() => {
       this.toastVisible = false;
-    }, 5000);
+    }, 4000);
   }
 
   // ---------------- LOAD DATA ----------------
@@ -77,87 +80,79 @@ export class TeamMeetingsComponent implements OnInit {
     this.auth.getUserByEmail(email).subscribe({
       next: user => {
         this.leaderId = user.id;
-        this.loadProjectsForLeader();
+        this.loadProjects();
         this.loadMeetings();
       },
-      error: () => {
-        this.showToast('Failed to load leader details.', 'error');
-      }
+      error: () => this.showToast('Failed to load leader data', 'error')
     });
   }
 
-  loadProjectsForLeader(): void {
+  loadProjects(): void {
     this.projectsService.getAll().subscribe({
       next: (all: any[]) => {
-        this.projects = all || [];
-        this.leaderProjects = this.projects.filter(p => p.leaderId === this.leaderId);
+        this.leaderProjects = (all || []).filter(p => p.leaderId === this.leaderId);
       },
-      error: () => {
-        this.showToast('Failed to load projects.', 'error');
-      }
+      error: () => this.showToast('Failed to load projects', 'error')
     });
   }
 
   loadMeetings(): void {
-    this.http.get<any[]>(`${API_BASE_URL}/meetings`, { withCredentials: true }).subscribe({
-      next: (data) => {
-        this.meetings = data || [];
-      },
-      error: err => {
-        this.showToast('Failed to load meetings.', 'error');
-      }
+    this.http.get<any[]>(`${API_BASE_URL}/meetings`, {
+      withCredentials: true
+    }).subscribe({
+      next: data => this.meetings = data || [],
+      error: () => this.showToast('Failed to load meetings', 'error')
     });
   }
 
   // ---------------- VALIDATION ----------------
 
   isMeetingFormValid(): boolean {
-    const titleValid =
-      !!this.newMeeting.title &&
-      this.newMeeting.title.trim().length >= 3;
-
-    const dateValid =
-      !!this.newMeeting.meetingDate;
-
-    const projectValid =
-      this.newMeeting.projectId !== 0;
-
-    const locationValid =
-      !this.newMeeting.meetingLocation ||
-      this.newMeeting.meetingLocation.trim().length >= 3;
-
-    const descValid =
-      !this.newMeeting.description ||
-      this.newMeeting.description.trim().length >= 10;
-
-    return titleValid && dateValid && projectValid && locationValid && descValid;
+    return (
+      this.newMeeting.projectId !== 0 &&
+      this.newMeeting.title.trim().length >= 3 &&
+      !!this.newMeeting.meetingDate &&
+      (this.newMeeting.meetingLocation.trim().length === 0 ||
+        this.newMeeting.meetingLocation.trim().length >= 3) &&
+      (this.newMeeting.description.trim().length === 0 ||
+        this.newMeeting.description.trim().length >= 10)
+    );
   }
 
-  // ---------------- CREATE MEETING ----------------
+  isEditMeetingValid(): boolean {
+    return (
+      this.editingMeeting &&
+      this.editingMeeting.projectId &&
+      (this.editingMeeting.title || '').trim().length >= 3 &&
+      !!this.editingMeeting.meetingDate &&
+      ((this.editingMeeting.meetingLocation || '').trim().length === 0 ||
+        (this.editingMeeting.meetingLocation || '').trim().length >= 3) &&
+      ((this.editingMeeting.description || '').trim().length === 0 ||
+        (this.editingMeeting.description || '').trim().length >= 10)
+    );
+  }
+
+  // ---------------- CREATE ----------------
 
   createMeeting(): void {
-    // חסימת שליחה אם לא תקין
     if (!this.isMeetingFormValid()) {
-      this.showToast('Please fix validation errors.', 'error');
+      this.showToast('Fix validation errors', 'error');
       return;
     }
 
     const payload = {
       ...this.newMeeting,
-      title: this.newMeeting.title.trim(),
-      description: this.newMeeting.description.trim(),
-      meetingLocation: this.newMeeting.meetingLocation.trim()
+      title: this.newMeeting.title.trim()
     };
 
     this.http.post(`${API_BASE_URL}/meetings/create`, payload, {
       withCredentials: true
     }).subscribe({
       next: () => {
-        this.showToast('Meeting created successfully.', 'success');
+        this.showToast('Meeting created', 'success');
         this.toggleAddForm();
         this.loadMeetings();
 
-        // reset form
         this.newMeeting = {
           projectId: 0,
           title: '',
@@ -167,13 +162,56 @@ export class TeamMeetingsComponent implements OnInit {
           status: 'SCHEDULED'
         };
       },
-      error: err => {
-        this.showToast('Failed to create meeting.', 'error');
-      }
+      error: () => this.showToast('Failed to create meeting', 'error')
     });
   }
 
   toggleAddForm(): void {
     this.showAddForm = !this.showAddForm;
+  }
+
+  // ---------------- EDIT ----------------
+
+  startEdit(m: any): void {
+    this.editingMeeting = { ...m };
+  }
+
+  cancelEdit(): void {
+    this.editingMeeting = null;
+  }
+
+  saveEdit(): void {
+    if (!this.isEditMeetingValid()) {
+      this.showToast('Fix validation errors', 'error');
+      return;
+    }
+
+    this.http.put(`${API_BASE_URL}/meetings/${this.editingMeeting.meetingId}`,
+      this.editingMeeting,
+      { withCredentials: true }
+    ).subscribe({
+      next: () => {
+        this.showToast('Meeting updated', 'success');
+        this.editingMeeting = null;
+        this.loadMeetings();
+      },
+      error: () => this.showToast('Failed to update meeting', 'error')
+    });
+  }
+
+  // ---------------- DELETE ----------------
+
+  deleteMeeting(id: number): void {
+    if (!confirm('Are you sure you want to delete this meeting?')) return;
+
+    this.http.delete(`${API_BASE_URL}/meetings/${id}`, {
+      withCredentials: true
+    }).subscribe({
+      next: () => {
+        this.showToast('Meeting deleted', 'success');
+        this.loadMeetings();
+      },
+      error: () => this.showToast('Failed to delete meeting', 'error')
+    });
   }
 }

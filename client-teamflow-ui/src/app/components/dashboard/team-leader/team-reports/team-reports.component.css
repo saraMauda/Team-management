@@ -1,5 +1,4 @@
-/* ===== Layout base ===== */
-
+/* Layout base */
 .reports-page {
   display: flex;
   height: calc(100vh - 80px);
@@ -11,8 +10,7 @@
   direction: ltr;
 }
 
-/* LEFT – inbox list */
-
+/* Inbox */
 .inbox {
   flex: 0 0 40%;
   max-width: 480px;
@@ -20,7 +18,7 @@
   border-radius: 16px;
   border: 1px solid #f28c28;
   padding: 16px 18px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
   overflow-y: auto;
 }
 
@@ -30,53 +28,42 @@
   color: #f28c28;
 }
 
-/* single row in inbox – like Gmail item */
-
 .report-item {
   padding: 10px 12px;
   border-radius: 10px;
-  background: rgba(10, 30, 50, 0.8);
+  background: rgba(10,30,50,0.8);
   cursor: pointer;
   margin-bottom: 8px;
-  transition: background 0.15s ease, transform 0.1s ease,
-    box-shadow 0.15s ease;
+  transition: background .15s, transform .1s, box-shadow .15s;
   display: flex;
   flex-direction: column;
-  gap: 4px;
 }
 
 .report-item:hover {
-  background: rgba(16, 50, 80, 0.95);
+  background: rgba(16,50,80,0.95);
   transform: translateY(-1px);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
 }
 
 .report-item.active {
   border: 1px solid #f28c28;
-  background: rgba(17, 60, 100, 0.95);
+  background: rgba(17,60,100,0.95);
 }
 
 .item-header {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 8px;
 }
 
 .item-header h3 {
   margin: 0;
   font-size: 15px;
   font-weight: 600;
-  color: #ffffff;
-}
-
-.item-header .date {
-  font-size: 12px;
-  color: #c0ccda;
+  color: #fff;
 }
 
 .preview {
-  margin: 2px 0 0;
   font-size: 13px;
   color: #d4dde7;
   overflow: hidden;
@@ -85,30 +72,21 @@
 }
 
 .meta {
-  margin-top: 2px;
   font-size: 12px;
   color: #9fa8b8;
 }
 
-.meta .employee {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-/* RIGHT – details + comments */
-
+/* Details panel */
 .details-panel {
   flex: 1;
   background: #081a2e;
   border-radius: 16px;
   border: 1px solid #1d3557;
   padding: 18px 20px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
   display: flex;
   flex-direction: column;
   gap: 16px;
-  overflow: hidden;
 }
 
 .panel-header {
@@ -134,20 +112,14 @@
   height: 32px;
   font-size: 16px;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s ease, color 0.15s ease;
+  display: grid;
+  place-items: center;
+  transition: .15s;
 }
 
 .close-btn:hover {
   background: #f28c28;
   color: #061727;
-}
-
-.report-info p {
-  margin: 2px 0;
-  font-size: 14px;
 }
 
 .report-box {
@@ -161,8 +133,7 @@
   color: #e3edf7;
 }
 
-/* comments */
-
+/* Comments */
 .comments-title {
   margin: 0;
   font-size: 18px;
@@ -173,15 +144,9 @@
 .comments-list {
   max-height: 220px;
   overflow-y: auto;
-  padding-right: 4px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-
-.comment-item {
-  display: flex;
-  justify-content: flex-start;
 }
 
 .comment-item .bubble {
@@ -190,27 +155,33 @@
   padding: 8px 10px;
   max-width: 70%;
   font-size: 13px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
 }
 
-.comment-item .bubble p {
-  margin: 0 0 4px;
+.my-message {
+  justify-content: flex-end;
 }
 
-.comment-item .bubble small {
-  font-size: 11px;
-  color: #9fa8b8;
+.my-message .bubble {
+  background-color: #ff7f32;
+  color: #0f2234;
+  border-radius: 18px 18px 4px 18px;
+  font-weight: 500;
 }
 
-/* add comment */
+.other-message .bubble {
+  background-color: #1a2a43;
+  color: #cfd9e4;
+  border-radius: 18px 18px 18px 4px;
+}
 
+/* Add comment box */
 .add-comment-box {
   margin-top: auto;
   border-top: 1px solid #243b55;
   padding-top: 8px;
   display: flex;
   gap: 10px;
-  align-items: flex-end;
 }
 
 .add-comment-box textarea {
@@ -223,9 +194,6 @@
   border: 1px solid #243b55;
   background: #05111f;
   color: #f5f7fa;
-  font-size: 13px;
-  font-family: inherit;
-  outline: none;
 }
 
 .add-comment-box textarea:focus {
@@ -240,20 +208,59 @@
   border-radius: 999px;
   font-size: 13px;
   cursor: pointer;
-  font-weight: 600;
-  transition: background 0.15s ease, transform 0.1s ease,
-    box-shadow 0.15s ease;
-  white-space: nowrap;
+  transition: .15s;
 }
 
 .send-btn:hover {
   background: #15b46a;
   transform: translateY(-1px);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
 }
 
-/* ===== Scrollbar style (nice on dark) ===== */
+/* Status edit */
+.status-edit-section {
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
+.status-dropdown {
+  background-color: #0e1b2e;
+  border: 1px solid #1d3a5c;
+  color: #d9e4ff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: .25s;
+}
+
+.status-dropdown:hover {
+  border-color: #ffb347;
+}
+
+.status-dropdown:focus {
+  border-color: #ff9100;
+  box-shadow: 0 0 5px rgba(255,153,0,0.5);
+}
+
+.status-edit-section .send-btn {
+  background-color: #1e8f4e;
+  padding: 6px 18px;
+  border-radius: 20px;
+}
+
+.status-edit-section .send-btn:hover {
+  background-color: #27a85e;
+}
+
+.status-edit-section .send-btn:disabled {
+  background-color: #2f5f40;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Scrollbars */
 .inbox::-webkit-scrollbar,
 .comments-list::-webkit-scrollbar {
   width: 6px;
@@ -265,21 +272,11 @@
   border-radius: 4px;
 }
 
-/* ===== Responsive ===== */
-
+/* Responsive */
 @media (max-width: 1024px) {
   .reports-page {
     flex-direction: column;
     height: auto;
-  }
-
-  .inbox {
-    max-width: 100%;
-    flex: 0 0 auto;
-  }
-
-  .details-panel {
-    flex: 0 0 auto;
   }
 }
 
@@ -287,121 +284,57 @@
   .reports-page {
     padding: 12px;
   }
-
-  .inbox {
-    padding: 12px;
-  }
-
-  .details-panel {
-    padding: 12px;
-  }
-
-  .item-header h3 {
-    font-size: 14px;
-  }
-
-  .preview {
-    font-size: 12px;
-  }
-
-  .report-box {
-    font-size: 13px;
-  }
-
-  .add-comment-box {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .send-btn {
-    align-self: flex-end;
-  }
-}
-.my-message {
-  justify-content: flex-end;
 }
 
+/* ===== VALIDATION STYLES ===== */
 
-.my-message .bubble {
-    background-color: #ff7f32;
-    color: #0f2234;
-    border-radius: 18px 18px 4px 18px;
-    font-weight: 500;
+.invalid-field {
+  border-color: #ff4d4d !important;
+  background-color: rgba(255,77,77,0.08) !important;
 }
 
-.other-message .bubble {
-    background-color: #1a2a43;
-    color: #cfd9e4;
-    border-radius: 18px 18px 18px 4px;
+.error {
+  color: #ff4d4d;
+  font-size: 13px;
+  margin-top: 4px;
+  font-weight: 500;
 }
 
-/* ====== STATUS EDIT SECTION ====== */
-
-.status-edit-section {
-  margin-top: 15px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.label-error {
+  color: #ff8080;
+  font-weight: 600;
 }
 
-.status-edit-section label {
-  color: #ffb347;
-  font-size: 15px;
+.required-star::after {
+  content: " *";
+  color: #ff4d4d;
+  font-weight: bold;
 }
 
-/* Select dropdown */
-.status-dropdown {
-  background-color: #0e1b2e;
-  border: 1px solid #1d3a5c;
-  color: #d9e4ff;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 14px;
-  outline: none;
-  cursor: pointer;
-  transition: 0.25s ease;
+.row-invalid {
+  background-color: rgba(255,77,77,0.15) !important;
 }
 
-.status-dropdown:hover {
-  border-color: #ffb347;
+.input-error-animate {
+  animation: shake 0.25s ease-in-out;
 }
 
-.status-dropdown:focus {
-  border-color: #ff9100;
-  box-shadow: 0 0 5px rgba(255, 153, 0, 0.5);
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-3px); }
+  40% { transform: translateX(3px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
 }
 
-/* Update button */
-.status-edit-section .send-btn {
-  background-color: #1e8f4e;
-  color: white;
-  padding: 6px 18px;
-  border-radius: 20px;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  transition: 0.25s ease;
+input.ng-touched.ng-invalid,
+textarea.ng-touched.ng-invalid,
+select.ng-touched.ng-invalid {
+  border-color: #ff4d4d !important;
 }
 
-.status-edit-section .send-btn:hover {
-  background-color: #27a85e;
-  transform: translateY(-2px);
-}
-
-.status-edit-section .send-btn:disabled {
-  background-color: #2f5f40;
-  cursor: not-allowed;
-  opacity: 0.5;
-}
-/* כל ה-CSS הקיים שלך — נשאר בדיוק אותו דבר */
-/* ... */
-/* ... */
-/* ... */
-
-/* =============================== */
-/*           TOAST GLOBAL          */
-/* =============================== */
-
+/* Toast */
 .toast {
   position: fixed;
   bottom: 24px;
@@ -413,7 +346,7 @@
   color: #fff;
   z-index: 9999;
   box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-  animation: slideIn 0.35s ease-out;
+  animation: slideIn .35s ease-out;
   max-width: 260px;
 }
 
@@ -427,5 +360,5 @@
 
 @keyframes slideIn {
   from { opacity: 0; transform: translateY(30px); }
-  to   { opacity: 1; transform: translateY(0); }
+  to { opacity: 1; transform: translateY(0); }
 }

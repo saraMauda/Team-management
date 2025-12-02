@@ -2,9 +2,8 @@
 
 <button class="add-btn" (click)="toggleAddForm()">+ Add Meeting</button>
 
-<!-- Add Meeting Form -->
+<!-- ADD MEETING FORM -->
 <div class="add-form" *ngIf="showAddForm">
-
   <h3>Create Meeting</h3>
 
   <!-- PROJECT -->
@@ -28,14 +27,12 @@
       [(ngModel)]="newMeeting.title"
       [ngClass]="{
         'invalid-field':
-          newMeeting.title &&
-          newMeeting.title.trim().length < 3
+          newMeeting.title && newMeeting.title.trim().length < 3
       }"
     />
 
     <div class="error"
-      *ngIf="newMeeting.title &&
-             newMeeting.title.trim().length < 3">
+      *ngIf="newMeeting.title && newMeeting.title.trim().length < 3">
       Title must be at least 3 characters.
     </div>
   </div>
@@ -107,14 +104,13 @@
   </div>
 </div>
 
-<!-- MEETING CARDS -->
+<!-- MEETINGS LIST -->
 <div class="meetings-list">
   <div class="meeting-card" *ngFor="let m of meetings">
 
     <div class="meeting-header">
       <h4>{{ m.title }}</h4>
 
-      <!-- STATUS — fully fixed -->
       <span class="status" [ngClass]="(m.status ?? '').toUpperCase()">
         {{ (m.status ?? '').toUpperCase() }}
       </span>
@@ -133,6 +129,107 @@
     </div>
 
     <p class="desc">{{ m.description }}</p>
+
+    <!-- ACTION BUTTONS -->
+    <div class="meeting-actions">
+      <button class="edit-btn" (click)="startEdit(m)">Edit</button>
+      <button class="delete-btn" (click)="deleteMeeting(m.meetingId)">Delete</button>
+    </div>
+
+    <!-- EDIT PANEL -->
+    <div class="edit-form" *ngIf="editingMeeting?.meetingId === m.meetingId">
+      <h4>Edit Meeting</h4>
+
+      <!-- PROJECT -->
+      <div class="form-row">
+        <label>Project</label>
+        <select [(ngModel)]="editingMeeting.projectId">
+          <option *ngFor="let p of leaderProjects" [ngValue]="p.id">
+            {{ p.name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- TITLE -->
+      <div class="form-row">
+        <label>Title</label>
+        <input
+          type="text"
+          [(ngModel)]="editingMeeting.title"
+          [ngClass]="{
+            'invalid-field':
+              ((editingMeeting?.title || '').trim().length < 3)
+          }"
+        />
+
+        <div class="error"
+          *ngIf="((editingMeeting?.title || '').trim().length < 3)">
+          Title must be at least 3 characters.
+        </div>
+      </div>
+
+      <!-- DATE -->
+      <div class="form-row">
+        <label>Date</label>
+        <input
+          type="date"
+          [(ngModel)]="editingMeeting.meetingDate"
+          [ngClass]="{
+            'invalid-field': !editingMeeting?.meetingDate
+          }"
+        />
+
+        <div class="error" *ngIf="!editingMeeting?.meetingDate">
+          Meeting date is required.
+        </div>
+      </div>
+
+      <!-- LOCATION -->
+      <div class="form-row">
+        <label>Location</label>
+        <input
+          type="text"
+          [(ngModel)]="editingMeeting.meetingLocation"
+          [ngClass]="{
+            'invalid-field':
+              ((editingMeeting?.meetingLocation || '').trim().length > 0) &&
+              ((editingMeeting?.meetingLocation || '').trim().length < 3)
+          }"
+        />
+
+        <div class="error"
+          *ngIf="((editingMeeting?.meetingLocation || '').trim().length > 0) &&
+                 ((editingMeeting?.meetingLocation || '').trim().length < 3)">
+          Location must be at least 3 characters.
+        </div>
+      </div>
+
+      <!-- DESCRIPTION -->
+      <div class="form-row">
+        <label>Description</label>
+        <textarea
+          [(ngModel)]="editingMeeting.description"
+          [ngClass]="{
+            'invalid-field':
+              ((editingMeeting?.description || '').trim().length > 0) &&
+              ((editingMeeting?.description || '').trim().length < 10)
+          }"
+        ></textarea>
+
+        <div class="error"
+          *ngIf="((editingMeeting?.description || '').trim().length > 0) &&
+                 ((editingMeeting?.description || '').trim().length < 10)">
+          Description must be at least 10 characters.
+        </div>
+      </div>
+
+      <!-- EDIT ACTIONS -->
+      <div class="form-actions">
+        <button class="save-btn" (click)="saveEdit()">Save</button>
+        <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
+      </div>
+
+    </div>
 
   </div>
 </div>
