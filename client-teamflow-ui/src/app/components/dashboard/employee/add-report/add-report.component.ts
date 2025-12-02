@@ -71,9 +71,46 @@ export class AddReportComponent implements OnInit {
     });
   }
 
+
+  /* =========================================================
+       FORM VALIDATION
+  ========================================================= */
+  isFormValid(): boolean {
+    if (!this.selectedProjectId) {
+      this.showToast('Please select a project.', 'error');
+      return false;
+    }
+
+    if (!this.title.trim() || this.title.trim().length < 3 || this.title.trim().length > 50) {
+      this.showToast('Title must be between 3 and 50 characters.', 'error');
+      return false;
+    }
+
+    if (!this.description.trim() || this.description.trim().length < 10) {
+      this.showToast('Description must be at least 10 characters.', 'error');
+      return false;
+    }
+
+    if (this.hours < 1 || this.hours > 12) {
+      this.showToast('Hours must be between 1 and 12.', 'error');
+      return false;
+    }
+
+    const validStatuses = ['IN_REVIEW', 'APPROVED', 'REJECTED'];
+    if (!validStatuses.includes(this.status)) {
+      this.showToast('Invalid status.', 'error');
+      return false;
+    }
+
+    return true;
+  }
+
+
+  /* =========================================================
+       SUBMIT REPORT
+  ========================================================= */
   submitReport(): void {
-    if (!this.selectedProjectId || !this.title.trim() || !this.description.trim()) {
-      this.showToast('Please fill out all required fields.', 'error');
+    if (!this.isFormValid()) {
       return;
     }
 
@@ -90,8 +127,8 @@ export class AddReportComponent implements OnInit {
       date: today,
       hours: this.hours,
       status: this.status,
-      description: this.description,
-      title: this.title
+      description: this.description.trim(),
+      title: this.title.trim()
     };
 
     this.loading = true;

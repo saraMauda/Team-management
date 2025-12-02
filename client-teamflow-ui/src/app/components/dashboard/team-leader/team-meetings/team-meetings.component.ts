@@ -34,7 +34,7 @@ export class TeamMeetingsComponent implements OnInit {
     status: 'SCHEDULED'
   };
 
-  // 🔔 Toast
+  // Toast
   toastVisible = false;
   toastMessage = '';
   toastType: 'success' | 'error' = 'success';
@@ -67,7 +67,6 @@ export class TeamMeetingsComponent implements OnInit {
   loadCurrentLeader(): void {
     const stored = localStorage.getItem('user');
     if (!stored) {
-      console.error('❌ No user in localStorage');
       this.showToast('User is not logged in.', 'error');
       return;
     }
@@ -82,7 +81,6 @@ export class TeamMeetingsComponent implements OnInit {
         this.loadMeetings();
       },
       error: () => {
-        console.error('❌ Cannot load leader user');
         this.showToast('Failed to load leader details.', 'error');
       }
     });
@@ -93,80 +91,26 @@ export class TeamMeetingsComponent implements OnInit {
       next: (all: any[]) => {
         this.projects = all || [];
         this.leaderProjects = this.projects.filter(p => p.leaderId === this.leaderId);
-        console.log('Leader Projects:', this.leaderProjects);
       },
       error: () => {
-        console.error('❌ Failed loading all projects');
         this.showToast('Failed to load projects.', 'error');
       }
     });
   }
 
   loadMeetings(): void {
-    this.http.get<any[]>(`${API_BASE_URL}/meetings`, {
-      withCredentials: true
-    }).subscribe({
+    this.http.get<any[]>(`${API_BASE_URL}/meetings`, { withCredentials: true }).subscribe({
       next: (data) => {
         this.meetings = data || [];
       },
       error: err => {
-        console.error('❌ Error loading meetings:', err);
         this.showToast('Failed to load meetings.', 'error');
       }
     });
   }
 
-  // ---------------- FORM ACTIONS ----------------
+  // ---------------- VALIDATION ----------------
 
-  toggleAddForm(): void {
-    this.showAddForm = !this.showAddForm;
-  }
-
-  createMeeting(): void {
-    // ולידציה – הכל עם Toast, בלי alert
-    if (this.newMeeting.projectId === 0) {
-      this.showToast('Please select a project.', 'error');
-      return;
-    }
-
-    if (!this.newMeeting.title.trim()) {
-      this.showToast('Please enter a meeting title.', 'error');
-      return;
-    }
-
-    if (!this.newMeeting.meetingDate) {
-      this.showToast('Please select a meeting date.', 'error');
-      return;
-    }
-
-    if (!this.newMeeting.description.trim()) {
-      this.showToast('Please enter a meeting description.', 'error');
-      return;
-    }
-
-    this.http.post(`${API_BASE_URL}/meetings/create`, this.newMeeting, {
-      withCredentials: true
-    }).subscribe({
-      next: () => {
-        this.showToast('Meeting created successfully.', 'success');
-        this.toggleAddForm();
-        this.loadMeetings();
-
-        this.newMeeting = {
-          projectId: 0,
-          title: '',
-          description: '',
-          meetingLocation: '',
-          meetingDate: '',
-          status: 'SCHEDULED'
-        };
-      },
-      error: err => {
-        console.error('❌ Error creating meeting:', err);
-        this.showToast('Failed to create meeting.', 'error');
-      }
-    });
-  }
   isMeetingFormValid(): boolean {
     const titleValid =
       !!this.newMeeting.title &&
@@ -189,5 +133,47 @@ export class TeamMeetingsComponent implements OnInit {
     return titleValid && dateValid && projectValid && locationValid && descValid;
   }
 
-}
+  // ---------------- CREATE MEETING ----------------
 
+  createMeeting(): void {
+    // חסימת שליחה אם לא תקין
+    if (!this.isMeetingFormValid()) {
+      this.showToast('Please fix validation errors.', 'error');
+      return;
+    }
+
+    const payload = {
+      ...this.newMeeting,
+      title: this.newMeeting.title.trim(),
+      description: this.newMeeting.description.trim(),
+      meetingLocation: this.newMeeting.meetingLocation.trim()
+    };
+
+    this.http.post(`${API_BASE_URL}/meetings/create`, payload, {
+      withCredentials: true
+    }).subscribe({
+      next: () => {
+        this.showToast('Meeting created successfully.', 'success');
+        this.toggleAddForm();
+        this.loadMeetings();
+
+        // reset form
+        this.newMeeting = {
+          projectId: 0,
+          title: '',
+          description: '',
+          meetingLocation: '',
+          meetingDate: '',
+          status: 'SCHEDULED'
+        };
+      },
+      error: err => {
+        this.showToast('Failed to create meeting.', 'error');
+      }
+    });
+  }
+
+  toggleAddForm(): void {
+    this.showAddForm = !this.showAddForm;
+  }
+}

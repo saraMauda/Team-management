@@ -14,7 +14,13 @@
     <!-- Project Name -->
     <div class="form-row">
       <label>Project Name</label>
-      <input type="text" [(ngModel)]="newProject.name" />
+      <input type="text"
+             [(ngModel)]="newProject.name"
+             [ngClass]="{ 'invalid-field': newProject.name.trim().length < 3 }" />
+
+      <div class="error" *ngIf="newProject.name.trim().length < 3">
+        Project name must be at least 3 characters.
+      </div>
     </div>
 
     <!-- Description -->
@@ -32,8 +38,15 @@
     <!-- End Date -->
     <div class="form-row">
       <label>End Date</label>
-      <input type="date" [(ngModel)]="newProject.endDate" />
-      <div class="error" *ngIf="newProject.startDate && newProject.endDate && !isDateRangeValid()">
+      <input type="date"
+             [(ngModel)]="newProject.endDate"
+             [ngClass]="{
+               'invalid-field':
+                 isDateOrderInvalid(newProject?.startDate ?? null, newProject?.endDate ?? null)
+             }" />
+
+      <div class="error"
+           *ngIf="isDateOrderInvalid(newProject?.startDate ?? null, newProject?.endDate ?? null)">
         End date must be after start date.
       </div>
     </div>
@@ -51,7 +64,8 @@
     <!-- Progress -->
     <div class="form-row">
       <label>Progress</label>
-      <input type="number" min="0" max="100" [(ngModel)]="newProject.progressPercentage" />
+      <input type="number" min="0" max="100"
+             [(ngModel)]="newProject.progressPercentage" />
     </div>
 
     <!-- Team Leader -->
@@ -63,6 +77,10 @@
           {{ leader.name }} ({{ leader.email }})
         </option>
       </select>
+
+      <div class="error" *ngIf="newProject.leaderId === null">
+        Leader is required.
+      </div>
     </div>
 
     <!-- Employees -->
@@ -81,10 +99,10 @@
 
         <label class="chip" *ngFor="let emp of availableEmployeesNew">
           <input type="checkbox"
-                 [checked]="newProject.employeeIds.includes(emp.id!)"
+                 [checked]="(newProject.employeeIds ?? []).includes(emp.id!)"
                  (change)="toggleEmployee($event, emp.id!)" />
 
-          <span class="chip-avatar">{{ emp.name.charAt(0) || '?' }}</span>
+          <span class="chip-avatar">{{ emp.name?.charAt(0) ?? '?' }}</span>
           <span class="chip-name">{{ emp.name }}</span>
         </label>
 
@@ -93,7 +111,9 @@
 
     <!-- Buttons -->
     <div class="edit-actions">
-      <button class="save-btn" (click)="addProject()" [disabled]="saving || !isNewProjectFormValid()">
+      <button class="save-btn"
+              (click)="addProject()"
+              [disabled]="saving || !isNewProjectFormValid()">
         {{ saving ? 'Saving...' : 'Save Project' }}
       </button>
 
@@ -110,7 +130,15 @@
     <!-- Project Name -->
     <div class="form-row">
       <label>Project Name</label>
-      <input type="text" [(ngModel)]="editingProject.name" />
+      <input type="text"
+             [(ngModel)]="editingProject.name"
+             [ngClass]="{
+               'invalid-field': ((editingProject?.name?.trim()?.length ?? 0) < 3)
+             }" />
+
+      <div class="error" *ngIf="(editingProject?.name?.trim()?.length ?? 0) < 3">
+        Project name must be at least 3 characters.
+      </div>
     </div>
 
     <!-- Description -->
@@ -128,7 +156,17 @@
     <!-- End Date -->
     <div class="form-row">
       <label>End Date</label>
-      <input type="date" [(ngModel)]="editingProject.endDate" />
+      <input type="date"
+             [(ngModel)]="editingProject.endDate"
+             [ngClass]="{
+               'invalid-field':
+                 isDateOrderInvalid(editingProject?.startDate ?? null, editingProject?.endDate ?? null)
+             }" />
+
+      <div class="error"
+           *ngIf="isDateOrderInvalid(editingProject?.startDate ?? null, editingProject?.endDate ?? null)">
+        End date must be after start date.
+      </div>
     </div>
 
     <!-- Status -->
@@ -144,7 +182,8 @@
     <!-- Progress -->
     <div class="form-row">
       <label>Progress</label>
-      <input type="number" min="0" max="100" [(ngModel)]="editingProject.progressPercentage" />
+      <input type="number" min="0" max="100"
+             [(ngModel)]="editingProject.progressPercentage" />
     </div>
 
     <!-- Leader -->
@@ -157,6 +196,10 @@
           {{ leader.name }} ({{ leader.email }})
         </option>
       </select>
+
+      <div class="error" *ngIf="editingProject?.leaderId === null">
+        Leader is required.
+      </div>
     </div>
 
     <!-- Employees -->
@@ -165,16 +208,16 @@
 
       <div class="checkbox-container">
 
-        <div *ngIf="!editingProject.leaderId" class="hint-text">
+        <div *ngIf="!editingProject?.leaderId" class="hint-text">
           Select a Team Leader to see their team members.
         </div>
 
         <label class="chip" *ngFor="let emp of availableEmployeesEdit">
           <input type="checkbox"
-                 [checked]="editingProject.employeeIds?.includes(emp.id!)"
+                 [checked]="(editingProject?.employeeIds ?? []).includes(emp.id!)"
                  (change)="toggleEmployeeEdit($event, emp.id!)" />
 
-          <span class="chip-avatar">{{ emp.name.charAt(0) }}</span>
+          <span class="chip-avatar">{{ emp.name?.charAt(0) ?? '?' }}</span>
           <span class="chip-name">{{ emp.name }}</span>
         </label>
 

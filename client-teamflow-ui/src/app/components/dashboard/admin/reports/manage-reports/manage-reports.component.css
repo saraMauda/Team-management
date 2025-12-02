@@ -1,264 +1,247 @@
-/* =========================================================
-   PAGE WRAPPER
-========================================================= */
-.admin-reports-page {
-    padding: 24px 32px;
-    background: #061727;
-    color: #f5f7fa;
-    min-height: calc(100vh - 80px);
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    direction: ltr;
+/* ====== WRAPPER ====== */
+.users-wrapper {
+  padding: 20px 30px;
+  color: #fff;
+  width: 100%;
 }
 
-/* =========================================================
-   CONTENT WRAPPER (MAIN LAYOUT)
-========================================================= */
-.content-wrapper {
-    display: flex;
-    gap: 24px;
-    flex: 1;
-}
-
-.content-wrapper > .team-wrapper {
-    flex: 1;
-}
-
-/* =========================================================
-   TITLES
-========================================================= */
+/* ====== PAGE TITLE ====== */
 .page-title {
-    font-size: 24px;
-    margin: 0 0 4px;
-    color: #f28c28;
+  font-size: 26px;
+  margin-bottom: 20px;
+  color: #f57c00;
+  font-weight: 700;
+  text-align: left;
 }
 
-.page-subtitle {
-    margin: 0 0 16px;
-    font-size: 14px;
-    color: #c0ccda;
+/* ====== ADD BUTTON ====== */
+.add-btn {
+  background-color: #1f3b5c;
+  border: 1px solid #285b8f;
+  color: #f57c00;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-weight: 600;
 }
 
-/* =========================================================
-   TEAM CARDS
-========================================================= */
-.team-wrapper {
-    margin-bottom: 16px;
+.add-btn:hover {
+  background-color: #24476c;
 }
 
-.team-card {
-    background: #0b2238;
-    border-radius: 16px;
-    border: 1px solid #f28c28;
-    padding: 14px 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-}
-
-.team-title {
-    margin: 0;
-    font-size: 18px;
-    color: #ffffff;
-}
-
-.team-email {
-    margin: 2px 0 10px;
-    font-size: 13px;
-    color: #c0ccda;
-}
-
-/* =========================================================
-   EMPLOYEE BLOCK
-========================================================= */
-.employee-card {
-    background: rgba(8, 25, 42, 0.9);
-    border-radius: 12px;
-    margin-bottom: 10px;
-    overflow: hidden;
-    border: 1px solid #243b55;
-}
-
-.employee-header {
-    padding: 8px 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    font-size: 14px;
-    background: rgba(12, 33, 54, 0.95);
-}
-
-.employee-header:hover {
-    background: rgba(20, 52, 82, 0.95);
-}
-
-.emp-name {
-    font-weight: 600;
-}
-
-.arrow {
-    font-size: 12px;
-    color: #c0ccda;
-}
-
-/* =========================================================
-   REPORTS LIST PER EMPLOYEE
-========================================================= */
-.reports-list {
-    padding: 6px 10px 10px;
-    max-height: 220px;
-    overflow-y: auto;
-    background: rgba(7, 23, 39, 0.95);
-}
-
-.no-reports {
-    font-size: 13px;
-    color: #9fa8b8;
-    padding: 4px 2px;
-}
-
-/* =========================================================
-   REPORT ROWS (MAIL STYLE)
-========================================================= */
-.report-row {
-    padding: 8px 10px;
-    border-radius: 10px;
-    background: rgba(10, 30, 50, 0.9);
-    margin-bottom: 6px;
-    cursor: pointer;
-    transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
-}
-
-.report-row:hover {
-    background: rgba(16, 50, 80, 0.95);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-}
-
-.report-row h4 {
-    margin: 0 0 2px;
-    font-size: 14px;
-}
-
-.report-row p {
-    margin: 0;
-    font-size: 13px;
-    color: #d4dde7;
-}
-
-.report-row .desc {
-    margin-top: 2px;
-    font-size: 12px;
-    color: #c0ccda;
-}
-
-/* =========================================================
-   SIDE PANEL (REPORT DETAILS)
-========================================================= */
+/* ====== PANEL ====== */
 .panel {
-    flex: 0 0 30%;
-    max-width: 420px;
-    background: #081a2e;
-    border-radius: 16px;
-    border: 1px solid #1d3557;
-    padding: 16px 18px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
-    position: sticky;
-    top: 24px;
-    align-self: flex-start;
+  background-color: #0d1b2a;
+  border: 1px solid rgba(255, 127, 50, 0.3);
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 25px;
 }
 
-.panel h2 {
-    margin: 0 0 8px;
-    font-size: 20px;
-    color: #f28c28;
+.panel-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #f57c00;
 }
 
-.panel .panel-box {
-    margin-top: 6px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    background: #0d2034;
-    border: 1px solid #243b55;
-    min-height: 60px;
-    font-size: 14px;
+/* ====== FORM ROW ====== */
+.form-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
 }
 
-.panel p {
-    margin: 2px 0;
-    font-size: 14px;
+label {
+  margin-bottom: 5px;
+  font-weight: 600;
 }
 
-.panel .close-btn {
-    float: right;
-    margin-left: 8px;
-    background: transparent;
-    border: 1px solid #f28c28;
-    color: #f28c28;
-    border-radius: 999px;
-    width: 28px;
-    height: 28px;
-    font-size: 14px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.15s ease, color 0.15s ease;
+input,
+select {
+  padding: 8px 10px;
+  border-radius: 5px;
+  border: 1px solid #285b8f;
+  background-color: #10263b;
+  color: white;
 }
 
-.panel .close-btn:hover {
-    background: #f28c28;
-    color: #061727;
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #f57c00;
 }
 
-/* =========================================================
-   CUSTOM SCROLLBAR
-========================================================= */
-.reports-list::-webkit-scrollbar {
-    width: 6px;
+/* ====== INVALID FIELD ====== */
+.invalid-field {
+  border-color: #ff4e4e !important;
+  background-color: rgba(255, 50, 50, 0.15);
 }
 
-.reports-list::-webkit-scrollbar-thumb {
-    background: #243b55;
-    border-radius: 4px;
+/* ERROR MESSAGE */
+.error {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #ff6b6b;
 }
 
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-@media (max-width: 1100px) {
-    .content-wrapper {
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .admin-reports-page {
-        padding: 16px;
-        gap: 16px;
-    }
-
-    .panel {
-        position: static;
-        max-width: 100%;
-        margin-top: 8px;
-    }
+/* ====== ACTION BUTTONS ====== */
+.edit-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
 }
 
-@media (max-width: 600px) {
-    .admin-reports-page {
-        padding: 12px;
-    }
+.save-btn,
+.cancel-btn {
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
 
-    .team-card {
-        padding: 10px 12px;
-    }
+.save-btn {
+  background-color: #285b8f;
+  border: 1px solid #3b6fa8;
+  color: #fff;
+}
 
-    .employee-header {
-        font-size: 13px;
-    }
+.save-btn:hover {
+  background-color: #3279b3;
+}
 
-    .report-row {
-        font-size: 13px;
-    }
+.cancel-btn {
+  background-color: transparent;
+  border: 1px solid #999;
+  color: #ccc;
+}
+
+.cancel-btn:hover {
+  background-color: rgba(255,255,255,0.1);
+}
+
+/* ====== TABLE ====== */
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.users-table th,
+.users-table td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.users-table th {
+  color: #f57c00;
+  font-weight: 700;
+  background-color: #132b45;
+}
+
+.users-table tr:hover {
+  background-color: rgba(255,127,50,0.12);
+}
+
+/* ====== TABLE BUTTONS ====== */
+.edit-btn {
+  background-color: #2b6dad;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #fff;
+  font-weight: 600;
+}
+
+.edit-btn:hover {
+  background-color: #3880c0;
+}
+
+.delete-btn {
+  background-color: #b83232;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #fff;
+  font-weight: 600;
+}
+
+delete-btn:hover {
+  background-color: #d64545;
+}
+
+/* ====== EMPTY TEXT ====== */
+.empty-text {
+  text-align: center;
+  padding: 20px;
+  color: #ccc;
+}
+
+/* ====== CONFIRM MODAL ====== */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.confirm-box {
+  background: #0d1b2a;
+  border: 1px solid #f57c00;
+  padding: 25px;
+  border-radius: 10px;
+  width: 350px;
+  text-align: center;
+}
+
+.confirm-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #f57c00;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* ====== TOAST ====== */
+.toast {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: #10263b;
+  padding: 15px 25px;
+  border-radius: 8px;
+  border-left: 5px solid #fff;
+  color: white;
+  font-weight: 600;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.toast-success {
+  border-color: #3fcf5c;
+}
+
+.toast-error {
+  border-color: #ff4646;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.error {
+  color: #ff4d4d;
+  font-size: 12px;
+  margin-top: 4px;
 }

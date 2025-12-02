@@ -7,6 +7,7 @@
 
   <h3>Create Meeting</h3>
 
+  <!-- PROJECT -->
   <div class="form-row">
     <label>Project</label>
     <select [(ngModel)]="newMeeting.projectId">
@@ -19,48 +20,89 @@
     </div>
   </div>
 
+  <!-- TITLE -->
   <div class="form-row">
     <label>Title</label>
-    <input type="text" [(ngModel)]="newMeeting.title">
+    <input
+      type="text"
+      [(ngModel)]="newMeeting.title"
+      [ngClass]="{
+        'invalid-field':
+          newMeeting.title &&
+          newMeeting.title.trim().length < 3
+      }"
+    />
 
-    <div class="error" *ngIf="newMeeting.title && newMeeting.title.trim().length < 3">
+    <div class="error"
+      *ngIf="newMeeting.title &&
+             newMeeting.title.trim().length < 3">
       Title must be at least 3 characters.
     </div>
   </div>
 
+  <!-- DATE -->
   <div class="form-row">
     <label>Date</label>
-    <input type="date" [(ngModel)]="newMeeting.meetingDate">
+    <input
+      type="date"
+      [(ngModel)]="newMeeting.meetingDate"
+      [ngClass]="{'invalid-field': !newMeeting.meetingDate}"
+    />
 
     <div class="error" *ngIf="!newMeeting.meetingDate">
       Meeting date is required.
     </div>
   </div>
 
+  <!-- LOCATION -->
   <div class="form-row">
     <label>Location</label>
-    <input type="text" [(ngModel)]="newMeeting.meetingLocation">
+    <input
+      type="text"
+      [(ngModel)]="newMeeting.meetingLocation"
+      [ngClass]="{
+        'invalid-field':
+          newMeeting.meetingLocation &&
+          newMeeting.meetingLocation.trim().length < 3
+      }"
+    />
 
-    <div class="error" *ngIf="newMeeting.meetingLocation &&
-              newMeeting.meetingLocation.trim().length < 3">
+    <div class="error"
+      *ngIf="newMeeting.meetingLocation &&
+             newMeeting.meetingLocation.trim().length < 3">
       Location must be at least 3 characters.
     </div>
   </div>
 
+  <!-- DESCRIPTION -->
   <div class="form-row">
     <label>Description</label>
-    <textarea [(ngModel)]="newMeeting.description"></textarea>
+    <textarea
+      [(ngModel)]="newMeeting.description"
+      [ngClass]="{
+        'invalid-field':
+          newMeeting.description &&
+          newMeeting.description.trim().length > 0 &&
+          newMeeting.description.trim().length < 10
+      }"
+    ></textarea>
 
-    <div class="error" *ngIf="newMeeting.description &&
-              newMeeting.description.trim().length < 10">
+    <div class="error"
+      *ngIf="newMeeting.description &&
+             newMeeting.description.trim().length > 0 &&
+             newMeeting.description.trim().length < 10">
       Description must be at least 10 characters.
     </div>
   </div>
 
+  <!-- ACTION BUTTONS -->
   <div class="form-actions">
-    <button class="save-btn" (click)="createMeeting()" [disabled]="!isMeetingFormValid()">
+    <button class="save-btn"
+            (click)="createMeeting()"
+            [disabled]="!isMeetingFormValid()">
       Create
     </button>
+
     <button class="cancel-btn" (click)="toggleAddForm()">Cancel</button>
   </div>
 </div>
@@ -71,8 +113,10 @@
 
     <div class="meeting-header">
       <h4>{{ m.title }}</h4>
-      <span class="status" [ngClass]="m.status?.toUpperCase()">
-        {{ m.status | uppercase }}
+
+      <!-- STATUS — fully fixed -->
+      <span class="status" [ngClass]="(m.status ?? '').toUpperCase()">
+        {{ (m.status ?? '').toUpperCase() }}
       </span>
     </div>
 
@@ -93,7 +137,7 @@
   </div>
 </div>
 
-<!-- Toast Notification -->
+<!-- TOAST -->
 <div class="toast" *ngIf="toastVisible" [ngClass]="toastType">
   {{ toastMessage }}
 </div>

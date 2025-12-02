@@ -21,6 +21,9 @@ export class EditProfileModalComponent {
   imagePreview?: string | null = null;
   selectedFile: File | null = null;
 
+  toastMessage = '';
+  toastType: 'success' | 'error' | null = null;
+
   constructor(private usersService: UsersService) {}
 
   ngOnInit() {
@@ -29,6 +32,18 @@ export class EditProfileModalComponent {
     this.imagePreview = this.user.image;
   }
 
+  /* ------- TOAST ------- */
+  showToast(type: 'success' | 'error', msg: string) {
+    this.toastType = type;
+    this.toastMessage = msg;
+
+    setTimeout(() => {
+      this.toastType = null;
+      this.toastMessage = '';
+    }, 5000);
+  }
+
+  /* ------- IMAGE SELECT ------- */
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (!file) return;
@@ -36,27 +51,53 @@ export class EditProfileModalComponent {
     this.selectedFile = file;
 
     const reader = new FileReader();
-    reader.onload = () => {
-      this.imagePreview = reader.result as string;
-    };
+    reader.onload = () => this.imagePreview = reader.result as string;
     reader.readAsDataURL(file);
   }
 
+  /* ------- SAVE ------- */
   save() {
+    // Name validation
+    if (!this.name || this.name.trim().length < 2) {
+      this.showToast('error', "Name is too short");
+      return;
+    }
+
+    // Email required
+    if (!this.email || this.email.trim().length === 0) {
+      this.showToast('error', "Email is required");
+      return;
+    }
+
+    // Company email validation
+    const companyEmailRegex = /^[A-Za-z0-9._%+-]+@teamflow\.com$/;
+    if (!companyEmailRegex.test(this.email)) {
+      this.showToast('error', "Email must end with @teamflow.com");
+      return;
+    }
+
     const updated = {
       ...this.user,
       name: this.name,
       email: this.email
     };
 
-    this.usersService.update(this.user.id, updated).subscribe(() => {
-      if (this.selectedFile) {
-        this.usersService.uploadImage(this.user.id, this.selectedFile).subscribe(() => {
-          this.close.emit();
-        });
-      } else {
-        this.close.emit();
-      }
+    this.usersService.update(this.user.id, updated).subscribe({
+      next: () => {
+        if (this.selectedFile) {
+          this.usersService.uploadImage(this.user.id, this.selectedFile).subscribe({
+            next: () => {
+              this.showToast('success', 'Profile updated successfully');
+              setTimeout(() => this.close.emit(), 1000);
+            },
+            error: () => this.showToast('error', 'Image upload failed')
+          });
+        } else {
+          this.showToast('success', 'Profile updated successfully');
+          setTimeout(() => this.close.emit(), 1000);
+        }
+      },
+      error: () => this.showToast('error', 'Update failed')
     });
   }
 

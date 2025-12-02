@@ -74,7 +74,6 @@ export class ManageProjectsComponent implements OnInit {
     this.toastMessage = msg;
     this.toastType = type;
     this.toastVisible = true;
-
     setTimeout(() => this.toastVisible = false, 5000);
   }
 
@@ -155,8 +154,8 @@ export class ManageProjectsComponent implements OnInit {
   }
 
   addProject(): void {
-    if (!this.newProject.name || !this.newProject.leaderId) {
-      this.showToast('Project must have a name and leader.', 'error');
+    if (!this.isNewProjectFormValid()) {
+      this.showToast('Please complete all required fields.', 'error');
       return;
     }
 
@@ -222,6 +221,11 @@ export class ManageProjectsComponent implements OnInit {
   updateProject(): void {
     if (!this.editingProject || this.editingProject.id == null) return;
 
+    if (!this.isEditProjectFormValid()) {
+      this.showToast('Please correct form errors before saving.', 'error');
+      return;
+    }
+
     this.saving = true;
 
     this.projectsService.update(this.editingProject.id, this.editingProject).subscribe({
@@ -274,29 +278,35 @@ export class ManageProjectsComponent implements OnInit {
 
   /* ------------------ VALIDATION ------------------- */
 
-  isDateRangeValid(): boolean {
-    if (!this.newProject.startDate || !this.newProject.endDate) return true;
-    return new Date(this.newProject.endDate) >= new Date(this.newProject.startDate);
+  isDateOrderInvalid(start: string | null, end: string | null): boolean {
+    if (!start || !end) return false;
+    return new Date(end) < new Date(start);
   }
 
   isNewProjectFormValid(): boolean {
     return (
       this.newProject.name.trim().length >= 3 &&
       this.newProject.leaderId !== null &&
-      this.isDateRangeValid()
+      !this.isDateOrderInvalid(this.newProject.startDate, this.newProject.endDate)
     );
   }
 
   isEditProjectFormValid(): boolean {
     if (!this.editingProject) return false;
-    return true;
+
+    const nameValid = (this.editingProject.name?.trim().length ?? 0) >= 3;
+    const leaderValid = this.editingProject.leaderId !== null;
+    const datesValid = !this.isDateOrderInvalid(
+      this.editingProject.startDate ?? null,
+      this.editingProject.endDate ?? null
+    );
+
+    return nameValid && leaderValid && datesValid;
   }
 
-
-onEditLeaderChange(leaderId: number | null): void {
-  if (!this.editingProject) return;
-  this.editingProject.leaderId = leaderId ?? null;
-  this.syncAvailableEmployeesForEdit();
-}
-
+  onEditLeaderChange(leaderId: number | null): void {
+    if (!this.editingProject) return;
+    this.editingProject.leaderId = leaderId ?? null;
+    this.syncAvailableEmployeesForEdit();
+  }
 }

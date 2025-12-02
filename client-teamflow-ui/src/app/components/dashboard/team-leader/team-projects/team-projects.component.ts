@@ -1,3 +1,4 @@
+// --- קובץ מלא, מתוקן ובטוח ---
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -23,12 +24,13 @@ export class TeamProjectsComponent implements OnInit {
   loading = true;
   error: string | null = null;
   currentUserId: number | null = null;
+
   teams: TeamDTO[] = [];
   leaderTeamMembers: UsersDTO[] = [];
+
   editingProject: ProjectDTO | null = null;
   saving = false;
 
-  // ---------------------- TOAST ----------------------
   toastVisible = false;
   toastMessage = '';
   toastType: 'success' | 'error' = 'success';
@@ -47,11 +49,9 @@ export class TeamProjectsComponent implements OnInit {
     this.toastMessage = msg;
     this.toastType = type;
     this.toastVisible = true;
-
     setTimeout(() => (this.toastVisible = false), 5000);
   }
 
-  // ----------------------------------------------------
   loadCurrentUser(): void {
     const stored = localStorage.getItem('user');
     if (!stored) {
@@ -60,7 +60,7 @@ export class TeamProjectsComponent implements OnInit {
       return;
     }
 
-    const email = JSON.parse(stored).email;
+    const email = JSON.parse(stored).email ?? "";
     if (!email) {
       this.error = 'User email not found.';
       this.loading = false;
@@ -79,13 +79,12 @@ export class TeamProjectsComponent implements OnInit {
     });
   }
 
-  // ----------------------------------------------------
   loadTeamsAndProjects(): void {
     this.teamService.getAllTeams().subscribe({
       next: teams => {
         this.teams = teams;
-        const myTeam = teams.find(t => t.leaderId === this.currentUserId) || null;
-        this.leaderTeamMembers = myTeam?.members || [];
+        const myTeam = teams.find(t => t.leaderId === this.currentUserId) ?? null;
+        this.leaderTeamMembers = myTeam?.members ?? [];
         this.loadProjectsForLeader();
       },
       error: () => {
@@ -108,11 +107,10 @@ export class TeamProjectsComponent implements OnInit {
     });
   }
 
-  // ----------------------------------------------------
   openEdit(p: ProjectDTO) {
     this.editingProject = {
       ...p,
-      employeeIds: p.employeeIds ? [...p.employeeIds] : []
+      employeeIds: [...(p.employeeIds ?? [])]
     };
   }
 
@@ -124,6 +122,7 @@ export class TeamProjectsComponent implements OnInit {
     if (!this.editingProject) return;
 
     const checked = (event.target as HTMLInputElement).checked;
+
     if (!Array.isArray(this.editingProject.employeeIds)) {
       this.editingProject.employeeIds = [];
     }
@@ -137,7 +136,40 @@ export class TeamProjectsComponent implements OnInit {
     }
   }
 
-  // ----------------------------------------------------
+  isDateRangeInvalid(): boolean {
+    if (!this.editingProject?.startDate || !this.editingProject?.endDate) return false;
+    return new Date(this.editingProject.endDate) < new Date(this.editingProject.startDate);
+  }
+
+  isEditFormValid(): boolean {
+    if (!this.editingProject) return false;
+
+    const name = this.editingProject.name ?? "";
+    const desc = this.editingProject.description ?? "";
+    const progress = this.editingProject.progressPercentage ?? 0;
+    const status = this.editingProject.status ?? "";
+
+    const nameValid = name.trim().length >= 3 && name.trim().length <= 40;
+    const descValid = desc.trim() === "" || desc.trim().length >= 10;
+    const startValid = !!this.editingProject.startDate;
+    const endValid = !!this.editingProject.endDate;
+    const datesValid = startValid && endValid && !this.isDateRangeInvalid();
+    const statusValid = ['ACTIVE', 'COMPLETED', 'ON_HOLD'].includes(status);
+    const progressValid = progress >= 0 && progress <= 100;
+    const employeesValid = Array.isArray(this.editingProject.employeeIds);
+
+    return (
+      nameValid &&
+      descValid &&
+      startValid &&
+      endValid &&
+      datesValid &&
+      progressValid &&
+      statusValid &&
+      employeesValid
+    );
+  }
+
   updateProject() {
     if (!this.editingProject?.id) return;
 
@@ -146,11 +178,16 @@ export class TeamProjectsComponent implements OnInit {
       return;
     }
 
+    if (!this.currentUserId) {
+      this.showToast('Cannot update: user not identified.', 'error');
+      return;
+    }
+
     this.saving = true;
 
     const payload: ProjectDTO = {
       ...this.editingProject,
-      leaderId: this.currentUserId!
+      leaderId: this.currentUserId
     };
 
     this.projectsService.update(this.editingProject.id, payload).subscribe({
@@ -167,7 +204,6 @@ export class TeamProjectsComponent implements OnInit {
     });
   }
 
-  // ----------------------------------------------------
   deleteProject(id: number) {
     this.projectsService.delete(id).subscribe({
       next: () => {
@@ -180,39 +216,11 @@ export class TeamProjectsComponent implements OnInit {
     });
   }
 
-  // ----------------------------------------------------
   getProgressColor(progress: number | null | undefined): string {
-    if (progress == null) return '#999';
-    if (progress >= 80) return '#4caf50';
-    if (progress >= 50) return '#ff9800';
-    return '#f44336';
-  }
-
-  isDateRangeInvalid(): boolean {
-    if (!this.editingProject?.startDate || !this.editingProject?.endDate) return false;
-    return new Date(this.editingProject.endDate) < new Date(this.editingProject.startDate);
-  }
-
-  isEditFormValid(): boolean {
-    if (!this.editingProject) return false;
-
-    const nameValid =
-      !!this.editingProject.name &&
-      this.editingProject.name.trim().length >= 3 &&
-      this.editingProject.name.trim().length <= 40;
-
-    const descValid =
-      !this.editingProject.description ||
-      this.editingProject.description.trim().length >= 10;
-
-    const startValid = !!this.editingProject.startDate;
-    const endValid = !!this.editingProject.endDate;
-
-    const datesValid = startValid && endValid && !this.isDateRangeInvalid();
-
-    const progress = this.editingProject.progressPercentage ?? 0;
-    const progressValid = progress >= 0 && progress <= 100;
-
-    return nameValid && descValid && startValid && endValid && datesValid && progressValid;
+    const val = progress ?? 0;
+    if (val >= 80) return '#4caf50';
+    if (val >= 50) return '#ff9800';
+    if (val >= 0) return '#f44336';
+    return '#999';
   }
 }

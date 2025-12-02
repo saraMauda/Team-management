@@ -17,32 +17,66 @@
   <div *ngIf="showAddForm" class="add-user-form panel">
 
     <div class="form-grid">
+
+      <!-- NAME -->
       <div class="form-col">
         <label>Name</label>
-        <input type="text" [(ngModel)]="newUser.name" placeholder="User name" />
+        <input type="text"
+               [(ngModel)]="newUser.name"
+               (ngModelChange)="markAddTouched()"
+               placeholder="Full Name (First Last)"
+               [ngClass]="{ 'invalid-field': addTouched && isAddNameInvalid() }" />
+
+        <div class="error" *ngIf="addTouched && isAddNameInvalid()">
+          Full name must include first & last name (min 2 letters each).
+        </div>
       </div>
 
+      <!-- EMAIL -->
       <div class="form-col">
         <label>Email</label>
-        <input type="email" [(ngModel)]="newUser.email" placeholder="Email address" />
+        <input type="email"
+               [(ngModel)]="newUser.email"
+               (ngModelChange)="markAddTouched()"
+               placeholder="email@teamflow.com"
+               [ngClass]="{ 'invalid-field': addTouched && isAddEmailInvalid() }" />
+
+        <div class="error" *ngIf="addTouched && isAddEmailInvalid()">
+            Email must be valid and end with &#64;teamflow.com.
+        </div>
       </div>
 
+      <!-- PASSWORD -->
       <div class="form-col">
         <label>Password</label>
-        <input type="password" [(ngModel)]="newUser.password" placeholder="Initial password" />
+        <input type="password"
+               [(ngModel)]="newUser.password"
+               (ngModelChange)="markAddTouched()"
+               placeholder="Initial password"
+               [ngClass]="{
+                 'invalid-field': addTouched && newUser.password && newUser.password.length < 4
+               }" />
+
+        <div class="error" *ngIf="addTouched && newUser.password && newUser.password.length < 4">
+          Password must be at least 4 characters.
+        </div>
       </div>
 
+      <!-- ROLE -->
       <div class="form-col">
         <label>Role</label>
-        <select [(ngModel)]="newUser.role">
+        <select [(ngModel)]="newUser.role" (ngModelChange)="markAddTouched()">
           <option value="ROLE_EMPLOYEE">Employee</option>
           <option value="ROLE_TEAMLEADER">Team Leader</option>
         </select>
       </div>
+
     </div>
 
     <div class="form-actions">
-      <button class="save-btn" (click)="addUser()" [disabled]="saving">
+      <button class="save-btn"
+              (click)="addUser()"
+              [disabled]="saving || !isAddUserFormValid()">
         {{ saving ? 'Saving...' : 'Save User' }}
       </button>
     </div>
@@ -69,8 +103,8 @@
           <tr>
             <td>
               <img *ngIf="user.image"
-                   [src]="user.image.startsWith('data:') ? user.image : 'data:image/png;base64,' + user.image"
-                   class="profile-img"/>
+                [src]="user.image.startsWith('data:') ? user.image : 'data:image/png;base64,' + user.image"
+                class="profile-img"/>
 
               <div *ngIf="!user.image" class="placeholder-img">👤</div>
             </td>
@@ -105,24 +139,45 @@
       <h3>Edit User</h3>
 
       <div class="edit-grid">
+
+        <!-- NAME -->
         <div class="field">
           <label>Name</label>
-          <input type="text" [(ngModel)]="editingUser.name" />
+          <input type="text"
+                 [(ngModel)]="editingUser.name"
+                 (ngModelChange)="markEditTouched()"
+                 [ngClass]="{ 'invalid-field': editTouched && isEditNameInvalid() }" />
+
+          <div class="error" *ngIf="editTouched && isEditNameInvalid()">
+            Full name must include first & last name (min 2 letters each).
+          </div>
         </div>
 
+        <!-- EMAIL -->
         <div class="field">
           <label>Email</label>
-          <input type="text" [(ngModel)]="editingUser.email" />
+          <input type="text"
+                 [(ngModel)]="editingUser.email"
+                 (ngModelChange)="markEditTouched()"
+                 [ngClass]="{ 'invalid-field': editTouched && isEditEmailInvalid() }" />
+
+          <div class="error" *ngIf="editTouched && isEditEmailInvalid()">
+              Email must be valid and end with &#64;teamflow.com.
+          </div>
+
+
         </div>
 
+        <!-- ROLE -->
         <div class="field">
           <label>Role</label>
-          <select [(ngModel)]="editingUser.role">
+          <select [(ngModel)]="editingUser.role" (ngModelChange)="markEditTouched()">
             <option value="ROLE_EMPLOYEE">Employee</option>
             <option value="ROLE_TEAMLEADER">Team Leader</option>
           </select>
         </div>
 
+        <!-- STATUS -->
         <div class="field">
           <label>Status</label>
           <select [(ngModel)]="editingUser.active">
@@ -131,6 +186,7 @@
           </select>
         </div>
 
+        <!-- PROFILE IMAGE -->
         <div class="field full">
           <label>Profile Image</label>
           <input type="file" (change)="onEditImageSelected($event)" />
@@ -139,11 +195,15 @@
       </div>
 
       <div class="panel-actions">
-        <button class="save-btn" (click)="updateUser()" [disabled]="saving">
+        <button class="save-btn"
+                (click)="updateUser()"
+                [disabled]="saving || !isEditFormValid()">
           {{ saving ? 'Saving...' : 'Save Changes' }}
         </button>
+
         <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
       </div>
+
     </div>
   </div>
 
@@ -161,6 +221,7 @@
     </div>
 
     <div class="teams-grid" *ngIf="teamLeaders.length > 0">
+
       <div class="team-card" *ngFor="let leader of teamLeaders">
 
         <div class="team-header">
@@ -168,6 +229,7 @@
             <div class="leader-avatar">
               {{ leader.name.charAt(0) }}
             </div>
+
             <div class="leader-text">
               <div class="leader-name">{{ leader.name }}</div>
               <div class="leader-email">{{ leader.email }}</div>
@@ -201,6 +263,7 @@
 
             <select [(ngModel)]="selectedMemberToAdd[leader.id!]">
               <option [ngValue]="null">-- Select Employee --</option>
+
               <option *ngFor="let emp of teamEmployees"
                       [ngValue]="emp.id"
                       [disabled]="isMemberInTeam(leader.id!, emp.id!)">
@@ -215,16 +278,19 @@
 
         </div>
       </div>
+
     </div>
   </div>
 
 </div>
 
-<!-- ⭐ DELETE CONFIRMATION MODAL -->
+<!-- DELETE CONFIRMATION MODAL -->
 <div class="confirm-overlay" *ngIf="confirmDeleteId !== null">
   <div class="confirm-box">
     <div class="confirm-title">Are you sure?</div>
-    <div class="confirm-text">This action will permanently remove this user.</div>
+    <div class="confirm-text">
+      This action will permanently remove this user.
+    </div>
 
     <div class="confirm-actions">
       <button class="cancel-btn" (click)="closeDeleteConfirm()">Cancel</button>
@@ -233,7 +299,7 @@
   </div>
 </div>
 
-<!-- ⭐ TOAST -->
+<!-- TOAST -->
 <div class="toast-container" *ngIf="toastMessage">
   <div class="toast-box" [ngClass]="toastType">
     {{ toastMessage }}

@@ -137,3 +137,13 @@ button:hover {
   color: #fff;
   border-left: 6px solid #ff4d4d;
 }
+.invalid-field {
+  border-color: #ff4d4d !important;
+  background-color: #3a1f1f !important;
+}
+
+.error {
+  color: #ff4d4d;
+  font-size: 13px;
+  margin-top: 4px;
+}

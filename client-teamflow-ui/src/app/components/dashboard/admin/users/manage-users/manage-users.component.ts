@@ -25,6 +25,9 @@ export class ManageUsersComponent implements OnInit {
   showEditForm = false;
   saving = false;
 
+  addTouched = false;
+  editTouched = false;
+  
   newUser = {
     name: '',
     email: '',
@@ -32,8 +35,6 @@ export class ManageUsersComponent implements OnInit {
     role: 'ROLE_EMPLOYEE',
     active: true
   };
-
-
 
   editingUser: UsersDTO | null = null;
   editingImageFile: File | null = null;
@@ -47,7 +48,7 @@ export class ManageUsersComponent implements OnInit {
   selectedMemberToAdd: { [leaderId: number]: number | null } = {};
 
   /* ---------------------------------------------------------
-     TOAST SYSTEM
+     TOAST
   --------------------------------------------------------- */
   toastMessage: string | null = null;
   toastType: 'success' | 'error' = 'success';
@@ -62,7 +63,7 @@ export class ManageUsersComponent implements OnInit {
   }
 
   /* ---------------------------------------------------------
-     DELETE CONFIRMATION MODAL
+     DELETE MODAL
   --------------------------------------------------------- */
   confirmDeleteId: number | null = null;
 
@@ -102,17 +103,12 @@ export class ManageUsersComponent implements OnInit {
     });
   }
 
-  /* ---------------------------------------------------------
-     LOAD TEAMS
-  --------------------------------------------------------- */
   loadTeams(): void {
     this.teamService.getAllTeams().subscribe({
       next: (data) => {
         this.teams = data || [];
       },
-      error: () => {
-        console.error('Failed to load teams');
-      }
+      error: () => console.error('Failed to load teams')
     });
   }
 
@@ -122,11 +118,46 @@ export class ManageUsersComponent implements OnInit {
   }
 
   /* ---------------------------------------------------------
+     VALIDATION — ADD USER
+  --------------------------------------------------------- */
+
+  isAddNameInvalid(): boolean {
+    if (!this.newUser.name) return true;
+
+    const parts = this.newUser.name.trim().split(' ');
+
+    return (
+      parts.length < 2 ||
+      parts[0].length < 2 ||
+      parts[1].length < 2
+    );
+  }
+
+  isAddEmailInvalid(): boolean {
+    if (!this.newUser.email) return true;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const endsCorrect = this.newUser.email.trim().toLowerCase().endsWith('@teamflow.com');
+
+    return (!emailRegex.test(this.newUser.email.trim()) || !endsCorrect);
+  }
+
+  isAddUserFormValid(): boolean {
+    const nameValid = !this.isAddNameInvalid();
+    const emailValid = !this.isAddEmailInvalid();
+    const passwordValid =
+      !this.newUser.password || this.newUser.password.length >= 4;
+    const roleValid = !!this.newUser.role;
+
+    return nameValid && emailValid && passwordValid && roleValid;
+  }
+
+  /* ---------------------------------------------------------
      ADD USER
   --------------------------------------------------------- */
   addUser(): void {
     if (!this.isAddUserFormValid()) {
-      alert("❌ Invalid user data. Please check the fields.");
+      this.showToast("Invalid user data. Please check all fields.", "error");
       return;
     }
 
@@ -165,29 +196,41 @@ export class ManageUsersComponent implements OnInit {
     };
     this.showAddForm = false;
   }
-  isEmailInvalid(): boolean {
-    if (!this.newUser.email) return false;
+
+  /* ---------------------------------------------------------
+     VALIDATION — EDIT USER
+  --------------------------------------------------------- */
+
+  isEditNameInvalid(): boolean {
+    if (!this.editingUser?.name) return true;
+
+    const parts = this.editingUser.name.trim().split(' ');
+
+    return (
+      parts.length < 2 ||
+      parts[0].length < 2 ||
+      parts[1].length < 2
+    );
+  }
+
+  isEditEmailInvalid(): boolean {
+    if (!this.editingUser?.email) return true;
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return !emailRegex.test(this.newUser.email);
+    const endsCorrect = this.editingUser.email.trim().toLowerCase().endsWith('@teamflow.com');
+
+    return (!emailRegex.test(this.editingUser.email.trim()) || !endsCorrect);
   }
 
-  isAddUserFormValid(): boolean {
-    const nameValid =
-      !!this.newUser.name &&
-      this.newUser.name.trim().length >= 3;
+  isEditFormValid(): boolean {
+    if (!this.editingUser) return false;
 
-const emailValid = !this.isEmailInvalid();
+    const nameValid = !this.isEditNameInvalid();
+    const emailValid = !this.isEditEmailInvalid();
+    const roleValid = !!this.editingUser.role;
 
-
-    const passwordValid =
-      !this.newUser.password || this.newUser.password.length >= 4;
-
-    const roleValid =
-      !!this.newUser.role;
-
-    return nameValid && emailValid && passwordValid && roleValid;
+    return nameValid && emailValid && roleValid;
   }
-
 
   /* ---------------------------------------------------------
      EDIT USER
@@ -210,7 +253,10 @@ const emailValid = !this.isEmailInvalid();
   }
 
   updateUser(): void {
-    if (!this.editingUser?.id) return;
+    if (!this.editingUser?.id || !this.isEditFormValid()) {
+      this.showToast("Invalid user data.", "error");
+      return;
+    }
 
     this.saving = true;
     const id = this.editingUser.id;
@@ -249,7 +295,7 @@ const emailValid = !this.isEmailInvalid();
   }
 
   /* ---------------------------------------------------------
-     DELETE USER (WITH CUSTOM CONFIRM MODAL)
+     DELETE USER
   --------------------------------------------------------- */
   deleteUserConfirmed() {
     if (this.confirmDeleteId === null) return;
@@ -275,40 +321,12 @@ const emailValid = !this.isEmailInvalid();
     });
   }
 
-  closeModal() {
-    this.confirmDeleteId = null;
-  }
-
   cancelEdit(): void {
     this.showEditForm = false;
     this.editingUser = null;
     this.previewImageBase64 = null;
     this.editingImageFile = null;
   }
-isEditNameInvalid(): boolean {
-  return !this.editingUser?.name || this.editingUser.name.trim().length < 3;
-}
-
-isEditEmailInvalid(): boolean {
-  if (!this.editingUser?.email) return true;
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return !emailRegex.test(this.editingUser.email.trim());
-}
-
-isEditRoleInvalid(): boolean {
-  return !this.editingUser?.role;
-}
-
-isEditFormValid(): boolean {
-  if (!this.editingUser) return false;
-
-  const nameValid = !this.isEditNameInvalid();
-  const emailValid = !this.isEditEmailInvalid();
-  const roleValid = !this.isEditRoleInvalid();
-
-  return nameValid && emailValid && roleValid;
-}
-
 
   /* ---------------------------------------------------------
      HELPERS
@@ -392,4 +410,11 @@ isEditFormValid(): boolean {
       error: () => this.showToast('Failed to remove member.', 'error')
     });
   }
+markAddTouched() {
+  this.addTouched = true;
+}
+
+markEditTouched() {
+  this.editTouched = true;
+}
 }
