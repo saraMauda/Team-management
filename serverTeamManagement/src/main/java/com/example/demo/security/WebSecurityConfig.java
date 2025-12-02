@@ -29,6 +29,8 @@ public class WebSecurityConfig {
 
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
+    @Autowired
+    private AuthTokenFilter authTokenFilter;
 
     public WebSecurityConfig(CustomUserDetailsService userDetailsService, AuthEntryPointJwt unauthorizedHandler) {
         this.userDetailsService = userDetailsService;
@@ -66,33 +68,30 @@ public class WebSecurityConfig {
                     CorsConfiguration corsConfiguration = new CorsConfiguration();
                     corsConfiguration.setAllowedOriginPatterns(List.of("http://localhost:4200"));
                     corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    corsConfiguration.setAllowedHeaders(List.of("*"));
+                    corsConfiguration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
+                    corsConfiguration.setExposedHeaders(List.of("Authorization"));
                     corsConfiguration.setAllowCredentials(true);
                     return corsConfiguration;
                 }))
-
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-
                         .requestMatchers("/api/users/signin").permitAll()
                         .requestMatchers("/api/users/authenticated").permitAll()
                         .requestMatchers("/register").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/chatAI").permitAll()
-
                         .anyRequest().authenticated()
-                );
+                )
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
 
-        http.exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler));
-
-        // הגדרות ל-H2 console
-        http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
-
-        // Provider + Filter
         http.authenticationProvider(authenticationProvider());
-        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        // ★★ חשוב — הפילטר מוזרק ולא נוצר ידנית
+        http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
 }

@@ -73,16 +73,19 @@ public class JwtUtils {
                 .maxAge(24 * 60 * 60)
                 .httpOnly(true)
                 .sameSite("None")
-                .secure(false)
+                .secure(true)   // חובה כשsameSite=None
                 .build();
     }
 
     public ResponseCookie getCleanJwtCookie() {
         return ResponseCookie.from("securitySample", "")
                 .path("/")
+                .maxAge(0)
                 .sameSite("None")
-                .secure(false)
+                .secure(true) // חובה
+                .httpOnly(true)
                 .build();
     }
+
 
 }
