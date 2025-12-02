@@ -13,9 +13,7 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     List<Meeting> findByProject_ProjectIdIn(List<Long> projectIds);
 
-    // לפי העובד
     List<Meeting> findByProject_EmployeeProjects_User_Email(String email);
 
-    // לפי אישורי עובד
     List<Meeting> findByApprovals_ApprovalEmployeeInProject_User_Id(Long userId);
 }

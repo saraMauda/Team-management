@@ -17,9 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.jar.JarOutputStream;
 
-
-//********תפקיד המחלקה:
-//
 @Component
 public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 

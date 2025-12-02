@@ -17,6 +17,5 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
 
     List<Report> findByReportEmployeeInProject_EmployeeProjectId(Long employeeProjectId);
 
-    // ❗ תיקון: ProjectLeader → Leader
     List<Report> findByReportEmployeeInProject_Project_Leader_Id(Long leaderId);
 }

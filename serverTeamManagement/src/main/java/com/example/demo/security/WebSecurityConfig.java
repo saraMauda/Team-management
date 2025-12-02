@@ -88,7 +88,6 @@ public class WebSecurityConfig {
 
         http.authenticationProvider(authenticationProvider());
 
-        // ★★ חשוב — הפילטר מוזרק ולא נוצר ידנית
         http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

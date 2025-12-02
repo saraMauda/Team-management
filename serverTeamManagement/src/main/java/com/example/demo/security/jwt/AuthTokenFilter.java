@@ -16,8 +16,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-//********תפקיד המחלקה:
-//
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
 
@@ -26,15 +24,10 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
-
-    //********תפקיד הפונקציה:
-    //מה הפונקציה מקבלת?
-    //
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         try{
             String jwt=jwtUtils.getJwtFromCookies(httpServletRequest);
-            //*********מהי השאלה כאן???
             if(jwt !=null && jwtUtils.validateJwtToken(jwt)){
                 String userName=jwtUtils.getUserNameFromJwtToken(jwt);
                 UserDetails userDetails= userDetailsService.loadUserByUsername(userName);
@@ -52,7 +45,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         {
             System.out.println(e);
         }
-        //***************מה משמעות ה-filter??
         filterChain.doFilter(httpServletRequest,httpServletResponse);
     }
 
