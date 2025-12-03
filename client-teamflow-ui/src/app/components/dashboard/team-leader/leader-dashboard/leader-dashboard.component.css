@@ -1,4 +1,4 @@
-/* ✅ Base */
+/*  Base */
 html, body, app-root {
   margin: 0;
   padding: 0;
@@ -8,7 +8,7 @@ html, body, app-root {
   overflow: hidden;
 }
 
-/* ✅ Main layout */
+/*  Main layout */
 .leader-layout {
   display: flex;
   height: 100vh;
@@ -21,7 +21,7 @@ html, body, app-root {
   left: 0;
 }
 
-/* ✅ Sidebar */
+/*  Sidebar */
 .leader-side-nav {
   width: 220px;
   background-color: #0e1c2b;
@@ -59,7 +59,7 @@ html, body, app-root {
   letter-spacing: 0.5px;
 }
 
-/* ✅ Sidebar Links */
+/*  Sidebar Links */
 .leader-side-nav ul {
   list-style: none;
   margin: 0;
@@ -84,7 +84,7 @@ html, body, app-root {
   font-weight: 700;
 }
 
-/* ✅ Main Content */
+/*  Main Content */
 .leader-main {
   flex: 1;
   display: flex;
@@ -94,7 +94,7 @@ html, body, app-root {
   background-color: #10263b;
 }
 
-/* ✅ Header */
+/*  Header */
 app-header {
   flex-shrink: 0;
   background-color: #0f2234;
@@ -109,7 +109,7 @@ app-header {
   box-sizing: border-box;
 }
 
-/* ✅ Content Scrollable Area */
+/*  Content Scrollable Area */
 .leader-content {
   flex: 1;
   overflow-y: auto;
@@ -120,7 +120,7 @@ app-header {
   box-sizing: border-box;
 }
 
-/* ✅ Footer */
+/*  Footer */
 app-footer {
   flex-shrink: 0;
   height: 45px;
@@ -132,7 +132,7 @@ app-footer {
   margin: 0;
 }
 
-/* ✅ Scrollbar styling */
+/*  Scrollbar styling */
 .leader-content::-webkit-scrollbar {
   width: 8px;
 }
@@ -144,7 +144,7 @@ app-footer {
   background-color: #0e1c2b;
 }
 
-/* ✅ Consistent box-sizing */
+/*  Consistent box-sizing */
 *, *::before, *::after {
   box-sizing: border-box;
 }

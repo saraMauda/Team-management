@@ -155,8 +155,22 @@ public class ProjectController {
             }
         }
 
-        return projectMapper.toDTO(project);
+        // אחרי שסיימת לעדכן את כל ה־EmployeeInProject למעלה...
+
+// 🔥 שמירה ודחיפת כל השינויים לבסיס הנתונים
+        projectRepository.save(project);
+        projectRepository.flush();
+        employeeInProjectRepository.flush();
+
+// 🔥 שליפה מחדש כדי לקבל פרויקט מעודכן כולל כל העובדים
+        Project updatedProject = projectRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Project not found after update"));
+
+// 🔥 החזרת DTO מעודכן — עכשיו Angular יקבל את העובדים הנכונים
+        return projectMapper.toDTO(updatedProject);
+
     }
+
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")

@@ -1,23 +1,36 @@
 <div class="add-report-container">
   <h2 class="title">Add New Report</h2>
 
-  <form (ngSubmit)="submitReport()" #reportForm="ngForm" class="report-form">
+  <form
+    class="report-form"
+    #reportForm="ngForm"
+    (ngSubmit)="submitReport(reportForm)"
+  >
 
     <!-- PROJECT -->
     <div class="form-group">
       <label for="project">Select Project:</label>
       <select
         id="project"
-        [(ngModel)]="selectedProjectId"
         name="project"
+        [(ngModel)]="selectedProjectId"
         required
-        [ngClass]="{ 'invalid-field': reportForm.submitted && !selectedProjectId }"
+        #projectCtrl="ngModel"
+        [ngClass]="{
+          'invalid-field':
+            (reportForm.submitted || projectCtrl.touched) && projectCtrl.invalid
+        }"
       >
-        <option [value]="null" disabled selected>-- Select a Project --</option>
-        <option *ngFor="let p of projects" [value]="p.id">{{ p.name }}</option>
+        <option [ngValue]="null">-- Select a Project --</option>
+        <option *ngFor="let p of projects" [ngValue]="p.id">
+          {{ p.name }}
+        </option>
       </select>
 
-      <small class="error" *ngIf="reportForm.submitted && !selectedProjectId">
+      <small
+        class="error"
+        *ngIf="(reportForm.submitted || projectCtrl.touched) && projectCtrl.invalid"
+      >
         Please select a project.
       </small>
     </div>
@@ -28,62 +41,119 @@
       <input
         id="title"
         type="text"
-        [(ngModel)]="title"
         name="title"
+        [(ngModel)]="title"
         required
         minlength="3"
         maxlength="50"
-        [ngClass]="{ 'invalid-field': reportForm.submitted && (title.trim().length < 3) }"
+        #titleCtrl="ngModel"
+        [ngClass]="{
+          'invalid-field':
+            (reportForm.submitted || titleCtrl.touched) && titleCtrl.invalid
+        }"
       />
 
-      <small class="error" *ngIf="reportForm.submitted && title.trim().length < 3">
+      <small
+        class="error"
+        *ngIf="(reportForm.submitted || titleCtrl.touched) && titleCtrl.errors?.['required']"
+      >
+        Title is required.
+      </small>
+
+      <small
+        class="error"
+        *ngIf="(reportForm.submitted || titleCtrl.touched) && titleCtrl.errors?.['minlength']"
+      >
         Title must be at least 3 characters.
+      </small>
+
+      <small
+        class="error"
+        *ngIf="(reportForm.submitted || titleCtrl.touched) && titleCtrl.errors?.['maxlength']"
+      >
+        Title cannot be longer than 50 characters.
       </small>
     </div>
 
     <!-- DESCRIPTION -->
     <div class="form-group">
-      <label>Description:</label>
+      <label for="description">Description:</label>
       <textarea
-        [(ngModel)]="description"
+        id="description"
         name="description"
+        [(ngModel)]="description"
         required
         minlength="10"
-        [ngClass]="{ 'invalid-field': reportForm.submitted && description.trim().length < 10 }"
+        #descCtrl="ngModel"
+        [ngClass]="{
+          'invalid-field':
+            (reportForm.submitted || descCtrl.touched) && descCtrl.invalid
+        }"
       ></textarea>
 
-      <small class="error" *ngIf="reportForm.submitted && description.trim().length < 10">
+      <small
+        class="error"
+        *ngIf="(reportForm.submitted || descCtrl.touched) && descCtrl.errors?.['required']"
+      >
+        Description is required.
+      </small>
+
+      <small
+        class="error"
+        *ngIf="(reportForm.submitted || descCtrl.touched) && descCtrl.errors?.['minlength']"
+      >
         Description must be at least 10 characters.
       </small>
     </div>
 
     <!-- HOURS -->
     <div class="form-group">
-      <label>Hours Worked:</label>
+      <label for="hours">Hours Worked:</label>
       <input
+        id="hours"
         type="number"
+        name="hours"
+        [(ngModel)]="hours"
+        required
         min="1"
         max="12"
-        [(ngModel)]="hours"
-        name="hours"
-        required
-        [ngClass]="{ 'invalid-field': reportForm.submitted && (hours < 1 || hours > 12) }"
+        #hoursCtrl="ngModel"
+        [ngClass]="{
+          'invalid-field':
+            (reportForm.submitted || hoursCtrl.touched) &&
+            (hoursCtrl.invalid || !isHoursRangeValid())
+        }"
       />
 
-      <small class="error" *ngIf="reportForm.submitted && (hours < 1 || hours > 12)">
+      <small
+        class="error"
+        *ngIf="(reportForm.submitted || hoursCtrl.touched) && hoursCtrl.errors?.['required']"
+      >
+        Hours are required.
+      </small>
+
+      <small
+        class="error"
+        *ngIf="(reportForm.submitted || hoursCtrl.touched) && !hoursCtrl.errors && !isHoursRangeValid()"
+      >
         Hours must be between 1 and 12.
       </small>
     </div>
 
-    <button type="submit" [disabled]="loading">Submit Report</button>
+    <!-- SUBMIT BUTTON -->
+    <button type="submit" [disabled]="loading">
+      {{ loading ? 'Submitting...' : 'Submit Report' }}
+    </button>
 
   </form>
 </div>
 
 <!-- ========================= TOAST ========================= -->
-<div class="toast"
-     *ngIf="toastVisible"
-     [class.toast-success]="toastType === 'success'"
-     [class.toast-error]="toastType === 'error'">
+<div
+  class="toast"
+  *ngIf="toastVisible"
+  [class.toast-success]="toastType === 'success'"
+  [class.toast-error]="toastType === 'error'"
+>
   {{ toastMessage }}
 </div>

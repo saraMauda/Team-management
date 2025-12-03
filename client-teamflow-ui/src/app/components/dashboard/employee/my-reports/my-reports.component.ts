@@ -27,7 +27,7 @@ export class MyReportsComponent implements OnInit {
   commentsLoading = false;
   panelOpen: boolean = false;
 
-  // ⭐ Toast
+  //  Toast
   toastVisible = false;
   toastMessage = '';
   toastType: 'success' | 'error' = 'success';
@@ -42,7 +42,7 @@ export class MyReportsComponent implements OnInit {
     this.loadUserInfo();
   }
 
-  // ⭐ Toast function
+  //  Toast function
   showToast(message: string, type: 'success' | 'error' = 'success') {
     this.toastMessage = message;
     this.toastType = type;

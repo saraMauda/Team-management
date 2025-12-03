@@ -39,6 +39,7 @@ export class ManageProjectsComponent implements OnInit {
   toastVisible = false;
   toastMessage = '';
   toastType: 'success' | 'error' = 'success';
+  submitAttempted = false;
 
   confirmDeleteId: number | null = null;
 
@@ -62,7 +63,7 @@ export class ManageProjectsComponent implements OnInit {
     private usersService: UsersService,
     private employeeProjectService: EmployeeProjectService,
     private teamService: TeamService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -154,6 +155,7 @@ export class ManageProjectsComponent implements OnInit {
   }
 
   addProject(): void {
+    this.submitAttempted = true;
     if (!this.isNewProjectFormValid()) {
       this.showToast('Please complete all required fields.', 'error');
       return;
@@ -189,6 +191,7 @@ export class ManageProjectsComponent implements OnInit {
     };
     this.availableEmployeesNew = [];
     this.showAddForm = false;
+    this.submitAttempted = false;
   }
 
   /* ------------------ EDIT PROJECT ------------------- */
@@ -218,34 +221,49 @@ export class ManageProjectsComponent implements OnInit {
     }
   }
 
-  updateProject(): void {
-    if (!this.editingProject || this.editingProject.id == null) return;
+updateProject(): void {
+  this.submitAttempted = true;
+  if (!this.editingProject || this.editingProject.id == null) return;
 
-    if (!this.isEditProjectFormValid()) {
-      this.showToast('Please correct form errors before saving.', 'error');
-      return;
-    }
-
-    this.saving = true;
-
-    this.projectsService.update(this.editingProject.id, this.editingProject).subscribe({
-      next: (updated) => {
-        this.projects = this.projects.map(p => p.id === updated.id ? updated : p);
-        this.cancelEdit();
-        this.saving = false;
-        this.showToast('Project updated successfully!', 'success');
-      },
-      error: () => {
-        this.showToast('Failed to update project', 'error');
-        this.saving = false;
-      }
-    });
+  if (!this.isEditProjectFormValid()) {
+    this.showToast('Please correct form errors before saving.', 'error');
+    return;
   }
+
+  this.saving = true;
+
+  const payload = {
+    id: this.editingProject.id,
+    name: this.editingProject.name.trim(),
+    description: this.editingProject!.description?.trim() ?? '',
+    startDate: this.editingProject.startDate,
+    endDate: this.editingProject.endDate,
+    status: this.editingProject.status,
+    progressPercentage: this.editingProject.progressPercentage,
+    leaderId: this.editingProject.leaderId,
+    employeeIds: this.editingProject.employeeIds ?? []
+  };
+
+  this.projectsService.update(this.editingProject.id, payload).subscribe({
+    next: (updated) => {
+      this.projects = this.projects.map(p => p.id === updated.id ? updated : p);
+      this.cancelEdit();
+      this.saving = false;
+      this.showToast('Project updated successfully!', 'success');
+    },
+    error: () => {
+      this.showToast('Failed to update project', 'error');
+      this.saving = false;
+    }
+  });
+}
+
 
   cancelEdit(): void {
     this.showEditForm = false;
     this.editingProject = null;
     this.availableEmployeesEdit = [];
+    this.submitAttempted = false;
   }
 
   /* ------------------ DELETE ------------------- */

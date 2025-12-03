@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { ReportsService } from '../../../../services/reports.service';
 import { ProjectsService } from '../../../../services/projects.service';
 import { AuthService } from '../../../../services/auth.service';
@@ -19,11 +19,10 @@ export class AddReportComponent implements OnInit {
 
   title: string = '';
   description: string = '';
-  status: string = 'IN_REVIEW';
-  hours: number = 8;
+  status: 'IN_REVIEW' | 'APPROVED' | 'REJECTED' = 'IN_REVIEW';
+  hours: number | null = null;
 
   loading = false;
-
   currentUserId: number | null = null;
 
   // TOAST
@@ -41,17 +40,21 @@ export class AddReportComponent implements OnInit {
     this.loadUser();
   }
 
+  /* ===================== TOAST ===================== */
   showToast(msg: string, type: 'success' | 'error' = 'success') {
     this.toastMessage = msg;
     this.toastType = type;
     this.toastVisible = true;
-
-    setTimeout(() => this.toastVisible = false, 5000);
+    setTimeout(() => (this.toastVisible = false), 5000);
   }
 
-  loadUser() {
+  /* ===================== LOAD USER & PROJECTS ===================== */
+  private loadUser(): void {
     const stored = localStorage.getItem('user');
-    if (!stored) return;
+    if (!stored) {
+      this.showToast('User not found in local storage.', 'error');
+      return;
+    }
 
     const email = JSON.parse(stored).email;
 
@@ -64,58 +67,29 @@ export class AddReportComponent implements OnInit {
     });
   }
 
-  loadProjects(): void {
+  private loadProjects(): void {
     this.projectsService.getMyProjects().subscribe({
-      next: (data) => (this.projects = data),
+      next: (data) => (this.projects = data || []),
       error: () => this.showToast('Failed to load projects.', 'error')
     });
   }
 
-
-  /* =========================================================
-       FORM VALIDATION
-  ========================================================= */
-  isFormValid(): boolean {
-    if (!this.selectedProjectId) {
-      this.showToast('Please select a project.', 'error');
-      return false;
-    }
-
-    if (!this.title.trim() || this.title.trim().length < 3 || this.title.trim().length > 50) {
-      this.showToast('Title must be between 3 and 50 characters.', 'error');
-      return false;
-    }
-
-    if (!this.description.trim() || this.description.trim().length < 10) {
-      this.showToast('Description must be at least 10 characters.', 'error');
-      return false;
-    }
-
-    if (this.hours < 1 || this.hours > 12) {
-      this.showToast('Hours must be between 1 and 12.', 'error');
-      return false;
-    }
-
-    const validStatuses = ['IN_REVIEW', 'APPROVED', 'REJECTED'];
-    if (!validStatuses.includes(this.status)) {
-      this.showToast('Invalid status.', 'error');
-      return false;
-    }
-
-    return true;
+  /* ===================== EXTRA VALIDATION ===================== */
+  isHoursRangeValid(): boolean {
+    return this.hours !== null && this.hours >= 1 && this.hours <= 12;
   }
 
-
-  /* =========================================================
-       SUBMIT REPORT
-  ========================================================= */
-  submitReport(): void {
-    if (!this.isFormValid()) {
+  /* ===================== SUBMIT REPORT ===================== */
+  submitReport(form: NgForm): void {
+    // בדיקות אנגולר (required, minlength, וכו')
+    if (form.invalid || !this.isHoursRangeValid()) {
+      form.control.markAllAsTouched();
+      this.showToast('Please fix the errors in the form.', 'error');
       return;
     }
 
-    if (!this.currentUserId) {
-      this.showToast('User not found.', 'error');
+    if (this.currentUserId == null || this.selectedProjectId == null) {
+      this.showToast('User or project not found.', 'error');
       return;
     }
 
@@ -125,7 +99,7 @@ export class AddReportComponent implements OnInit {
       projectId: this.selectedProjectId,
       userId: this.currentUserId,
       date: today,
-      hours: this.hours,
+      hours: this.hours!,             
       status: this.status,
       description: this.description.trim(),
       title: this.title.trim()
@@ -137,7 +111,7 @@ export class AddReportComponent implements OnInit {
       next: () => {
         this.showToast('Report submitted successfully!', 'success');
         this.loading = false;
-        this.resetForm();
+        this.resetForm(form);
       },
       error: () => {
         this.showToast('Failed to submit report.', 'error');
@@ -146,11 +120,9 @@ export class AddReportComponent implements OnInit {
     });
   }
 
-  resetForm(): void {
-    this.selectedProjectId = null;
-    this.title = '';
-    this.description = '';
+  private resetForm(form: NgForm): void {
+    form.resetForm(); // מאפס גם את ה־ngForm והמצב של touched / submitted
     this.status = 'IN_REVIEW';
-    this.hours = 8;
+    this.hours = null;
   }
 }

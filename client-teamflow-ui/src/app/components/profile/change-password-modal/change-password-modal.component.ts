@@ -43,13 +43,13 @@ export class ChangePasswordModalComponent implements OnInit {
 
     try {
       const parsed = JSON.parse(stored);
-      this.userId = parsed.id;       // ← הכי חשוב
+      this.userId = parsed.id;      
     } catch {
       this.errorMessage = "Session error";
     }
   }
 
-  /** ולידציה בסיסית */
+
   validateNewPassword(): string | null {
     if (this.newPassword.length < 8) {
       return "Password must be at least 8 characters";
@@ -63,7 +63,7 @@ export class ChangePasswordModalComponent implements OnInit {
     return null;
   }
 
-  /** שינוי סיסמה */
+
   changePassword() {
     this.errorMessage = '';
     this.successMessage = '';

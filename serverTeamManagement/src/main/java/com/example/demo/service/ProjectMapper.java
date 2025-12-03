@@ -17,8 +17,10 @@ public interface ProjectMapper {
     @Mapping(target = "employeeIds",
             expression = "java(project.getEmployeeProjects() == null ? java.util.Collections.emptyList() : " +
                     "project.getEmployeeProjects().stream()" +
+                    ".filter(e -> \"ACTIVE\".equals(e.getStatus()))" +   // ← מסנן רק אקטיביים
                     ".map(e -> e.getUser().getId())" +
                     ".collect(java.util.stream.Collectors.toList()))"
     )
+
     ProjectDTO toDTO(Project project);
 }
