@@ -29,7 +29,7 @@ export class EditProfileModalComponent {
   ngOnInit() {
     this.name = this.user.name;
     this.email = this.user.email;
-    this.imagePreview = this.user.image;
+    this.imagePreview = this.user.image ?? null;
   }
 
   /* ------- TOAST ------- */
@@ -76,8 +76,7 @@ export class EditProfileModalComponent {
       return;
     }
 
-    const updated = {
-      ...this.user,
+    const updated: Partial<UsersDTO> = {
       name: this.name,
       email: this.email
     };
@@ -87,18 +86,26 @@ export class EditProfileModalComponent {
         if (this.selectedFile) {
           this.usersService.uploadImage(this.user.id, this.selectedFile).subscribe({
             next: () => {
-              this.showToast('success', 'Profile updated successfully');
-              setTimeout(() => this.close.emit(), 1000);
+              this.onSuccess();
             },
             error: () => this.showToast('error', 'Image upload failed')
           });
         } else {
-          this.showToast('success', 'Profile updated successfully');
-          setTimeout(() => this.close.emit(), 1000);
+          this.onSuccess();
         }
       },
       error: () => this.showToast('error', 'Update failed')
     });
+  }
+
+  /* ------- SUCCESS HANDLER ------- */
+  private onSuccess() {
+    this.showToast('success', 'Profile updated successfully');
+
+    setTimeout(() => {
+      window.location.reload();
+      this.close.emit();        
+    }, 800);
   }
 
   cancel() {
