@@ -24,7 +24,7 @@ export class TeamMeetingsComponent implements OnInit {
 
   showAddForm = false;
 
-  // NEW MEETING MODEL
+  // NEW MEETING FORM
   newMeeting = {
     projectId: 0,
     title: '',
@@ -34,8 +34,10 @@ export class TeamMeetingsComponent implements OnInit {
     status: 'SCHEDULED'
   };
 
-  // EDITING MEETING
   editingMeeting: any = null;
+
+  // DELETE CONFIRMATION
+  deleteConfirmId: number | null = null;
 
   // Toast
   toastVisible = false;
@@ -60,19 +62,14 @@ export class TeamMeetingsComponent implements OnInit {
     this.toastType = type;
     this.toastVisible = true;
 
-    setTimeout(() => {
-      this.toastVisible = false;
-    }, 4000);
+    setTimeout(() => (this.toastVisible = false), 4000);
   }
 
   // ---------------- LOAD DATA ----------------
 
   loadCurrentLeader(): void {
     const stored = localStorage.getItem('user');
-    if (!stored) {
-      this.showToast('User is not logged in.', 'error');
-      return;
-    }
+    if (!stored) return;
 
     const obj = JSON.parse(stored);
     const email = obj.email;
@@ -97,9 +94,7 @@ export class TeamMeetingsComponent implements OnInit {
   }
 
   loadMeetings(): void {
-    this.http.get<any[]>(`${API_BASE_URL}/meetings`, {
-      withCredentials: true
-    }).subscribe({
+    this.http.get<any[]>(`${API_BASE_URL}/meetings`, { withCredentials: true }).subscribe({
       next: data => this.meetings = data || [],
       error: () => this.showToast('Failed to load meetings', 'error')
     });
@@ -140,30 +135,25 @@ export class TeamMeetingsComponent implements OnInit {
       return;
     }
 
-    const payload = {
-      ...this.newMeeting,
-      title: this.newMeeting.title.trim()
-    };
+    const payload = { ...this.newMeeting };
 
-    this.http.post(`${API_BASE_URL}/meetings/create`, payload, {
-      withCredentials: true
-    }).subscribe({
-      next: () => {
-        this.showToast('Meeting created', 'success');
-        this.toggleAddForm();
-        this.loadMeetings();
-
-        this.newMeeting = {
-          projectId: 0,
-          title: '',
-          description: '',
-          meetingLocation: '',
-          meetingDate: '',
-          status: 'SCHEDULED'
-        };
-      },
-      error: () => this.showToast('Failed to create meeting', 'error')
-    });
+    this.http.post(`${API_BASE_URL}/meetings/create`, payload, { withCredentials: true })
+      .subscribe({
+        next: () => {
+          this.showToast('Meeting created', 'success');
+          this.toggleAddForm();
+          this.loadMeetings();
+          this.newMeeting = {
+            projectId: 0,
+            title: '',
+            description: '',
+            meetingLocation: '',
+            meetingDate: '',
+            status: 'SCHEDULED'
+          };
+        },
+        error: () => this.showToast('Failed to create meeting', 'error')
+      });
   }
 
   toggleAddForm(): void {
@@ -186,7 +176,8 @@ export class TeamMeetingsComponent implements OnInit {
       return;
     }
 
-    this.http.put(`${API_BASE_URL}/meetings/${this.editingMeeting.meetingId}`,
+    this.http.put(
+      `${API_BASE_URL}/meetings/${this.editingMeeting.meetingId}`,
       this.editingMeeting,
       { withCredentials: true }
     ).subscribe({
@@ -199,19 +190,25 @@ export class TeamMeetingsComponent implements OnInit {
     });
   }
 
-  // ---------------- DELETE ----------------
+  // ---------------- DELETE (NEW) ----------------
 
-  deleteMeeting(id: number): void {
-    if (!confirm('Are you sure you want to delete this meeting?')) return;
+  askDelete(id: number): void {
+    this.deleteConfirmId = id;
+  }
 
-    this.http.delete(`${API_BASE_URL}/meetings/${id}`, {
-      withCredentials: true
-    }).subscribe({
-      next: () => {
-        this.showToast('Meeting deleted', 'success');
-        this.loadMeetings();
-      },
-      error: () => this.showToast('Failed to delete meeting', 'error')
-    });
+  cancelDelete(): void {
+    this.deleteConfirmId = null;
+  }
+
+  confirmDelete(id: number): void {
+    this.http.delete(`${API_BASE_URL}/meetings/${id}`, { withCredentials: true })
+      .subscribe({
+        next: () => {
+          this.showToast('Meeting deleted', 'success');
+          this.deleteConfirmId = null;
+          this.loadMeetings();
+        },
+        error: () => this.showToast('Failed to delete meeting', 'error')
+      });
   }
 }

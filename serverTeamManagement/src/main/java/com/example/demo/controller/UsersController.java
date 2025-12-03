@@ -53,7 +53,7 @@ public class UsersController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UsersDTO> updateUser(@PathVariable Long id,
                                                @Valid @RequestBody UsersDTO userDTO) {
         return usersRepository.findById(id)

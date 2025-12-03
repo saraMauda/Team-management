@@ -296,3 +296,35 @@
   margin-top: 4px;
   font-weight: 500;
 }
+.delete-confirm {
+  margin-top: 10px;
+  padding: 12px;
+  background: #2b3b4d;
+  border-radius: 8px;
+  color: white;
+  border: 1px solid #ff7f32;
+}
+
+.confirm-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.confirm-btn {
+  background: #ff7f32;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #30475e;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}

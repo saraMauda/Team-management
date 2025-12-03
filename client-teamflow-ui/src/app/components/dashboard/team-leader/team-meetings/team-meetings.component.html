@@ -104,6 +104,7 @@
   </div>
 </div>
 
+
 <!-- MEETINGS LIST -->
 <div class="meetings-list">
   <div class="meeting-card" *ngFor="let m of meetings">
@@ -130,11 +131,23 @@
 
     <p class="desc">{{ m.description }}</p>
 
+
     <!-- ACTION BUTTONS -->
-    <div class="meeting-actions">
+    <div class="meeting-actions" *ngIf="deleteConfirmId !== m.meetingId">
       <button class="edit-btn" (click)="startEdit(m)">Edit</button>
-      <button class="delete-btn" (click)="deleteMeeting(m.meetingId)">Delete</button>
+      <button class="delete-btn" (click)="askDelete(m.meetingId)">Delete</button>
     </div>
+
+    <!-- DELETE CONFIRMATION BOX -->
+    <div class="delete-confirm" *ngIf="deleteConfirmId === m.meetingId">
+      <span>Are you sure?</span>
+
+      <div class="confirm-row">
+        <button class="confirm-btn" (click)="confirmDelete(m.meetingId)">Confirm</button>
+        <button class="cancel-btn" (click)="cancelDelete()">Cancel</button>
+      </div>
+    </div>
+
 
     <!-- EDIT PANEL -->
     <div class="edit-form" *ngIf="editingMeeting?.meetingId === m.meetingId">
@@ -233,6 +246,7 @@
 
   </div>
 </div>
+
 
 <!-- TOAST -->
 <div class="toast" *ngIf="toastVisible" [ngClass]="toastType">

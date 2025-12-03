@@ -1,5 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { UsersService } from '../../../services/users.service';
+import { AuthService } from '../../../services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -24,52 +25,64 @@ export class ChangePasswordModalComponent implements OnInit {
   successMessage = '';
   loading = false;
 
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.loadUser();
   }
 
-  /** -----------------------------------------
-   * שליפת userId מה־localStorage (כמו HEADER)
-   * ----------------------------------------- */
+  /**
+   * Loads the user ID using the email stored in localStorage.
+   * This replaces the old cookie-reading logic.
+   */
   loadUser() {
-    const stored = localStorage.getItem("user");
+    const email = this.authService.getCurrentUserEmail();
 
-    if (!stored) {
-      this.errorMessage = "Unable to find user session";
+    if (!email) {
+      this.errorMessage = 'Unable to find user session';
       return;
     }
 
-    try {
-      const parsed = JSON.parse(stored);
-      this.userId = parsed.id;      
-    } catch {
-      this.errorMessage = "Session error";
-    }
+    this.usersService.getByEmail(email).subscribe({
+      next: (user) => {
+        this.userId = user.id;
+      },
+      error: () => {
+        this.errorMessage = 'Unable to load user data';
+      }
+    });
   }
-
 
   validateNewPassword(): string | null {
     if (this.newPassword.length < 8) {
-      return "Password must be at least 8 characters";
+      return 'Password must be at least 8 characters';
     }
 
-    const letters = this.newPassword.split("").filter(ch => /[a-zA-Z]/.test(ch));
+    const letters = this.newPassword.split('').filter(ch => /[a-zA-Z]/.test(ch));
     if (letters.length < 2) {
-      return "Password must contain at least 2 English letters";
+      return 'Password must contain at least 2 English letters';
     }
 
     return null;
   }
 
-
+  /**
+   * Sends request to change password.
+   */
   changePassword() {
     this.errorMessage = '';
     this.successMessage = '';
 
+    if (!this.userId) {
+      this.errorMessage = 'User not loaded';
+      return;
+    }
+
     if (this.newPassword !== this.confirmPassword) {
-      this.errorMessage = "Passwords do not match";
+      this.errorMessage = 'Passwords do not match';
       return;
     }
 
@@ -79,24 +92,18 @@ export class ChangePasswordModalComponent implements OnInit {
       return;
     }
 
-    if (!this.userId) {
-      this.errorMessage = "User not loaded";
-      return;
-    }
-
     this.loading = true;
 
     this.usersService.changePassword(this.userId, this.oldPassword, this.newPassword)
       .subscribe({
         next: () => {
           this.loading = false;
-          this.successMessage = "Password updated successfully";
-
+          this.successMessage = 'Password updated successfully';
           setTimeout(() => this.closeModal(), 1200);
         },
         error: (err) => {
           this.loading = false;
-          this.errorMessage = err.error?.message || "Error updating password";
+          this.errorMessage = err.error?.message || 'Error updating password';
         }
       });
   }

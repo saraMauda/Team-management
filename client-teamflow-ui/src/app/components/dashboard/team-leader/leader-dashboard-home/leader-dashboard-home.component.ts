@@ -54,11 +54,9 @@ export class LeaderDashboardHomeComponent implements OnInit {
   normalizeStatus(status: string | null | undefined): string {
     if (!status) return 'IN_REVIEW';
     status = status.toUpperCase();
-
     if (status === 'SUBMITTED' || status === 'OPEN') {
       return 'IN_REVIEW';
     }
-
     return status;
   }
 
@@ -112,8 +110,7 @@ export class LeaderDashboardHomeComponent implements OnInit {
 
         this.loadReportsAndMeetings(this.teamMembers, projectIds);
       },
-      error: (err) => {
-        console.error('Failed to load core data:', err);
+      error: () => {
         this.error = 'Failed to load core data.';
         this.loading = false;
       }
@@ -125,28 +122,34 @@ export class LeaderDashboardHomeComponent implements OnInit {
     const memberNameMap = new Map<number, string>();
     members.forEach(m => memberNameMap.set(m.id, m.name));
 
-    const reportCalls = members.map(m =>
-      this.reportsService.getByEmployee(m.id)
-    );
+    const nameOf = (id: number): string =>
+      memberNameMap.get(id) || 'Unknown';
 
     const meetingCalls = projectIds.map(id =>
       this.meetingsService.getTeamMeetings(id)
     );
 
-    const allCalls = [...reportCalls, ...meetingCalls];
-
-    forkJoin(allCalls).subscribe({
+    forkJoin([
+      this.reportsService.getAll(),
+      ...meetingCalls
+    ]).subscribe({
       next: (results: any[]) => {
 
-        // ---- REPORTS ----
-        const reportsResults = results.slice(0, reportCalls.length);
-        const mergedReports: ReportDTO[] = reportsResults.flat().filter(r => r);
+        const allReports = results[0];
+        const meetingsArrays = results.slice(1);
 
-        const enrichedReports: EnrichedReportDTO[] = mergedReports.map(report => ({
-          ...report,
-          status: this.normalizeStatus(report.status),
-          employeeName: report.employeeName || 'Unknown'
-        }));
+        const allMeetings: MeetingDTO[] = meetingsArrays.flat();
+
+const relevantReports = allReports.filter((r: ReportDTO) =>
+  members.some((m: any) => m.id === r.userId)
+);
+
+const enrichedReports: EnrichedReportDTO[] = relevantReports.map((report: ReportDTO) => ({
+  ...report,
+  status: this.normalizeStatus(report.status),
+  employeeName: nameOf(report.userId!)
+}));
+
 
         this.reportsAwaitingReview = enrichedReports.filter(
           r => r.status === 'IN_REVIEW'
@@ -154,18 +157,25 @@ export class LeaderDashboardHomeComponent implements OnInit {
 
         this.reportsAwaitingReviewCount = this.reportsAwaitingReview.length;
 
-        // ---- MEETINGS ----
-        const meetingsResults = results.slice(reportCalls.length);
-        const mergedMeetings: MeetingDTO[] = meetingsResults.flat().filter(m => m);
+this.upcomingMeetingsCount = allMeetings.filter(m => {
+  if (!m.meetingDate) return false;
 
-        this.upcomingMeetingsCount = mergedMeetings.filter(
-          m => new Date(m.meetingDate!).getTime() > Date.now()
-        ).length;
+  const cleaned = m.meetingDate.trim();
+  const [year, month, day] = cleaned.split("-").map(n => Number(n));
 
-        this.loading = false;
+  if (!year || !month || !day) return false;
+
+  const date = new Date(year, month - 1, day);
+
+  return date.getTime() > Date.now();
+}).length;
+
+this.loading = false;
+
+
+
       },
-      error: (err) => {
-        console.error('Error loading reports or meetings:', err);
+      error: () => {
         this.error = 'Failed to load reports or meetings.';
         this.loading = false;
       }
