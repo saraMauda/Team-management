@@ -11,10 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -237,10 +234,19 @@ Goal:
     }
 
 
-    private String buildMeetingsSummary(Users user) {
+    private String buildMeetingsSummary(Long leaderId) {
 
-        List<Meeting> meetings =
-                meetingRepository.findByApprovals_ApprovalEmployeeInProject_User_Id(user.getId());
+        List<Project> leaderProjects = projectRepository.findByLeader_Id(leaderId);
+
+        if (leaderProjects == null || leaderProjects.isEmpty()) {
+            return "Meetings: none";
+        }
+
+        List<Long> projectIds = leaderProjects.stream()
+                .map(Project::getProjectId)
+                .toList();
+
+        List<Meeting> meetings = meetingRepository.findByProject_ProjectIdIn(projectIds);
 
         if (meetings == null || meetings.isEmpty()) {
             return "Meetings: none";
@@ -252,15 +258,12 @@ Goal:
         for (Meeting m : meetings) {
             sb.append("• ").append(m.getTitle()).append("\n")
                     .append("  Date: ").append(safeDate(m.getMeetingDate())).append("\n")
-                    .append("  Location: ").append(
-                            m.getMeetingLocation() == null ? "N/A" : m.getMeetingLocation()
-                    ).append("\n")
-                    .append("  Status: ").append(
-                            m.getStatus() == null ? "N/A" : m.getStatus()
-                    ).append("\n\n");
+                    .append("  Location: ").append(m.getMeetingLocation() == null ? "N/A" : m.getMeetingLocation()).append("\n")
+                    .append("  Status: ").append(m.getStatus() == null ? "N/A" : m.getStatus()).append("\n\n");
         }
 
         return sb.toString();
+
     }
     private String buildEmployeeLoadSummary(Long leaderId) {
 
@@ -394,7 +397,7 @@ Goal:
         List<Report> reports =
                 reportRepository.findByReportEmployeeInProject_Project_Leader_Id(leaderId);
 
-        if (reports.isEmpty()) {
+        if (reports == null || reports.isEmpty()) {
             return "ReportsByEmployee: none";
         }
 
@@ -427,6 +430,53 @@ Goal:
         return sb.toString();
     }
 
+    private String buildEmployeesWhoDidNotSubmitReports(Long leaderId) {
+
+        // כל חברי הצוות
+        List<Team> teams = teamRepository.findByLeaderId(leaderId);
+        Map<Long, Users> allMembers = new HashMap<>();
+
+        for (Team t : teams) {
+            List<TeamMember> members = teamMemberRepository.findByTeamId(t.getId());
+            for (TeamMember tm : members) {
+                Users u = tm.getUser();
+                if (u != null) {
+                    allMembers.put(u.getId(), u);
+                }
+            }
+        }
+
+        if (allMembers.isEmpty()) {
+            return "Employees: none";
+        }
+
+        // כל הדוחות
+        List<Report> reports =
+                reportRepository.findByReportEmployeeInProject_Project_Leader_Id(leaderId);
+
+        Set<Long> submittersIds = new HashSet<>();
+        for (Report r : reports) {
+            Users u = r.getReportEmployeeInProject().getUser();
+            if (u != null) {
+                submittersIds.add(u.getId());
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Employees:\n");
+
+        boolean found = false;
+
+        for (Users u : allMembers.values()) {
+            if (!submittersIds.contains(u.getId())) {
+                found = true;
+                sb.append("• ").append(u.getName()).append("\n")
+                        .append("  Email: ").append(u.getEmail()).append("\n\n");
+            }
+        }
+
+        return found ? sb.toString() : "Employees: none";
+    }
 
 
 
@@ -461,6 +511,13 @@ Goal:
         }
 
         else if (containsAny(normalized,
+                "מי לא הגיש", "לא הגיש דוח", "לא שלח דוח",
+                "who did not submit", "didn't submit")) {
+
+            systemData = buildEmployeesWhoDidNotSubmitReports(leaderId);
+        }
+
+        else if (containsAny(normalized,
                 "מומח", "התמח", "skill", "skills",
                 "expert", "expertise", "specialty")) {
 
@@ -488,7 +545,7 @@ Goal:
         } else if (containsAny(normalized, "report", "reports", "דוח", "דוחות")) {
             systemData = buildReportsSummary(leaderId);
         } else if (containsAny(normalized, "meeting", "meetings", "פגיש")) {
-            systemData = buildMeetingsSummary(currentUser);
+            systemData = buildMeetingsSummary(leaderId);
         }
 
         if (systemData != null) {
