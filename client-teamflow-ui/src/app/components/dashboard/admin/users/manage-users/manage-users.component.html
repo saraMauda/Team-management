@@ -42,7 +42,7 @@
                [ngClass]="{ 'invalid-field': addTouched && isAddEmailInvalid() }" />
 
         <div class="error" *ngIf="addTouched && isAddEmailInvalid()">
-            Email must be valid and end with &#64;teamflow.com.
+          Email must be valid and end with &#64;teamflow.com.
         </div>
       </div>
 
@@ -68,6 +68,7 @@
         <select [(ngModel)]="newUser.role" (ngModelChange)="markAddTouched()">
           <option value="ROLE_EMPLOYEE">Employee</option>
           <option value="ROLE_TEAMLEADER">Team Leader</option>
+          <option value="ROLE_ADMIN">Admin</option>
         </select>
       </div>
 
@@ -103,8 +104,8 @@
           <tr>
             <td>
               <img *ngIf="user.image"
-                [src]="user.image.startsWith('data:') ? user.image : 'data:image/png;base64,' + user.image"
-                class="profile-img"/>
+                   [src]="user.image.startsWith('data:') ? user.image : 'data:image/png;base64,' + user.image"
+                   class="profile-img"/>
 
               <div *ngIf="!user.image" class="placeholder-img">👤</div>
             </td>
@@ -162,10 +163,8 @@
                  [ngClass]="{ 'invalid-field': editTouched && isEditEmailInvalid() }" />
 
           <div class="error" *ngIf="editTouched && isEditEmailInvalid()">
-              Email must be valid and end with &#64;teamflow.com.
+            Email must be valid and end with &#64;teamflow.com.
           </div>
-
-
         </div>
 
         <!-- ROLE -->
@@ -174,6 +173,7 @@
           <select [(ngModel)]="editingUser.role" (ngModelChange)="markEditTouched()">
             <option value="ROLE_EMPLOYEE">Employee</option>
             <option value="ROLE_TEAMLEADER">Team Leader</option>
+            <option value="ROLE_ADMIN">Admin</option>
           </select>
         </div>
 

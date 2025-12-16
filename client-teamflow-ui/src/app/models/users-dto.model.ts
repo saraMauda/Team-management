@@ -1,5 +1,3 @@
-// src/app/models/users-dto.model.ts
-
 export type UserRole =
   | 'ROLE_ADMIN'
   | 'ROLE_TEAMLEADER'
@@ -13,6 +11,6 @@ export interface UsersDTO {
   password?: string;
   role: UserRole;       
   active: boolean;
-  image?: string; 
-  roleString:string       // Base64 or null
+  image?: string;
+  roleString?: string; 
 }

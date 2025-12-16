@@ -55,14 +55,44 @@ public class UsersController {
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UsersDTO> updateUser(@PathVariable Long id,
-                                               @Valid @RequestBody UsersDTO userDTO) {
+                                               @Valid @RequestBody UsersDTO userDTO,
+                                               Authentication authentication) {
+
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
         return usersRepository.findById(id)
                 .map(existing -> {
-                    existing.setName(userDTO.getName());
-                    existing.setEmail(userDTO.getEmail());
-                    existing.setActive(userDTO.isActive());
+                    boolean isSelf = authentication.getName().equals(existing.getEmail());
+                    if (!isAdmin && !isSelf) {
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN).<UsersDTO>build();
+                    }
+
+                    if (userDTO.getName() != null) {
+                        existing.setName(userDTO.getName());
+                    }
+
+                    if (userDTO.getEmail() != null) {
+                        existing.setEmail(userDTO.getEmail());
+                    }
+
+                    if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
+                        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                        existing.setPassword(encoder.encode(userDTO.getPassword()));
+                    }
+
+                    if (userDTO.isActive() != existing.isActive()) {
+                        if (!isAdmin) {
+                            return ResponseEntity.status(HttpStatus.FORBIDDEN).<UsersDTO>build();
+                        }
+                        existing.setActive(userDTO.isActive());
+                    }
 
                     if (userDTO.getRole() != null && !userDTO.getRole().isEmpty()) {
+                        if (!isAdmin) {
+                            return ResponseEntity.status(HttpStatus.FORBIDDEN).<UsersDTO>build();
+                        }
+
                         ERole eRole = ERole.valueOf(userDTO.getRole());
                         Role role = roleRepository.findByName(eRole)
                                 .orElseThrow(() -> new RuntimeException("Role not found: " + userDTO.getRole()));
@@ -71,16 +101,12 @@ public class UsersController {
                         existing.getRoles().add(role);
                     }
 
-                    if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
-                        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-                        existing.setPassword(encoder.encode(userDTO.getPassword()));
-                    }
-
                     Users saved = usersRepository.save(existing);
                     return ResponseEntity.ok(usersMapper.toDTO(saved));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -127,6 +153,7 @@ public class UsersController {
     }
 
     @PostMapping("/signup")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UsersDTO> signUp(@Valid @RequestBody Users user) {
         if (usersRepository.findByEmail(user.getEmail()) != null)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

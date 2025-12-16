@@ -27,7 +27,7 @@ export class ManageUsersComponent implements OnInit {
 
   addTouched = false;
   editTouched = false;
-  
+
   newUser = {
     name: '',
     email: '',
@@ -155,36 +155,37 @@ export class ManageUsersComponent implements OnInit {
   /* ---------------------------------------------------------
      ADD USER
   --------------------------------------------------------- */
-  addUser(): void {
-    if (!this.isAddUserFormValid()) {
-      this.showToast("Invalid user data. Please check all fields.", "error");
-      return;
-    }
-
-    const payload: Partial<UsersDTO> = {
-      name: this.newUser.name.trim(),
-      email: this.newUser.email.trim(),
-      password: this.newUser.password || '1234',
-      role: this.newUser.role,
-      active: this.newUser.active
-    };
-
-    this.saving = true;
-
-    this.usersService.create(payload).subscribe({
-      next: (user) => {
-        this.users.unshift(user);
-        this.refreshRoleLists();
-        this.resetAddForm();
-        this.showToast('User added successfully!', 'success');
-        this.saving = false;
-      },
-      error: () => {
-        this.showToast('Failed to add user.', 'error');
-        this.saving = false;
-      }
-    });
+addUser(): void {
+  if (!this.isAddUserFormValid()) {
+    this.showToast("Invalid user data. Please check all fields.", "error");
+    return;
   }
+
+  const payload: any = {
+    name: this.newUser.name.trim(),
+    email: this.newUser.email.trim(),
+    password: this.newUser.password || '1234',
+    active: this.newUser.active,
+
+    roleString: this.newUser.role
+  };
+
+  this.saving = true;
+
+  this.usersService.create(payload).subscribe({
+    next: (user) => {
+      this.users.unshift(user);
+      this.refreshRoleLists();
+      this.resetAddForm();
+      this.showToast('User added successfully!', 'success');
+      this.saving = false;
+    },
+    error: () => {
+      this.showToast('Failed to add user.', 'error');
+      this.saving = false;
+    }
+  });
+}
 
   resetAddForm(): void {
     this.newUser = {
@@ -410,11 +411,12 @@ export class ManageUsersComponent implements OnInit {
       error: () => this.showToast('Failed to remove member.', 'error')
     });
   }
-markAddTouched() {
-  this.addTouched = true;
-}
 
-markEditTouched() {
-  this.editTouched = true;
-}
+  markAddTouched() {
+    this.addTouched = true;
+  }
+
+  markEditTouched() {
+    this.editTouched = true;
+  }
 }
