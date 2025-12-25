@@ -432,7 +432,6 @@ Goal:
 
     private String buildEmployeesWhoDidNotSubmitReports(Long leaderId) {
 
-        // כל חברי הצוות
         List<Team> teams = teamRepository.findByLeaderId(leaderId);
         Map<Long, Users> allMembers = new HashMap<>();
 
@@ -450,7 +449,6 @@ Goal:
             return "Employees: none";
         }
 
-        // כל הדוחות
         List<Report> reports =
                 reportRepository.findByReportEmployeeInProject_Project_Leader_Id(leaderId);
 

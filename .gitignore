@@ -1,0 +1,27 @@
+# Visual Studio
+.vs/
+
+# Build output
+bin/
+obj/
+
+# NuGet packages
+packages/
+
+# Test logs
+*.testlog
+TestStore/
+
+# Databases
+*.db
+*.mv.db
+
+# Excel files
+*.xlsx
+
+# User-specific files
+*.suo
+*.user
+*.cache
+*.pdb
+*.dll
