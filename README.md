@@ -206,3 +206,6 @@ Advanced dashboard analytics
 Developed by
 Sara
 Software Engineering Student
+<p align="center">
+  <img src="screenshots/admin dashboard" width="900"/>
+</p>
