@@ -160,6 +160,12 @@ Unauthorized access is restricted at both backend and frontend layers.
 <p align="center">
   <img src="screenshots/admin-dashboard.png" width="800"/>
 </p>
+<h2>Application Screenshots</h2>
+
+<div style="display: flex; justify-content: center; gap: 20px;">
+  <img src="screenshots/admin-dashboard.png" width="450"/>
+  <img src="screenshots/teamLeader dashboard.png" width="450"/>
+</div>
 
 <hr/>
 
