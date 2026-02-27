@@ -1,211 +1,228 @@
-TeamFlow – Enterprise Team Management Platform
-Overview
+<h1 align="center">TeamFlow</h1>
+<h3 align="center">Enterprise Team Management Platform</h3>
 
-TeamFlow is a full-stack Team Management Platform designed to manage organizational structure, users, and meetings using a secure and scalable architecture.
+<hr/>
 
-The system was developed with strong emphasis on clean architecture, security best practices, and modular design. It demonstrates backend engineering skills, secure authentication implementation, structured frontend development, and automation readiness.
+<h2>Overview</h2>
+<p>
+TeamFlow is a full-stack Team Management Platform designed to manage organizational
+structure, user roles, and team operations using a secure and scalable architecture.
+</p>
 
-Core Capabilities
-Role-Based Access Control (RBAC)
+<p>
+The system demonstrates strong backend engineering principles, secure authentication
+implementation, structured frontend architecture, and automation-ready design.
+It was developed with emphasis on clean code, separation of concerns, and production-oriented standards.
+</p>
 
-The platform enforces strict role separation:
+<hr/>
 
-Admin
+<h2>Core Capabilities</h2>
 
-Full user lifecycle management
+<h3>Role-Based Access Control</h3>
 
-Role assignment and permission control
+<ul>
+  <li><strong>Admin</strong>
+    <ul>
+      <li>Full user lifecycle management</li>
+      <li>Role assignment and permission control</li>
+      <li>System-wide visibility</li>
+    </ul>
+  </li>
 
-System-wide visibility
+  <li><strong>Team Leader</strong>
+    <ul>
+      <li>Team member management</li>
+      <li>Meeting creation and tracking</li>
+      <li>Operational oversight</li>
+    </ul>
+  </li>
 
-Team Leader
+  <li><strong>Employee</strong>
+    <ul>
+      <li>Profile management</li>
+      <li>Meeting participation</li>
+      <li>Controlled access to team resources</li>
+    </ul>
+  </li>
+</ul>
 
-Team member management
-
-Meeting creation and tracking
-
-Operational oversight
-
-Employee
-
-Profile management
-
-Meeting participation
-
-Controlled access to team resources
-
+<p>
 All permissions are enforced at backend level using Spring Security.
+</p>
 
-Architecture
+<hr/>
 
-TeamFlow follows a layered enterprise architecture:
+<h2>System Architecture</h2>
 
+<p>
+The platform follows a layered architecture:
+</p>
+
+<pre>
 Controller → Service → Repository → Database
+</pre>
 
-Backend Design
+<h3>Backend Design</h3>
+<ul>
+  <li>RESTful API</li>
+  <li>DTO pattern for secure data transfer</li>
+  <li>Service-layer business logic isolation</li>
+  <li>Spring Data JPA abstraction</li>
+  <li>Centralized exception handling</li>
+  <li>JWT-based authentication</li>
+  <li>BCrypt password encryption</li>
+</ul>
 
-RESTful API
+<h3>Frontend Design</h3>
+<ul>
+  <li>Angular component-based architecture</li>
+  <li>Route guards for role-based protection</li>
+  <li>Modular API services</li>
+  <li>Strong TypeScript typing</li>
+  <li>Clear separation of concerns</li>
+</ul>
 
-DTO pattern
+<hr/>
 
-Service-layer business logic isolation
+<h2>Technology Stack</h2>
 
-Repository abstraction via Spring Data JPA
+<h3>Backend</h3>
+<ul>
+  <li>Java</li>
+  <li>Spring Boot</li>
+  <li>Spring Security (JWT)</li>
+  <li>Spring Data JPA</li>
+  <li>Hibernate</li>
+  <li>H2 In-Memory Database</li>
+</ul>
 
-Centralized exception handling
+<h3>Frontend</h3>
+<ul>
+  <li>Angular</li>
+  <li>TypeScript</li>
+  <li>HTML5</li>
+  <li>CSS3</li>
+</ul>
 
-JWT-based authentication
+<h3>DevOps & Tooling</h3>
+<ul>
+  <li>Git / GitHub</li>
+  <li>Postman</li>
+  <li>Jenkins</li>
+  <li>Automated API Testing</li>
+  <li>Automated UI Testing</li>
+</ul>
 
-BCrypt password encryption
+<hr/>
 
-In-memory database configuration for fast development and testing
+<h2>Database Design</h2>
 
-Frontend Design
+<p>
+The system uses H2 in-memory database for development and testing.
+The architecture is designed for seamless migration to production-grade databases
+such as MySQL or PostgreSQL.
+</p>
 
-Angular component-based architecture
+<p>Main entities:</p>
+<ul>
+  <li>User</li>
+  <li>Role</li>
+  <li>Team</li>
+  <li>Meeting</li>
+  <li>Task</li>
+</ul>
 
-Route guards for role-based navigation
+<hr/>
 
-Modular service communication
+<h2>Security Implementation</h2>
 
-Strong TypeScript typing
+<ul>
+  <li>Stateless JWT authentication</li>
+  <li>Role-based authorization</li>
+  <li>BCrypt password hashing</li>
+  <li>Protected REST endpoints</li>
+  <li>Angular route guards</li>
+</ul>
 
-Clear separation of concerns
+<p>
+Unauthorized access is restricted at both backend and frontend layers.
+</p>
 
-Technology Stack
-Backend
+<hr/>
 
-Java
+<h2>Application Screenshots</h2>
 
-Spring Boot
+<p align="center">
+  <img src="screenshots/login.png" width="800"/>
+</p>
 
-Spring Security (JWT)
+<p align="center">
+  <img src="screenshots/dashboard.png" width="800"/>
+</p>
 
-Spring Data JPA
+<p align="center">
+  <img src="screenshots/admin-panel.png" width="800"/>
+</p>
 
-Hibernate
+<hr/>
 
-H2 Database (In-Memory)
+<h2>Installation</h2>
 
-Frontend
+<h3>Clone Repository</h3>
 
-Angular
+<pre>
+git clone https://github.com/your-username/TeamFlow.git
+cd TeamFlow
+</pre>
 
-TypeScript
+<h3>Backend</h3>
 
-HTML5
-
-CSS3
-
-DevOps & Tooling
-
-Git / GitHub
-
-Postman
-
-Jenkins
-
-Automated API Testing
-
-Automated UI Testing
-
-Database Implementation
-
-The system uses H2 in-memory database for development and testing purposes.
-
-Why H2:
-
-Fast setup and zero external dependencies
-
-Ideal for local development and CI environments
-
-Easy integration with Spring Boot
-
-Supports automatic schema generation via Hibernate
-
-Main Entities:
-
-User
-
-Role
-
-Team
-
-Meeting
-
-Task
-
-The database schema is normalized and managed via JPA annotations.
-
-The system can be easily migrated to MySQL or PostgreSQL by updating the datasource configuration.
-
-Security Implementation
-
-Stateless JWT authentication
-
-Role-based authorization
-
-BCrypt password hashing
-
-Protected REST endpoints
-
-Angular route guards
-
-Unauthorized access is blocked at both backend and frontend levels.
-
-Installation & Setup
-Clone Repository
-git clone https://github.com/saraMauda/Team-management
-Backend
-
-Run the application:
-
+<pre>
 mvn spring-boot:run
+</pre>
 
-Backend default:
-http://localhost:8080
+<p>Default: http://localhost:8080</p>
+<p>H2 Console: http://localhost:8080/h2-console</p>
 
-H2 Console:
-http://localhost:8080/h2-console
+<h3>Frontend</h3>
 
-Frontend
+<pre>
 npm install
 ng serve
+</pre>
 
-Frontend default:
-http://localhost:4200
+<p>Default: http://localhost:4200</p>
 
-Engineering Highlights
+<hr/>
 
-Clean layered architecture
+<h2>Engineering Highlights</h2>
 
-Secure authentication flow
+<ul>
+  <li>Clean layered architecture</li>
+  <li>Strong separation of concerns</li>
+  <li>Secure authentication flow</li>
+  <li>Role-based authorization enforcement</li>
+  <li>Automation-ready infrastructure</li>
+  <li>CI integration compatible</li>
+  <li>Production migration-ready design</li>
+</ul>
 
-Strict role-based authorization
+<hr/>
 
-In-memory database optimized for development speed
+<h2>Future Enhancements</h2>
 
-Automation-ready infrastructure
+<ul>
+  <li>Migration to production-grade SQL database</li>
+  <li>Docker containerization</li>
+  <li>Cloud deployment</li>
+  <li>Real-time notifications</li>
+  <li>Advanced dashboard analytics</li>
+</ul>
 
-CI integration compatible
+<hr/>
 
-Production migration-ready design
-
-Future Enhancements
-
-Migration to production-grade SQL database
-
-Docker containerization
-
-Cloud deployment
-
-Real-time notifications
-
-Advanced dashboard analytics
-
-Developed by
-Sara
-Software Engineering Student
 <p align="center">
-  <img src="screenshots/admin dashboard.png" width="900"/>
+Developed by Sara<br/>
+Software Engineering Student
 </p>
