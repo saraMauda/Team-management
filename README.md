@@ -170,12 +170,12 @@ Unauthorized access is restricted at both backend and frontend layers.
 
 <div style="display: flex; justify-content: center; gap: 20px;">
   <img src="screenshots/teamLeader AI.png" width="450"/>
-  <img src="screenshots/teamLeaderreport.png" width="450"/>
+  <img src="screenshots/teamLeader report.png" width="450"/>
 </div>
 
 <div style="display: flex; justify-content: center; gap: 20px;">
   <img src="screenshots/employee add report.png" width="450"/>
-  <img src="screenshots/ew=mployee dashboard.png" width="450"/>
+  <img src="screenshots/employee dashboard.png" width="450"/>
 </div>
 
 <div style="display: flex; justify-content: center; gap: 20px;">
