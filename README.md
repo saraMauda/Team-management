@@ -1,4 +1,4 @@
-eamFlow – Enterprise Team Management Platform
+TeamFlow – Enterprise Team Management Platform
 Overview
 
 TeamFlow is a full-stack Team Management Platform designed to manage organizational structure, users, and meetings using a secure and scalable architecture.
