@@ -153,18 +153,33 @@ Unauthorized access is restricted at both backend and frontend layers.
 
 <h2>Application Screenshots</h2>
 
-<p align="center">
-  <img src="screenshots/login.png" width="800"/>
-</p>
-
-<p align="center">
-  <img src="screenshots/admin-dashboard.png" width="800"/>
-</p>
-<h2>Application Screenshots</h2>
-
 <div style="display: flex; justify-content: center; gap: 20px;">
   <img src="screenshots/admin-dashboard.png" width="450"/>
+  <img src="screenshots/admin users.png" width="450"/>
+</div>
+
+<div style="display: flex; justify-content: center; gap: 20px;">
+  <img src="screenshots/admin reports.png" width="450"/>
   <img src="screenshots/teamLeader dashboard.png" width="450"/>
+</div>
+
+<div style="display: flex; justify-content: center; gap: 20px;">
+  <img src="screenshots/meetings.png" width="450"/>
+  <img src="screenshots/projects.png" width="450"/>
+</div>
+
+<div style="display: flex; justify-content: center; gap: 20px;">
+  <img src="screenshots/teamLeader AI.png" width="450"/>
+  <img src="screenshots/teamLeaderreport.png" width="450"/>
+</div>
+
+<div style="display: flex; justify-content: center; gap: 20px;">
+  <img src="screenshots/employee add report.png" width="450"/>
+  <img src="screenshots/ew=mployee dashboard.png" width="450"/>
+</div>
+
+<div style="display: flex; justify-content: center; gap: 20px;">
+  <img src="screenshots/login.png" width="450"/>
 </div>
 
 <hr/>
