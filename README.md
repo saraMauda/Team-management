@@ -158,11 +158,7 @@ Unauthorized access is restricted at both backend and frontend layers.
 </p>
 
 <p align="center">
-  <img src="screenshots/dashboard.png" width="800"/>
-</p>
-
-<p align="center">
-  <img src="screenshots/admin-panel.png" width="800"/>
+  <img src="screenshots/admin-dashboard.png" width="800"/>
 </p>
 
 <hr/>
