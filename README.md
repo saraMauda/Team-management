@@ -207,5 +207,5 @@ Developed by
 Sara
 Software Engineering Student
 <p align="center">
-  <img src="screenshots/admin dashboard" width="900"/>
+  <img src="screenshots/admin dashboard.png" width="900"/>
 </p>
