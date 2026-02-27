@@ -163,7 +163,7 @@ Run the application:
 mvn spring-boot:run
 
 Backend default:
-http://localhost:8081
+http://localhost:8080
 
 H2 Console:
 http://localhost:8080/h2-console
