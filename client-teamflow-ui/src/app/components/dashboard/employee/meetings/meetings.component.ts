@@ -3,21 +3,24 @@ import { CommonModule } from '@angular/common';
 import { MeetingsService } from '../../../../services/meetings.service';
 import { ProjectsService } from '../../../../services/projects.service';
 import { ApprovalService } from '../../../../services/approval.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-meetings',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './meetings.component.html',
   styleUrls: ['./meetings.component.css']
 })
 export class MeetingsComponent implements OnInit {
 
   meetings: any[] = [];
+  filteredMeetings: any[] = [];
   loading = true;
   error: string | null = null;
 
-  // ====== TOAST ======
+  searchText = '';
+
   toastVisible = false;
   toastMessage = '';
   toastType: 'success' | 'error' = 'success';
@@ -57,8 +60,9 @@ export class MeetingsComponent implements OnInit {
             });
 
             this.meetings = enriched;
-            this.loadApprovalsForAllMeetings();
+            this.filteredMeetings = [...this.meetings];
 
+            this.loadApprovalsForAllMeetings();
             this.loading = false;
           },
           error: () => {
@@ -73,6 +77,19 @@ export class MeetingsComponent implements OnInit {
         this.showToast('Failed to load meetings', 'error');
       }
     });
+  }
+
+  searchMeetings() {
+    const text = this.searchText.toLowerCase().trim();
+
+    if (!text) {
+      this.filteredMeetings = [...this.meetings];
+      return;
+    }
+
+    this.filteredMeetings = this.meetings.filter(m =>
+      m.title?.toLowerCase().includes(text)
+    );
   }
 
   loadApprovalsForAllMeetings(): void {

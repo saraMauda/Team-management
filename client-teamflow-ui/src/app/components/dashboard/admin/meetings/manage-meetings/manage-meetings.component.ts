@@ -10,18 +10,19 @@ import { forkJoin } from 'rxjs';
 @Component({
   selector: 'app-manage-meetings',
   standalone: true,
-imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './manage-meetings.component.html',
   styleUrls: ['./manage-meetings.component.css']
 })
 export class ManageMeetingsComponent implements OnInit {
 
   meetings: MeetingDTO[] = [];
+  allMeetings: MeetingDTO[] = [];
   loading = true;
   error: string | null = null;
   editMode = false;
+  searchText = '';
 
-  
   projectNamesMap: Map<number, string> = new Map(); 
 
   constructor(
@@ -42,18 +43,18 @@ export class ManageMeetingsComponent implements OnInit {
       projectsData: this.projectsService.getAll()
     }).subscribe({
       next: ({ meetingsData, projectsData }) => {
-        
 
         this.projectNamesMap = new Map(
           projectsData.map(p => [p.id!, p.name])
         );
 
-        this.meetings = meetingsData.sort(
+        this.allMeetings = meetingsData.sort(
           (a, b) =>
             new Date(a.meetingDate!).getTime() -
             new Date(b.meetingDate!).getTime()
         );
-        
+
+        this.meetings = [...this.allMeetings];
         this.loading = false;
       },
       error: (err) => {
@@ -62,6 +63,19 @@ export class ManageMeetingsComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  searchMeetings(): void {
+    const text = this.searchText.trim().toLowerCase();
+
+    if (!text) {
+      this.meetings = [...this.allMeetings];
+      return;
+    }
+
+    this.meetings = this.allMeetings.filter(m =>
+      (m.title || '').toLowerCase().includes(text)
+    );
   }
 
   isPast(date?: string): boolean {

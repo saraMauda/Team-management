@@ -67,7 +67,7 @@ export class EmployeeDashboardHomeComponent implements OnInit {
     this.auth.getUserByEmail(email).subscribe({
       next: (user: any) => {
         this.currentUserId = user.id;
-        this.currentUserName = user.firstName || 'Employee';
+        this.currentUserName = user.name || 'Employee';
         this.loadDashboard();
       },
       error: (err) => {

@@ -7,7 +7,7 @@ import { importProvidersFrom } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { credentialsInterceptor } from './interceptors/credentials.interceptor';
 
-export const API_BASE_URL = 'http://localhost:8080/api';
+export const API_BASE_URL = 'http://localhost:8081/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [

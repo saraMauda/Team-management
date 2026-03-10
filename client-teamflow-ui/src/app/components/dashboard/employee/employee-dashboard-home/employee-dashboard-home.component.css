@@ -47,7 +47,7 @@
   margin: 0;
   font-size: clamp(26px, 2.6vw, 34px);
   font-weight: 700;
-  color: #f5f7fa;
+  color: #ff9a57 !important;
 }
 
 /* Right side (subtitle) */

@@ -20,11 +20,13 @@ export class TeamMeetingsComponent implements OnInit {
   leaderId: number | null = null;
 
   meetings: any[] = [];
+  allMeetings: any[] = [];
   leaderProjects: any[] = [];
 
   showAddForm = false;
 
-  // NEW MEETING FORM
+  searchText = '';
+
   newMeeting = {
     projectId: 0,
     title: '',
@@ -36,10 +38,8 @@ export class TeamMeetingsComponent implements OnInit {
 
   editingMeeting: any = null;
 
-  // DELETE CONFIRMATION
   deleteConfirmId: number | null = null;
 
-  // Toast
   toastVisible = false;
   toastMessage = '';
   toastType: 'success' | 'error' = 'success';
@@ -55,8 +55,6 @@ export class TeamMeetingsComponent implements OnInit {
     this.loadCurrentLeader();
   }
 
-  // ---------------- TOAST ----------------
-
   showToast(message: string, type: 'success' | 'error' = 'success'): void {
     this.toastMessage = message;
     this.toastType = type;
@@ -64,8 +62,6 @@ export class TeamMeetingsComponent implements OnInit {
 
     setTimeout(() => (this.toastVisible = false), 4000);
   }
-
-  // ---------------- LOAD DATA ----------------
 
   loadCurrentLeader(): void {
     const stored = localStorage.getItem('user');
@@ -95,12 +91,26 @@ export class TeamMeetingsComponent implements OnInit {
 
   loadMeetings(): void {
     this.http.get<any[]>(`${API_BASE_URL}/meetings`, { withCredentials: true }).subscribe({
-      next: data => this.meetings = data || [],
+      next: data => {
+        this.allMeetings = data || [];
+        this.meetings = [...this.allMeetings];
+      },
       error: () => this.showToast('Failed to load meetings', 'error')
     });
   }
 
-  // ---------------- VALIDATION ----------------
+  searchMeetings(): void {
+    const text = this.searchText.trim().toLowerCase();
+
+    if (!text) {
+      this.meetings = [...this.allMeetings];
+      return;
+    }
+
+    this.meetings = this.allMeetings.filter(m =>
+      (m.title || '').toLowerCase().includes(text)
+    );
+  }
 
   isMeetingFormValid(): boolean {
     return (
@@ -126,8 +136,6 @@ export class TeamMeetingsComponent implements OnInit {
         (this.editingMeeting.description || '').trim().length >= 10)
     );
   }
-
-  // ---------------- CREATE ----------------
 
   createMeeting(): void {
     if (!this.isMeetingFormValid()) {
@@ -160,8 +168,6 @@ export class TeamMeetingsComponent implements OnInit {
     this.showAddForm = !this.showAddForm;
   }
 
-  // ---------------- EDIT ----------------
-
   startEdit(m: any): void {
     this.editingMeeting = { ...m };
   }
@@ -189,8 +195,6 @@ export class TeamMeetingsComponent implements OnInit {
       error: () => this.showToast('Failed to update meeting', 'error')
     });
   }
-
-  // ---------------- DELETE (NEW) ----------------
 
   askDelete(id: number): void {
     this.deleteConfirmId = id;

@@ -1,12 +1,19 @@
 <div class="page-title">Team Meetings</div>
 
+<div class="search-box">
+  <input
+    type="text"
+    placeholder="Search meeting by title..."
+    [(ngModel)]="searchText"
+  />
+  <button class="search-btn" (click)="searchMeetings()">Search</button>
+</div>
+
 <button class="add-btn" (click)="toggleAddForm()">+ Add Meeting</button>
 
-<!-- ADD MEETING FORM -->
 <div class="add-form" *ngIf="showAddForm">
   <h3>Create Meeting</h3>
 
-  <!-- PROJECT -->
   <div class="form-row">
     <label>Project</label>
     <select [(ngModel)]="newMeeting.projectId">
@@ -19,7 +26,6 @@
     </div>
   </div>
 
-  <!-- TITLE -->
   <div class="form-row">
     <label>Title</label>
     <input
@@ -37,7 +43,6 @@
     </div>
   </div>
 
-  <!-- DATE -->
   <div class="form-row">
     <label>Date</label>
     <input
@@ -51,7 +56,6 @@
     </div>
   </div>
 
-  <!-- LOCATION -->
   <div class="form-row">
     <label>Location</label>
     <input
@@ -71,7 +75,6 @@
     </div>
   </div>
 
-  <!-- DESCRIPTION -->
   <div class="form-row">
     <label>Description</label>
     <textarea
@@ -92,7 +95,6 @@
     </div>
   </div>
 
-  <!-- ACTION BUTTONS -->
   <div class="form-actions">
     <button class="save-btn"
             (click)="createMeeting()"
@@ -104,8 +106,6 @@
   </div>
 </div>
 
-
-<!-- MEETINGS LIST -->
 <div class="meetings-list">
   <div class="meeting-card" *ngFor="let m of meetings">
 
@@ -131,14 +131,11 @@
 
     <p class="desc">{{ m.description }}</p>
 
-
-    <!-- ACTION BUTTONS -->
     <div class="meeting-actions" *ngIf="deleteConfirmId !== m.meetingId">
       <button class="edit-btn" (click)="startEdit(m)">Edit</button>
       <button class="delete-btn" (click)="askDelete(m.meetingId)">Delete</button>
     </div>
 
-    <!-- DELETE CONFIRMATION BOX -->
     <div class="delete-confirm" *ngIf="deleteConfirmId === m.meetingId">
       <span>Are you sure?</span>
 
@@ -148,12 +145,9 @@
       </div>
     </div>
 
-
-    <!-- EDIT PANEL -->
     <div class="edit-form" *ngIf="editingMeeting?.meetingId === m.meetingId">
       <h4>Edit Meeting</h4>
 
-      <!-- PROJECT -->
       <div class="form-row">
         <label>Project</label>
         <select [(ngModel)]="editingMeeting.projectId">
@@ -163,7 +157,6 @@
         </select>
       </div>
 
-      <!-- TITLE -->
       <div class="form-row">
         <label>Title</label>
         <input
@@ -181,7 +174,6 @@
         </div>
       </div>
 
-      <!-- DATE -->
       <div class="form-row">
         <label>Date</label>
         <input
@@ -197,7 +189,6 @@
         </div>
       </div>
 
-      <!-- LOCATION -->
       <div class="form-row">
         <label>Location</label>
         <input
@@ -217,7 +208,6 @@
         </div>
       </div>
 
-      <!-- DESCRIPTION -->
       <div class="form-row">
         <label>Description</label>
         <textarea
@@ -236,7 +226,6 @@
         </div>
       </div>
 
-      <!-- EDIT ACTIONS -->
       <div class="form-actions">
         <button class="save-btn" (click)="saveEdit()">Save</button>
         <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
@@ -247,8 +236,6 @@
   </div>
 </div>
 
-
-<!-- TOAST -->
 <div class="toast" *ngIf="toastVisible" [ngClass]="toastType">
   {{ toastMessage }}
 </div>

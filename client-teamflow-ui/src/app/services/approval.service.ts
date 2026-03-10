@@ -8,7 +8,7 @@ import { Approval } from '../models/approval.model';
 })
 export class ApprovalService {
 
-  private baseUrl = 'http://localhost:8080/api/approvals';
+  private baseUrl = 'http://localhost:8081/api/approvals';
 
   constructor(private http: HttpClient) {}
 

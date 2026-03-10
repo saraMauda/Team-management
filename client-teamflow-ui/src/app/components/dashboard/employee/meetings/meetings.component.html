@@ -2,11 +2,23 @@
 
   <h2 class="title">My Meetings</h2>
 
+  <div class="search-box">
+    <input
+      type="text"
+      placeholder="Search meeting..."
+      [(ngModel)]="searchText"
+    />
+
+    <button class="search-btn" (click)="searchMeetings()">
+      Search
+    </button>
+  </div>
+
   <div *ngIf="error" class="error-msg">{{ error }}</div>
 
-  <div class="meetings-grid" *ngIf="meetings.length > 0; else noMeetingsTpl">
+  <div class="meetings-grid" *ngIf="filteredMeetings.length > 0; else noMeetingsTpl">
     
-    <div class="meeting-card" *ngFor="let m of meetings">
+    <div class="meeting-card" *ngFor="let m of filteredMeetings">
 
       <div class="meeting-header">
         <h3>{{ m.title }}</h3>
@@ -61,7 +73,6 @@
   <div class="no-meetings">You don't have any meetings scheduled.</div>
 </ng-template>
 
-<!-- ====== TOAST ====== -->
 <div class="toast" *ngIf="toastVisible" [ngClass]="toastType">
   {{ toastMessage }}
 </div>

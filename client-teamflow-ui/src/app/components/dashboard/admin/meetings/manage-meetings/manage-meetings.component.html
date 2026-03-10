@@ -2,6 +2,20 @@
 
   <h2 class="title">All Meetings</h2>
 
+  <div class="search-box">
+
+    <input
+      type="text"
+      placeholder="Search meeting by title..."
+      [(ngModel)]="searchText"
+    />
+
+    <button class="search-btn" (click)="searchMeetings()">
+      Search
+    </button>
+
+  </div>
+
   <div *ngIf="error" class="error-msg">{{ error }}</div>
 
   <div class="meetings-grid" *ngIf="meetings.length > 0; else noMeetingsTpl">
@@ -27,7 +41,6 @@
         <div><b>Date:</b> {{ formatDate(m.meetingDate) }}</div>
         <div><b>Location:</b> {{ m.meetingLocation || '-' }}</div>
         <div><b>Status:</b> {{ m.status || '-' }}</div>
-        
         <div><b>Project:</b> {{ getProjectName(m.projectId) }}</div>
       </div>
 
