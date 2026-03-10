@@ -199,8 +199,8 @@ cd TeamFlow
 mvn spring-boot:run
 </pre>
 
-<p>Default: http://localhost:8080</p>
-<p>H2 Console: http://localhost:8080/h2-console</p>
+<p>Default: http://localhost:8081</p>
+<p>H2 Console: http://localhost:8081/h2-console</p>
 
 <h3>Frontend</h3>
 
