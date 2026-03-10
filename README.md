@@ -189,7 +189,7 @@ Unauthorized access is restricted at both backend and frontend layers.
 <h3>Clone Repository</h3>
 
 <pre>
-git clone https://github.com/your-username/TeamFlow.git
+git clone https://github.com/saraMauda/Team-management.git
 cd TeamFlow
 </pre>
 
